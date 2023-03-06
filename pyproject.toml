@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "opossum.lib.py"
+version = "0.1"
+description = "A library for handling Opossum files with Python"
+authors = [
+    "Meret Behrens <meret.behrens@tngtech.com>",
+    "Jakob Schubert <jakob.schubert@tngtech.com>",
+]
+license = "Apache-2.0"
+
+readme = "README.md"
+
+
+repository = "https://github.com/opossum-tool/opossum.lib.py"
+
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.group.dev.dependencies]
+
+[tool.poetry.group.test.dependencies]
+pytest = "^6.0.0"
+
+[tool.poetry.group.typing.dependencies]
+mypy = ">=1.0"
+
+[virtualenvs]
+in-project = true

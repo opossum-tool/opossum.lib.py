@@ -1,0 +1,11 @@
+# test
+.pytest_cache
+
+.DS_Store
+.idea/*
+.python-version
+.vscode/*
+
+.mypy_cache
+
+.venv
