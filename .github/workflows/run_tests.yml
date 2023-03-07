@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: Meret Behrens
+# SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Install and Run tests
+
+on: [ pull_request, workflow_dispatch ]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os}}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.4.0
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install package
+        run: poetry install --no-interaction
+
+      - name: Run tests
+        run: poetry run pytest
