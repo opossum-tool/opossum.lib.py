@@ -1,19 +1,22 @@
-# SPDX-FileCopyrightText: Meret Behrens
 # SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
 
 name: Install and Run tests
 
-on: [ pull_request, workflow_dispatch ]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-  build:
-
-    runs-on: ${{ matrix.os}}
+  poetry:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        os: [ ubuntu-latest, macos-latest ]
         python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
 
     steps:
@@ -23,15 +26,42 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: cache poetry install
+        uses: actions/cache@v3
+        with:
+          path: ~/.local
+          key: poetry-${{matrix.os}}-1.4.0-0
+
       - name: Install poetry
         uses: snok/install-poetry@v1
         with:
           version: 1.4.0
           virtualenvs-create: true
           virtualenvs-in-project: true
+      - name: cache deps
+        id: cache-deps
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: pydeps-${{ matrix.os}}-${{matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
-      - name: Install package
-        run: poetry install --no-interaction
+      - name: Install package dependencies
+        run: poetry install --no-interaction --no-root
+        if: steps.cache--deps.outputs.cache-hit != 'true'
+
+      - run: poetry install --no-interaction
+
+      - name: Run isort
+        run: poetry run isort src/ tests/
+
+      - name: Run black
+        run: poetry run black src/ tests/
+
+      - name: Run flake8
+        run: poetry run flake8 src/ tests/
+
+      - name: Run mypy
+        run: poetry run python -m mypy src/ tests/
 
       - name: Run tests
         run: poetry run pytest
