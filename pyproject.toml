@@ -17,13 +17,23 @@ repository = "https://github.com/opossum-tool/opossum.lib.py"
 [tool.poetry.dependencies]
 python = "^3.7"
 
-[tool.poetry.group.dev.dependencies]
-
 [tool.poetry.group.test.dependencies]
 pytest = "^6.0.0"
+black = "^23.1.0"
+isort = "^5.11"
+flake8 = "^5"
+mypy = "^1.1.1"
 
 [tool.poetry.group.typing.dependencies]
 mypy = ">=1.0"
 
 [virtualenvs]
 in-project = true
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
