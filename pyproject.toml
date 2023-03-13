@@ -19,13 +19,12 @@ python = "^3.7"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^6.0.0"
+
+[tool.poetry.group.typing.dependencies]
 black = "^23.1.0"
 isort = "^5.11"
 flake8 = "^5"
 mypy = "^1.1.1"
-
-[tool.poetry.group.typing.dependencies]
-mypy = ">=1.0"
 
 [virtualenvs]
 in-project = true
@@ -37,3 +36,6 @@ profile = "black"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-name: Install and Run tests
-
+name: Lint and Test
 on:
   push:
     branches:

@@ -11,6 +11,7 @@ echo "-----------------------"
 poetry run black src/ tests/
 
 echo "run flake"
+echo "-----------------------"
 poetry run flake8 src/ tests/
 
 echo "running mypy"
