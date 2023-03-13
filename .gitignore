@@ -1,13 +1,13 @@
-__pycache__
+__pycache__/
 
 # test
-.pytest_cache
+.pytest_cache/
 
 .DS_Store
 .idea/*
 .python-version
 .vscode/*
 
-.mypy_cache
+.mypy_cache/
 
-.venv
+.venv/

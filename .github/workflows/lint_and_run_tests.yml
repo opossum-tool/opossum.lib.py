@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-name: Install and Run tests
-
+name: Lint and Test
 on:
   push:
     branches:
@@ -45,6 +44,8 @@ jobs:
           path: .venv
           key: pydeps-${{ matrix.os}}-${{matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
+      # We use a cache for the projects dependencies but want to avoid caching the projects code.
+      # --no-root installs all dependencies but not the project itself which we do in the next step.
       - name: Install package dependencies
         run: poetry install --no-interaction --no-root
         if: steps.cache--deps.outputs.cache-hit != 'true'
@@ -96,6 +97,8 @@ jobs:
           path: .venv
           key: pydeps-${{ matrix.os}}-${{matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
+      # We use a cache for the projects dependencies but want to avoid caching the projects code.
+      # --no-root installs all dependencies but not the project itself which we do in the next step.
       - name: Install package dependencies
         run: poetry install --no-interaction --no-root
         if: steps.cache--deps.outputs.cache-hit != 'true'
