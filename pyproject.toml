@@ -16,6 +16,7 @@ repository = "https://github.com/opossum-tool/opossum.lib.py"
 
 [tool.poetry.dependencies]
 python = "^3.8.1"
+spdx-tools = {git = "https://github.com/spdx/tools-python.git", rev = "refactor-python-tools"}
 
 [tool.poetry.group.test.dependencies]
 pytest = "^6.0.0"
