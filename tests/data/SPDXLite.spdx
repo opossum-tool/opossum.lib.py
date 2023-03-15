@@ -1,0 +1,48 @@
+## Document Information
+SPDXVersion: SPDX-2.3
+DataLicense: CC0-1.0
+SPDXID: SPDXRef-Lite
+DocumentName: SPDX Lite Document
+DocumentNamespace: https://test.namespace.com
+
+## Creation Information
+Creator: Person: Meret Behrens
+Created: 2023-03-14T08:49:00Z
+
+## Package Information
+PackageName: Example package
+SPDXID: SPDXRef-Package
+PackageVersion: 1.2
+PackageFileName: file_name
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: https://download.com
+FilesAnalyzed: False
+PackageHomePage: https://homepage.com
+PackageLicenseConcluded: LicenseRef-1
+PackageLicenseDeclared: NOASSERTION
+PackageLicenseComments: A comment about licenses.
+PackageCopyrightText: Copyright (c)
+PackageComment: This is a comment.
+
+## Package Information
+PackageName: Example package
+SPDXID: SPDXRef-Package-B
+PackageVersion: 1.2
+PackageFileName: file_name
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: https://download.com
+FilesAnalyzed: False
+PackageHomePage: https://homepage.com
+PackageLicenseConcluded: LicenseRef-1
+PackageLicenseDeclared: NOASSERTION
+PackageLicenseComments: A comment about licenses.
+PackageCopyrightText: Copyright (c)
+PackageComment: This is a comment.
+
+## License Information
+LicenseID: LicenseRef-1
+ExtractedText: This is my personal license.
+LicenseName: Authors License
+LicenseComment: Another comment.
+
+
