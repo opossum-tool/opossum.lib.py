@@ -1,0 +1,54 @@
+## Document Information
+SPDXVersion: SPDX-2.3
+DataLicense: CC0-1.0
+SPDXID: SPDXRef-DOCUMENT
+DocumentName: SPDX Lite Document
+DocumentNamespace: https://test.namespace.com
+
+## Creation Information
+Creator: Person: Meret Behrens
+Created: 2023-03-14T08:49:00Z
+
+## Package Information
+PackageName: Package A
+SPDXID: SPDXRef-Package-A
+PackageDownloadLocation: https
+FilesAnalyzed: True
+
+## File Information
+FileName: File-A
+SPDXID: SPDXRef-File-A
+FileChecksum: SHA1:
+
+## File Information
+FileName: File-C
+SPDXID: SPDXRef-File-C
+FileChecksum: SHA1:
+
+## Package Information
+PackageName: Package B
+SPDXID: SPDXRef-Package-B
+PackageDownloadLocation: https
+FilesAnalyzed: True
+
+## Package Information
+PackageName: Package C
+SPDXID: SPDXRef-Package-C
+PackageDownloadLocation: https
+FilesAnalyzed: True
+
+## File Information
+FileName: File-B
+SPDXID: SPDXRef-File-B
+FileChecksum: SHA1:
+
+## Snippet Information
+SnippetSPDXID: SPDXRef-Snippet
+SnippetFromFileSPDXID: SPDXRef-File-B
+SnippetByteRange: 1:5
+
+## Relationships
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-Package-A
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-Package-B
+Relationship: SPDXRef-Package-A COPY_OF SPDXRef-Package-C
+
