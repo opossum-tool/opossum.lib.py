@@ -13,14 +13,17 @@ readme = "README.md"
 
 repository = "https://github.com/opossum-tool/opossum.lib.py"
 
+packages = [
+    { include = "opossum_lib", from="src" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.8.1"
 spdx-tools = {git = "https://github.com/spdx/tools-python.git", rev = "refactor-python-tools"}
-networkx = "==2.6.2"
+networkx = "^3.0"
 
 [tool.poetry.group.test.dependencies]
-pytest = "^6.0.0"
+pytest = "^7.2.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
