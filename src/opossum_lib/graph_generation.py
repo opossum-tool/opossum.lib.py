@@ -9,27 +9,6 @@ from spdx.model.document import Document
 from spdx.model.relationship import Relationship
 
 
-def generate_graph_from_spdx_lite(document: Document) -> DiGraph:
-    graph = DiGraph()
-
-    document_spdx_id = document.creation_info.spdx_id
-    graph.add_node(document_spdx_id)
-
-    describes = "DESCRIBES"
-    graph.add_node(describes)
-    graph.add_edge(document_spdx_id, describes)
-
-    package_spdx_ids = [package.spdx_id for package in document.packages]
-    package_nodes = [
-        (spdx_id, {"element": get_element_from_spdx_id(document, spdx_id)})
-        for spdx_id in package_spdx_ids
-    ]
-    graph.add_nodes_from(package_nodes)
-    graph.add_edges_from((describes, spdx_id) for spdx_id in package_spdx_ids)
-
-    return graph
-
-
 def generate_graph_from_spdx(document: Document) -> DiGraph:
     graph = DiGraph()
     graph.add_node(document.creation_info.spdx_id, element=document.creation_info)
