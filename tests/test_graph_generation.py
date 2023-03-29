@@ -31,11 +31,11 @@ def test_generate_graph_from_spdx_lite() -> None:
     [
         (
             "SPDXJSONExample-v2.3.spdx.json",
-            20,
+            22,
             22,
             ["SPDXRef-Package_DYNAMIC_LINK", "SPDXRef-JenaLib_CONTAINS"],
         ),
-        ("SPDX.spdx", 11, 10, []),
+        ("SPDX.spdx", 12, 10, []),
     ],
 )
 def test_generate_graph_from_spdx(
