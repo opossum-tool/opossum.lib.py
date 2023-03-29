@@ -8,22 +8,7 @@ import pytest
 from spdx.parser.parse_anything import parse_file
 from spdx.validation.document_validator import validate_full_spdx_document
 
-from opossum_lib.graph_generation import (
-    generate_graph_from_spdx,
-    generate_graph_from_spdx_lite,
-)
-
-
-def test_generate_graph_from_spdx_lite() -> None:
-    document = parse_file(
-        str(Path(__file__).resolve().parent / "data" / "SPDXLite.spdx")
-    )
-    graph = generate_graph_from_spdx_lite(document)
-
-    assert document.creation_info.spdx_id in graph.nodes()
-    assert graph.number_of_nodes() == 4
-    assert "DESCRIBES" in graph.nodes()
-    assert graph.number_of_edges() == 3
+from opossum_lib.graph_generation import generate_graph_from_spdx
 
 
 @pytest.mark.parametrize(
