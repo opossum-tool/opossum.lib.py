@@ -12,35 +12,35 @@ Created: 2023-03-14T08:49:00Z
 ## Package Information
 PackageName: Package A
 SPDXID: SPDXRef-Package-A
-PackageDownloadLocation: https
+PackageDownloadLocation: https://download.com
 FilesAnalyzed: True
 
 ## File Information
 FileName: File-A
 SPDXID: SPDXRef-File-A
-FileChecksum: SHA1:
+FileChecksum: SHA1: d6a770ba38583ed4bb4525bd96e50461655d2759
 
 ## File Information
 FileName: File-C
 SPDXID: SPDXRef-File-C
-FileChecksum: SHA1:
+FileChecksum: SHA1: d6a770ba38583ed4bb4525bd96e50461655d2759
 
 ## Package Information
 PackageName: Package B
 SPDXID: SPDXRef-Package-B
-PackageDownloadLocation: https
+PackageDownloadLocation: https://download.com
 FilesAnalyzed: True
 
 ## Package Information
 PackageName: Package C
 SPDXID: SPDXRef-Package-C
-PackageDownloadLocation: https
+PackageDownloadLocation: https://download.com
 FilesAnalyzed: True
 
 ## File Information
 FileName: File-B
 SPDXID: SPDXRef-File-B
-FileChecksum: SHA1:
+FileChecksum: SHA1: d6a770ba38583ed4bb4525bd96e50461655d2759
 
 ## Snippet Information
 SnippetSPDXID: SPDXRef-Snippet
