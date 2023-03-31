@@ -19,7 +19,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8.1"
-spdx-tools = {git = "https://github.com/spdx/tools-python.git", rev = "refactor-python-tools"}
+spdx-tools = {git = "https://github.com/spdx/tools-python.git", rev = "main"}
 networkx = "^3.0"
 
 [tool.poetry.group.test.dependencies]
