@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 from typing import Dict, List
 
-from networkx import DiGraph  # type: ignore
+from networkx import DiGraph
 from spdx.document_utils import get_contained_spdx_element_ids, get_element_from_spdx_id
 from spdx.model.document import Document
 from spdx.model.relationship import Relationship
