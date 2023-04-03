@@ -1,16 +1,9 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from typing import Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
-from mypy.copytype import Any
-from networkx import (
-    DiGraph,
-    edge_bfs,
-    is_weakly_connected,
-    subgraph,
-    weakly_connected_components,
-)
+from networkx import DiGraph, edge_bfs, is_weakly_connected, weakly_connected_components
 from spdx.model.document import CreationInfo
 from spdx.model.file import File
 from spdx.model.package import Package
@@ -41,15 +34,15 @@ def generate_tree_from_graph(
             induced_subgraph = graph.edge_subgraph(unreached_edges)
             source = _get_node_without_incoming_edge(induced_subgraph)
             tree_component = generate_tree_from_graph(induced_subgraph, source, tree)
-            tree.add_nodes_from(tree_component.nodes)
-            tree.add_edges_from(tree_component.edges)
+            tree.add_nodes_from(tree_component.nodes(data=True))
+            tree.add_edges_from(tree_component.edges(data=True))
 
     else:  # get connected components
         tree = DiGraph()
         for connected_set in weakly_connected_components(
             graph
         ):  # returns only a set of nodes without edges
-            connected_subgraph = subgraph(graph, connected_set)
+            connected_subgraph = graph.subgraph(connected_set).copy()
             # if the documents node is not in the subgraph we choose
             # any elements node without incoming edge
             source = (
@@ -58,8 +51,8 @@ def generate_tree_from_graph(
                 else _get_node_without_incoming_edge(connected_subgraph)
             )
             tree_component = generate_tree_from_graph(connected_subgraph, source)
-            tree.add_nodes_from(tree_component.nodes)
-            tree.add_edges_from(tree_component.edges)
+            tree.add_nodes_from(tree_component.nodes(data=True))
+            tree.add_edges_from(tree_component.edges(data=True))
 
     return tree
 
