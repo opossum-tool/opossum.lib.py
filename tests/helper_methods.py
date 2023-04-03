@@ -57,3 +57,50 @@ def _create_minimal_document() -> Document:
     )
 
     return document
+
+
+def _generate_document_with_from_root_node_unreachable_file() -> Document:
+    # this is a helper method to create a document where there doesn't exist
+    # a directed path from the root node SPDXRef-DOCUMENT to SPDXRef-File-B
+    download_location = "https"
+    packages = [
+        Package(
+            spdx_id="SPDXRef-Package-A",
+            name="Package-A",
+            download_location=download_location,
+        ),
+        Package(
+            spdx_id="SPDXRef-Package-B",
+            name="Package-B",
+            download_location=download_location,
+        ),
+    ]
+    checksum = Checksum(ChecksumAlgorithm.SHA1, "")
+    files = [
+        File(spdx_id="SPDXRef-File-A", checksums=[checksum], name="File-A"),
+        File(spdx_id="SPDXRef-File-B", checksums=[checksum], name="File-B"),
+    ]
+    relationships = [
+        Relationship("SPDXRef-Package-A", RelationshipType.CONTAINS, "SPDXRef-File-A"),
+        Relationship(
+            "SPDXRef-DOCUMENT", RelationshipType.DESCRIBES, "SPDXRef-Package-A"
+        ),
+        Relationship(
+            "SPDXRef-DOCUMENT", RelationshipType.DESCRIBES, "SPDXRef-Package-B"
+        ),
+        Relationship("SPDXRef-File-B", RelationshipType.DESCRIBES, "SPDXRef-Package-B"),
+    ]
+    document = Document(
+        creation_info=CreationInfo(
+            spdx_id="SPDXRef-DOCUMENT",
+            spdx_version="SPDX-2.3",
+            name="Document",
+            document_namespace="https",
+            created=datetime(2022, 2, 2),
+            creators=[Actor(ActorType.PERSON, "Me")],
+        ),
+        files=files,
+        relationships=relationships,
+        packages=packages,
+    )
+    return document
