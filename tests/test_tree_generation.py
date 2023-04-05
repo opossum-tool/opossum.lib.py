@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 from datetime import datetime
 from pathlib import Path
-from typing import List
 from unittest import TestCase
 
 import pytest
@@ -22,7 +21,7 @@ from tests.helper_methods import _create_minimal_document
 
 
 def test_different_paths_graph() -> None:
-    # generate tree from a directed graph with a cycle
+    # generate tree from a directed graph with an undirected cycle
     document = _create_minimal_document()
 
     graph = generate_graph_from_spdx(document)
@@ -178,23 +177,122 @@ def test_different_roots_graph() -> None:
     assert not is_weakly_connected(tree)
 
 
+def test_tree_generation_for_cycle() -> None:
+    # generate tree from a graph with a directed cycle
+    document = _create_minimal_document()
+    document.relationships += [
+        Relationship("SPDXRef-File", RelationshipType.CONTAINED_BY, "SPDXRef-Package-A")
+    ]
+
+    graph = generate_graph_from_spdx(document)
+    tree = generate_tree_from_graph(graph)
+
+    TestCase().assertCountEqual(
+        tree.nodes(),
+        [
+            "SPDXRef-DOCUMENT",
+            "SPDXRef-Package-A",
+            "SPDXRef-Package-B",
+            "SPDXRef-File",
+            "SPDXRef-File_CONTAINED_BY",
+            "SPDXRef-File_CONTAINED_BY_SPDXRef-Package-A",
+            "SPDXRef-DOCUMENT_DESCRIBES",
+            "SPDXRef-Package-A_CONTAINS",
+            "SPDXRef-Package-B_CONTAINS",
+            "SPDXRef-Package-B_CONTAINS_SPDXRef-File",
+        ],
+    )
+    TestCase().assertCountEqual(
+        tree.edges(),
+        [
+            ("SPDXRef-DOCUMENT", "SPDXRef-DOCUMENT_DESCRIBES"),
+            ("SPDXRef-DOCUMENT_DESCRIBES", "SPDXRef-Package-A"),
+            ("SPDXRef-DOCUMENT_DESCRIBES", "SPDXRef-Package-B"),
+            ("SPDXRef-Package-A", "SPDXRef-Package-A_CONTAINS"),
+            ("SPDXRef-Package-B", "SPDXRef-Package-B_CONTAINS"),
+            ("SPDXRef-Package-A_CONTAINS", "SPDXRef-File"),
+            ("SPDXRef-Package-B_CONTAINS", "SPDXRef-Package-B_CONTAINS_SPDXRef-File"),
+            ("SPDXRef-File", "SPDXRef-File_CONTAINED_BY"),
+            (
+                "SPDXRef-File_CONTAINED_BY",
+                "SPDXRef-File_CONTAINED_BY_SPDXRef-Package-A",
+            ),
+        ],
+    )
+
+
+def test_tree_generation_unconnected_cycle() -> None:
+    # generate tree from a graph with a directed cycle that is not connected with the
+    # documents root node
+    creation_info = CreationInfo(
+        spdx_version="SPDX-2.3",
+        spdx_id="SPDXRef-DOCUMENT",
+        data_license="CC0-1.0",
+        name="SPDX Lite Document",
+        document_namespace="https://test.namespace.com",
+        creators=[Actor(ActorType.PERSON, "Meret Behrens")],
+        created=datetime(2023, 3, 14, 8, 49),
+    )
+    package = Package(
+        name="Example package",
+        spdx_id="SPDXRef-Package",
+        download_location="https://download.com",
+    )
+    file = File(
+        name="Example file",
+        spdx_id="SPDXRef-File",
+        checksums=[Checksum(ChecksumAlgorithm.SHA1, "")],
+    )
+
+    relationships = [
+        Relationship("SPDXRef-Package", RelationshipType.CONTAINS, "SPDXRef-File"),
+        Relationship("SPDXRef-File", RelationshipType.CONTAINED_BY, "SPDXRef-Package"),
+    ]
+    document = Document(
+        creation_info=creation_info,
+        packages=[package],
+        files=[file],
+        relationships=relationships,
+    )
+
+    graph = generate_graph_from_spdx(document)
+    tree = generate_tree_from_graph(graph)
+
+    TestCase().assertCountEqual(
+        tree.nodes(),
+        [
+            "SPDXRef-DOCUMENT",
+            "SPDXRef-Package",
+            "SPDXRef-File",
+            "SPDXRef-Package_CONTAINS",
+            "SPDXRef-Package_CONTAINS_SPDXRef-File",
+            "SPDXRef-File_CONTAINED_BY",
+            "SPDXRef-File_CONTAINED_BY_SPDXRef-Package",
+        ],
+    )
+    TestCase().assertCountEqual(
+        tree.edges(),
+        [
+            ("SPDXRef-File", "SPDXRef-File_CONTAINED_BY"),
+            (
+                "SPDXRef-File_CONTAINED_BY",
+                "SPDXRef-File_CONTAINED_BY_SPDXRef-Package",
+            ),
+            ("SPDXRef-Package", "SPDXRef-Package_CONTAINS"),
+            ("SPDXRef-Package_CONTAINS", "SPDXRef-Package_CONTAINS_SPDXRef-File"),
+        ],
+    )
+
+
 @pytest.mark.parametrize(
-    "file_name, nodes_count, edges_count, relationship_node_keys",
+    "file_name, nodes_count, edges_count",
     [
-        (
-            "SPDXJSONExample-v2.3.spdx.json",
-            25,
-            22,
-            ["SPDXRef-Package_DYNAMIC_LINK", "SPDXRef-JenaLib_CONTAINS"],
-        ),
-        ("SPDX.spdx", 12, 10, []),
+        ("SPDXJSONExample-v2.3.spdx.json", 25, 22),
+        ("SPDX.spdx", 12, 10),
     ],
 )
 def test_tree_generation_for_bigger_examples(
-    file_name: str,
-    nodes_count: int,
-    edges_count: int,
-    relationship_node_keys: List[str],
+    file_name: str, nodes_count: int, edges_count: int
 ) -> None:
     document = parse_file(str(Path(__file__).resolve().parent / "data" / file_name))
     graph = generate_graph_from_spdx(document)
