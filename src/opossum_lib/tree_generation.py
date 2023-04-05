@@ -1,29 +1,37 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from networkx import DiGraph, edge_bfs, is_weakly_connected, weakly_connected_components
+from spdx.constants import DOCUMENT_SPDX_ID
 from spdx.model.document import CreationInfo
 from spdx.model.file import File
 from spdx.model.package import Package
 
 
-def generate_tree_from_graph(
+def generate_tree_from_graph(graph: DiGraph) -> DiGraph:
+    return _generate_tree_from_graph_recursively(graph)
+
+
+def _generate_tree_from_graph_recursively(
     graph: DiGraph,
-    source: Optional[str] = "SPDXRef-DOCUMENT",
-    tree: Optional[DiGraph] = None,
+    source: Optional[str] = DOCUMENT_SPDX_ID,
+    created_tree: Optional[DiGraph] = None,
 ) -> DiGraph:
     if not graph.edges():
-        return graph
+        return graph.copy()
 
     if is_weakly_connected(graph):
-        tree = tree or DiGraph()
+        if created_tree:
+            created_tree = created_tree.copy()
+        else:
+            created_tree = DiGraph()
         edges_bfs = edge_bfs(graph, source)
+
         visited_edges = []
         for edge in edges_bfs:
-            _add_source_node(edge, graph, tree)
-            _add_target_node_and_edge(edge, graph, tree)
+            _add_edge_and_associated_nodes_to_tree(edge, created_tree, graph)
             visited_edges += [edge]
         # check if there is a directed path from source to each element node
         # if not, we need to construct sub-graphs from the unreached edges
@@ -33,28 +41,39 @@ def generate_tree_from_graph(
         if unreached_edges:
             induced_subgraph = graph.edge_subgraph(unreached_edges)
             source = _get_node_without_incoming_edge(induced_subgraph)
-            tree_component = generate_tree_from_graph(induced_subgraph, source, tree)
-            tree.add_nodes_from(tree_component.nodes(data=True))
-            tree.add_edges_from(tree_component.edges(data=True))
+            tree_component = _generate_tree_from_graph_recursively(
+                induced_subgraph, source, created_tree
+            )
+            created_tree.add_nodes_from(tree_component.nodes(data=True))
+            created_tree.add_edges_from(tree_component.edges(data=True))
 
     else:  # get connected components
-        tree = DiGraph()
-        for connected_set in weakly_connected_components(
-            graph
-        ):  # returns only a set of nodes without edges
-            connected_subgraph = graph.subgraph(connected_set).copy()
+        if created_tree:
+            created_tree = created_tree.copy()
+        else:
+            created_tree = DiGraph()
+        for connected_subgraph in _weakly_connected_component_sub_graphs(graph):
             # if the documents node is not in the subgraph we choose
             # any elements node without incoming edge
             source = (
-                "SPDXRef-DOCUMENT"
-                if "SPDXRef-DOCUMENT" in connected_set
+                DOCUMENT_SPDX_ID
+                if DOCUMENT_SPDX_ID in connected_subgraph
                 else _get_node_without_incoming_edge(connected_subgraph)
             )
-            tree_component = generate_tree_from_graph(connected_subgraph, source)
-            tree.add_nodes_from(tree_component.nodes(data=True))
-            tree.add_edges_from(tree_component.edges(data=True))
+            tree_component = _generate_tree_from_graph_recursively(
+                connected_subgraph, source, created_tree
+            )
+            created_tree.add_nodes_from(tree_component.nodes(data=True))
+            created_tree.add_edges_from(tree_component.edges(data=True))
 
-    return tree
+    return created_tree
+
+
+def _add_edge_and_associated_nodes_to_tree(
+    edge: Tuple[str, str], created_tree: DiGraph, graph: DiGraph
+) -> None:
+    _add_source_node(edge, graph, created_tree)
+    _add_target_node_and_edge(edge, graph, created_tree)
 
 
 def _add_target_node_and_edge(
@@ -65,8 +84,8 @@ def _add_target_node_and_edge(
         tree.add_node(edge[1], **target_node_data)
         tree.add_edge(*edge)
     else:
-        # if the child node is already in the graph duplicate the node by adding the
-        # parent node as prefix
+        # if the target node is already in the graph duplicate the node by adding the
+        # source node as prefix
         target_node_data = graph.nodes[edge[1]]
         duplicated_node = edge[0] + "_" + edge[1]
         tree.add_node(duplicated_node, **target_node_data)
@@ -83,6 +102,22 @@ def _add_source_node(edge: Tuple[str, str], graph: DiGraph, tree: DiGraph) -> No
 
 def _get_node_without_incoming_edge(graph: DiGraph) -> Any:
     for node, degree in graph.in_degree():
-        if degree == 0 and "element" in graph.nodes[node]:
+        if degree == 0 and _node_represents_a_spdx_element(graph, node):
             return node
-    return ""
+    # if there is no node without incoming edge, choose the first in the list of nodes,
+    # nodes are stored as a dict which keeps the order in which the nodes are added,
+    return None
+
+
+def _node_represents_a_spdx_element(graph: DiGraph, node: str) -> bool:
+    return "element" in graph.nodes[node]
+
+
+def _weakly_connected_component_sub_graphs(graph: DiGraph) -> List[DiGraph]:
+    connected_sub_graphs = []
+    for connected_set in weakly_connected_components(
+        graph
+    ):  # returns only a set of nodes without edges
+        connected_sub_graphs.append(graph.subgraph(connected_set).copy())
+
+    return connected_sub_graphs
