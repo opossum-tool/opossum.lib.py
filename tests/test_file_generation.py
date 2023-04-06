@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 from pathlib import Path
+from typing import Tuple
 from unittest import TestCase
 
 import pytest
@@ -104,11 +105,44 @@ def test_different_roots_graph() -> None:
 
 
 @pytest.mark.parametrize(
-    "file_name, expected_top_level_keys",
-    [("SPDXJSONExample-v2.3.spdx.json", 3), ("SPDX.spdx", 2)],
+    "file_name, expected_top_level_keys, expected_file_path_level_1, "
+    "expected_file_path_level_2",
+    [
+        (
+            "SPDXJSONExample-v2.3.spdx.json",
+            3,
+            (
+                "SPDXRef-DOCUMENT",
+                "COPY_OF",
+                "DocumentRef-spdx-tool-1.2:SPDXRef-ToolsElement",
+            ),
+            (
+                "SPDXRef-DOCUMENT",
+                "CONTAINS",
+                "SPDXRef-Package",
+                "DYNAMIC_LINK",
+                "SPDXRef-Saxon",
+            ),
+        ),
+        (
+            "SPDX.spdx",
+            2,
+            ("SPDXRef-DOCUMENT", "DESCRIBES", "SPDXRef-Package-B"),
+            (
+                "SPDXRef-DOCUMENT",
+                "DESCRIBES",
+                "SPDXRef-Package-A",
+                "CONTAINS",
+                "SPDXRef-File-C",
+            ),
+        ),
+    ],
 )
 def test_tree_generation_for_bigger_examples(
-    file_name: str, expected_top_level_keys: int
+    file_name: str,
+    expected_top_level_keys: int,
+    expected_file_path_level_1: Tuple[str, str, str],
+    expected_file_path_level_2: Tuple[str, str, str, str, str],
 ) -> None:
     document = parse_file(str(Path(__file__).resolve().parent / "data" / file_name))
     graph = generate_graph_from_spdx(document)
@@ -121,3 +155,15 @@ def test_tree_generation_for_bigger_examples(
     )
     file_tree = opossum_information["resources"]
     assert len(file_tree.keys()) == expected_top_level_keys
+    assert (
+        file_tree[expected_file_path_level_1[0]][expected_file_path_level_1[1]][
+            expected_file_path_level_1[2]
+        ]
+        == 1
+    )
+    assert (
+        file_tree[expected_file_path_level_2[0]][expected_file_path_level_2[1]][
+            expected_file_path_level_2[2]
+        ][expected_file_path_level_2[3]][expected_file_path_level_2[4]]
+        == 1
+    )
