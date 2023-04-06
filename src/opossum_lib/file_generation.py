@@ -39,26 +39,12 @@ def generate_json_file_from_tree(tree: DiGraph) -> Dict[str, Dict[str, Any]]:
     return opossum_information
 
 
-def tree_to_dict(graph: DiGraph, node: str) -> Union[int, Dict[str, Any]]:
-    successors = [successor for successor in graph.successors(node)]
+def tree_to_dict(graph: DiGraph, source: str) -> Union[int, Dict[str, Any]]:
+    successors = list(graph.successors(source))
     if not successors:
-        branch_dict: Union[int, Dict] = 1
-        return branch_dict
+        return 1
     branch_dict = {}
     for successor in successors:
-        successor_name = strip_node(successor, graph)
+        successor_name = graph.nodes[successor]["label"]
         branch_dict[successor_name] = tree_to_dict(graph, successor)
     return branch_dict
-
-
-def strip_node(node: str, graph: DiGraph) -> str:
-    # We want to revert the string concatenation for unique nodes to
-    # only have the spdx_ids and RelationshipTypes as resources
-    # duplicated element nodes were concatenated with the relationship,
-    # the spdx_id of the element is after the last "_"
-    # nodes representing RelationshipTypes were concatenated with the source node,
-    # the required part is after the first "_"
-    if "element" in graph.nodes[node]:
-        return node.split("_")[-1]
-    else:
-        return node.split("_", 1)[-1]
