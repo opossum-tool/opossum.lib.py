@@ -4,21 +4,40 @@
 import datetime
 import json
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, TypedDict, Union
 
-from networkx import DiGraph, weakly_connected_components
+from networkx import DiGraph, shortest_path, weakly_connected_components
 
-from opossum_lib.helper_methods import _get_source_for_graph_traversal
+from opossum_lib.helper_methods import (
+    _get_source_for_graph_traversal,
+    _node_represents_a_spdx_element,
+)
+
+OpossumInformation = TypedDict(
+    "OpossumInformation",
+    {
+        "metadata": Dict[str, str],
+        "resources": Dict[str, Any],
+        "externalAttributions": Dict,
+        "resourcesToAttributions": Dict,
+        "attributionBreakpoints": List[str],
+    },
+)
 
 
-def write_dict_to_file(opossum_information: Dict, file_path: Path) -> None:
+def write_dict_to_file(
+    opossum_information: OpossumInformation, file_path: Path
+) -> None:
     with file_path.open("w") as out:
         json.dump(opossum_information, out, indent=4)
 
 
-def generate_json_file_from_tree(tree: DiGraph) -> Dict[str, Dict[str, Any]]:
+def generate_json_file_from_tree(
+    tree: DiGraph,
+) -> OpossumInformation:
     doc_name = tree.nodes["SPDXRef-DOCUMENT"]["element"].name
-    opossum_information: Dict[str, Dict[str, Any]] = {
+
+    opossum_information: OpossumInformation = {
         "metadata": {
             "projectId": "tools-python-opossum-crossover",
             "projectTitle": doc_name,
@@ -27,6 +46,7 @@ def generate_json_file_from_tree(tree: DiGraph) -> Dict[str, Dict[str, Any]]:
         "resources": {},
         "externalAttributions": {},
         "resourcesToAttributions": {},
+        "attributionBreakpoints": [],
     }
 
     for connected_set in weakly_connected_components(tree):
@@ -39,6 +59,9 @@ def generate_json_file_from_tree(tree: DiGraph) -> Dict[str, Dict[str, Any]]:
 
         opossum_information["resources"][source] = tree_to_dict(
             connected_subgraph, source
+        )
+        opossum_information["attributionBreakpoints"].extend(
+            get_breakpoints(connected_subgraph, source)
         )
 
     return opossum_information
@@ -53,3 +76,17 @@ def tree_to_dict(graph: DiGraph, source: str) -> Union[int, Dict[str, Any]]:
         successor_name = graph.nodes[successor]["label"]
         branch_dict[successor_name] = tree_to_dict(graph, successor)
     return branch_dict
+
+
+def get_breakpoints(graph: DiGraph, source: str) -> List[str]:
+    breakpoints = []
+    for node in graph.nodes():
+        if not _node_represents_a_spdx_element(graph, node):
+            path = shortest_path(graph, source, node)
+            breakpoints.append(_create_file_path_from_graph_path(path))
+
+    return breakpoints
+
+
+def _create_file_path_from_graph_path(path: List[str]) -> str:
+    return "/" + "/".join(path) + "/"
