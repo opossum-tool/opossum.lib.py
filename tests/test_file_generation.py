@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 from pathlib import Path
-from typing import Tuple
+from typing import List, Tuple
 from unittest import TestCase
 
 import pytest
@@ -36,11 +36,27 @@ def test_different_paths_graph() -> None:
     opossum_information = generate_json_file_from_tree(tree)
 
     TestCase().assertCountEqual(
-        ["metadata", "resources", "externalAttributions", "resourcesToAttributions"],
+        [
+            "metadata",
+            "resources",
+            "externalAttributions",
+            "resourcesToAttributions",
+            "attributionBreakpoints",
+        ],
         list(opossum_information.keys()),
     )
     file_tree = opossum_information["resources"]
     assert file_tree == expected_file_tree
+    TestCase().assertCountEqual(
+        opossum_information["attributionBreakpoints"],
+        [
+            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/",
+            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-A/"
+            "SPDXRef-Package-A_CONTAINS/",
+            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-B/"
+            "SPDXRef-Package-B_CONTAINS/",
+        ],
+    )
 
 
 def test_unconnected_paths_graph() -> None:
@@ -69,11 +85,27 @@ def test_unconnected_paths_graph() -> None:
     opossum_information = generate_json_file_from_tree(tree)
 
     TestCase().assertCountEqual(
-        ["metadata", "resources", "externalAttributions", "resourcesToAttributions"],
+        [
+            "metadata",
+            "resources",
+            "externalAttributions",
+            "resourcesToAttributions",
+            "attributionBreakpoints",
+        ],
         list(opossum_information.keys()),
     )
     file_tree = opossum_information["resources"]
     assert file_tree == expected_file_tree
+    TestCase().assertCountEqual(
+        opossum_information["attributionBreakpoints"],
+        [
+            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/",
+            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-A/"
+            "SPDXRef-Package-A_CONTAINS/",
+            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-B/"
+            "SPDXRef-Package-B_CONTAINS/",
+        ],
+    )
 
 
 def test_different_roots_graph() -> None:
@@ -96,16 +128,31 @@ def test_different_roots_graph() -> None:
     opossum_information = generate_json_file_from_tree(tree)
 
     TestCase().assertCountEqual(
-        ["metadata", "resources", "externalAttributions", "resourcesToAttributions"],
+        [
+            "metadata",
+            "resources",
+            "externalAttributions",
+            "resourcesToAttributions",
+            "attributionBreakpoints",
+        ],
         list(opossum_information.keys()),
     )
     file_tree = opossum_information["resources"]
     assert file_tree == expected_file_tree
+    TestCase().assertCountEqual(
+        opossum_information["attributionBreakpoints"],
+        [
+            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/",
+            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-A/"
+            "SPDXRef-Package-A_CONTAINS/",
+            "/SPDXRef-File-B/SPDXRef-File-B_DESCRIBES/",
+        ],
+    )
 
 
 @pytest.mark.parametrize(
     "file_name, expected_top_level_keys, expected_file_path_level_1, "
-    "expected_file_path_level_2",
+    "expected_file_path_level_2, expected_breakpoints",
     [
         (
             "SPDXJSONExample-v2.3.spdx.json",
@@ -122,6 +169,13 @@ def test_different_roots_graph() -> None:
                 "DYNAMIC_LINK",
                 "SPDXRef-Saxon",
             ),
+            [
+                "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_CONTAINS/SPDXRef-Package/"
+                "SPDXRef-Package_CONTAINS/"
+                "SPDXRef-CommonsLangSrc/SPDXRef-CommonsLangSrc_GENERATED_FROM/",
+                "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_CONTAINS/SPDXRef-Package/"
+                "SPDXRef-Package_DYNAMIC_LINK/",
+            ],
         ),
         (
             "SPDX.spdx",
@@ -134,6 +188,13 @@ def test_different_roots_graph() -> None:
                 "CONTAINS",
                 "SPDXRef-File-C",
             ),
+            [
+                "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-A/"
+                "SPDXRef-Package-A_CONTAINS/",
+                "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-A/"
+                "SPDXRef-Package-A_COPY_OF/"
+                "SPDXRef-Package-C/SPDXRef-Package-C_CONTAINS/",
+            ],
         ),
     ],
 )
@@ -142,6 +203,7 @@ def test_tree_generation_for_bigger_examples(
     expected_top_level_keys: int,
     expected_file_path_level_1: Tuple[str, str, str],
     expected_file_path_level_2: Tuple[str, str, str, str, str],
+    expected_breakpoints: List[str],
 ) -> None:
     document = parse_file(str(Path(__file__).resolve().parent / "data" / file_name))
     graph = generate_graph_from_spdx(document)
@@ -149,7 +211,13 @@ def test_tree_generation_for_bigger_examples(
     opossum_information = generate_json_file_from_tree(tree)
 
     TestCase().assertCountEqual(
-        ["metadata", "resources", "externalAttributions", "resourcesToAttributions"],
+        [
+            "metadata",
+            "resources",
+            "externalAttributions",
+            "resourcesToAttributions",
+            "attributionBreakpoints",
+        ],
         list(opossum_information.keys()),
     )
     file_tree = opossum_information["resources"]
@@ -166,3 +234,6 @@ def test_tree_generation_for_bigger_examples(
         ][expected_file_path_level_2[3]][expected_file_path_level_2[4]]
         == 1
     )
+
+    for attribution_breakpoint in expected_breakpoints:
+        assert attribution_breakpoint in opossum_information["attributionBreakpoints"]
