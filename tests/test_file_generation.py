@@ -50,11 +50,9 @@ def test_different_paths_graph() -> None:
     TestCase().assertCountEqual(
         opossum_information["attributionBreakpoints"],
         [
-            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/",
-            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-A/"
-            "SPDXRef-Package-A_CONTAINS/",
-            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-B/"
-            "SPDXRef-Package-B_CONTAINS/",
+            "/SPDXRef-DOCUMENT/DESCRIBES/",
+            "/SPDXRef-DOCUMENT/DESCRIBES/SPDXRef-Package-A/CONTAINS/",
+            "/SPDXRef-DOCUMENT/DESCRIBES/SPDXRef-Package-B/CONTAINS/",
         ],
     )
 
@@ -99,11 +97,9 @@ def test_unconnected_paths_graph() -> None:
     TestCase().assertCountEqual(
         opossum_information["attributionBreakpoints"],
         [
-            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/",
-            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-A/"
-            "SPDXRef-Package-A_CONTAINS/",
-            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-B/"
-            "SPDXRef-Package-B_CONTAINS/",
+            "/SPDXRef-DOCUMENT/DESCRIBES/",
+            "/SPDXRef-DOCUMENT/DESCRIBES/SPDXRef-Package-A/CONTAINS/",
+            "/SPDXRef-DOCUMENT/DESCRIBES/SPDXRef-Package-B/CONTAINS/",
         ],
     )
 
@@ -142,10 +138,9 @@ def test_different_roots_graph() -> None:
     TestCase().assertCountEqual(
         opossum_information["attributionBreakpoints"],
         [
-            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/",
-            "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-A/"
-            "SPDXRef-Package-A_CONTAINS/",
-            "/SPDXRef-File-B/SPDXRef-File-B_DESCRIBES/",
+            "/SPDXRef-DOCUMENT/DESCRIBES/",
+            "/SPDXRef-DOCUMENT/DESCRIBES/SPDXRef-Package-A/CONTAINS/",
+            "/SPDXRef-File-B/DESCRIBES/",
         ],
     )
 
@@ -170,11 +165,9 @@ def test_different_roots_graph() -> None:
                 "SPDXRef-Saxon",
             ),
             [
-                "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_CONTAINS/SPDXRef-Package/"
-                "SPDXRef-Package_CONTAINS/"
-                "SPDXRef-CommonsLangSrc/SPDXRef-CommonsLangSrc_GENERATED_FROM/",
-                "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_CONTAINS/SPDXRef-Package/"
-                "SPDXRef-Package_DYNAMIC_LINK/",
+                "/SPDXRef-DOCUMENT/CONTAINS/SPDXRef-Package/CONTAINS/"
+                "SPDXRef-CommonsLangSrc/GENERATED_FROM/",
+                "/SPDXRef-DOCUMENT/CONTAINS/SPDXRef-Package/DYNAMIC_LINK/",
             ],
         ),
         (
@@ -189,11 +182,9 @@ def test_different_roots_graph() -> None:
                 "SPDXRef-File-C",
             ),
             [
-                "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-A/"
-                "SPDXRef-Package-A_CONTAINS/",
-                "/SPDXRef-DOCUMENT/SPDXRef-DOCUMENT_DESCRIBES/SPDXRef-Package-A/"
-                "SPDXRef-Package-A_COPY_OF/"
-                "SPDXRef-Package-C/SPDXRef-Package-C_CONTAINS/",
+                "/SPDXRef-DOCUMENT/DESCRIBES/SPDXRef-Package-A/CONTAINS/",
+                "/SPDXRef-DOCUMENT/DESCRIBES/SPDXRef-Package-A/COPY_OF/"
+                "SPDXRef-Package-C/CONTAINS/",
             ],
         ),
     ],

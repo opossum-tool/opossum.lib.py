@@ -83,10 +83,10 @@ def get_breakpoints(graph: DiGraph, source: str) -> List[str]:
     for node in graph.nodes():
         if not _node_represents_a_spdx_element(graph, node):
             path = shortest_path(graph, source, node)
-            breakpoints.append(_create_file_path_from_graph_path(path))
+            breakpoints.append(_create_file_path_from_graph_path(graph, path))
 
     return breakpoints
 
 
-def _create_file_path_from_graph_path(path: List[str]) -> str:
-    return "/" + "/".join(path) + "/"
+def _create_file_path_from_graph_path(graph: DiGraph, path: List[str]) -> str:
+    return "/" + "/".join([graph.nodes[node]["label"] for node in path]) + "/"
