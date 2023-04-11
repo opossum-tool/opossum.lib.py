@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 import datetime
 import json
+from pathlib import Path
 from typing import Any, Dict, Union
 
 from networkx import DiGraph, weakly_connected_components
@@ -10,8 +11,8 @@ from networkx import DiGraph, weakly_connected_components
 from opossum_lib.helper_methods import _get_source_for_graph_traversal
 
 
-def write_dict_to_file(opossum_information: Dict, file_path: str) -> None:
-    with open(file_path, "w") as out:
+def write_dict_to_file(opossum_information: Dict, file_path: Path) -> None:
+    with file_path.open("w") as out:
         json.dump(opossum_information, out, indent=4)
 
 
@@ -31,6 +32,10 @@ def generate_json_file_from_tree(tree: DiGraph) -> Dict[str, Dict[str, Any]]:
     for connected_set in weakly_connected_components(tree):
         connected_subgraph = tree.subgraph(connected_set).copy()
         source = _get_source_for_graph_traversal(connected_subgraph)
+        if source is None:  # from development not possible, how to deal with this?
+            raise RuntimeError(
+                "A tree should always have a node without incoming edge."
+            )
 
         opossum_information["resources"][source] = tree_to_dict(
             connected_subgraph, source

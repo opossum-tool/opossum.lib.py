@@ -9,7 +9,7 @@ import pytest
 from spdx.model.package import Package
 from spdx.parser.parse_anything import parse_file
 
-from opossum_lib.file_generation import generate_json_file_from_tree, write_dict_to_file
+from opossum_lib.file_generation import generate_json_file_from_tree
 from opossum_lib.graph_generation import generate_graph_from_spdx
 from opossum_lib.tree_generation import generate_tree_from_graph
 from tests.helper_methods import (
@@ -19,7 +19,7 @@ from tests.helper_methods import (
 
 
 def test_different_paths_graph() -> None:
-    # generate tree from a directed graph with a cycle
+    """Creating a tree from a directed graph with a cycle."""
     expected_file_tree = {
         "SPDXRef-DOCUMENT": {
             "DESCRIBES": {
@@ -44,7 +44,7 @@ def test_different_paths_graph() -> None:
 
 
 def test_unconnected_paths_graph() -> None:
-    # generate tree from a directed graph with a cycle
+    """Creating a tree from a directed graph with a cycle."""
     expected_file_tree = {
         "SPDXRef-DOCUMENT": {
             "DESCRIBES": {
@@ -68,7 +68,6 @@ def test_unconnected_paths_graph() -> None:
 
     opossum_information = generate_json_file_from_tree(tree)
 
-    write_dict_to_file(opossum_information, "example2.json")
     TestCase().assertCountEqual(
         ["metadata", "resources", "externalAttributions", "resourcesToAttributions"],
         list(opossum_information.keys()),
@@ -78,9 +77,9 @@ def test_unconnected_paths_graph() -> None:
 
 
 def test_different_roots_graph() -> None:
-    # test tree generation for a connected graph where some edges are not reachable
-    # from the SPDXRef-DOCUMENT node that means the connected graph has multiple sources
-    # and the result should be disconnected
+    """Creating a tree from a connected graph where some edges are not reachable
+    from the SPDXRef-DOCUMENT node. This means that the connected graph has multiple
+    sources and thus the result should be disconnected."""
     expected_file_tree = {
         "SPDXRef-DOCUMENT": {
             "DESCRIBES": {

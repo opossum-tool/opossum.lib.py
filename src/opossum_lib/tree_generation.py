@@ -1,13 +1,15 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from networkx import DiGraph, edge_bfs, is_weakly_connected, weakly_connected_components
 from spdx.constants import DOCUMENT_SPDX_ID
 from spdx.model.document import CreationInfo
 from spdx.model.file import File
 from spdx.model.package import Package
+
+from opossum_lib.helper_methods import _get_source_for_graph_traversal
 
 
 def generate_tree_from_graph(graph: DiGraph) -> DiGraph:
@@ -40,7 +42,7 @@ def _generate_tree_from_graph_recursively(
         unreached_edges = set(graph.edges).difference(set(visited_edges))
         if unreached_edges:
             induced_subgraph = graph.edge_subgraph(unreached_edges)
-            source = _get_node_without_incoming_edge(induced_subgraph)
+            source = _get_source_for_graph_traversal(induced_subgraph)
             tree_component = _generate_tree_from_graph_recursively(
                 induced_subgraph, source, created_tree
             )
@@ -55,11 +57,7 @@ def _generate_tree_from_graph_recursively(
         for connected_subgraph in _weakly_connected_component_sub_graphs(graph):
             # if the documents node is not in the subgraph we choose
             # any elements node without incoming edge
-            source = (
-                DOCUMENT_SPDX_ID
-                if DOCUMENT_SPDX_ID in connected_subgraph
-                else _get_node_without_incoming_edge(connected_subgraph)
-            )
+            source = _get_source_for_graph_traversal(connected_subgraph)
             tree_component = _generate_tree_from_graph_recursively(
                 connected_subgraph, source, created_tree
             )
@@ -98,19 +96,6 @@ def _add_source_node(edge: Tuple[str, str], graph: DiGraph, tree: DiGraph) -> No
             edge[0]
         ]
         tree.add_node(edge[0], **source_node_data)
-
-
-def _get_node_without_incoming_edge(graph: DiGraph) -> Any:
-    for node, degree in graph.in_degree():
-        if degree == 0 and _node_represents_a_spdx_element(graph, node):
-            return node
-    # if there is no node without incoming edge, choose the first in the list of nodes,
-    # nodes are stored as a dict which keeps the order in which the nodes are added,
-    return None
-
-
-def _node_represents_a_spdx_element(graph: DiGraph, node: str) -> bool:
-    return "element" in graph.nodes[node]
 
 
 def _weakly_connected_component_sub_graphs(graph: DiGraph) -> List[DiGraph]:
