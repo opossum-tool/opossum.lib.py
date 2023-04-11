@@ -12,8 +12,8 @@ from spdx.model.relationship import Relationship, RelationshipType
 
 
 def _create_minimal_document() -> Document:
-    # this is a helper method to create a minimal document that describes two
-    # packages which both contain the same file
+    """This is a helper method to create a minimal document that describes two
+    packages which both contain the same file."""
     creation_info = CreationInfo(
         spdx_version="SPDX-2.3",
         spdx_id="SPDXRef-DOCUMENT",
@@ -60,8 +60,8 @@ def _create_minimal_document() -> Document:
 
 
 def _generate_document_with_from_root_node_unreachable_file() -> Document:
-    # this is a helper method to create a document where there doesn't exist
-    # a directed path from the root node SPDXRef-DOCUMENT to SPDXRef-File-B
+    """This is a helper method to create a document where there doesn't exist
+    a directed path from the root node SPDXRef-DOCUMENT to SPDXRef-File-B."""
     download_location = "https"
     packages = [
         Package(
