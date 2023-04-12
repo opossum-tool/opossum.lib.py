@@ -18,7 +18,7 @@ jobs:
         shell: bash
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
         python-version: [ "3.8", "3.9", "3.10", "3.11" ]
 
     steps:
@@ -32,7 +32,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.local
-          key: poetry-${{matrix.os}}-1.4.0-0
+          key: poetry-${{ matrix.os }}-${{ matrix.python-version }}-1.4.0-0
 
       - name: Install poetry
         uses: snok/install-poetry@v1
@@ -45,7 +45,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: pydeps-${{ matrix.os}}-${{matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: pydeps-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       # We use a cache for the projects dependencies but want to avoid caching the projects code.
       # --no-root installs all dependencies but not the project itself which we do in the next step.
@@ -88,7 +88,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.local
-          key: poetry-${{matrix.os}}-1.4.0-0
+          key: poetry-${{ matrix.os }}-${{ matrix.python-version }}-1.4.0-0
 
       - name: Install poetry
         uses: snok/install-poetry@v1
@@ -101,7 +101,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: pydeps-${{ matrix.os}}-${{matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: pydeps-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       # We use a cache for the projects dependencies but want to avoid caching the projects code.
       # --no-root installs all dependencies but not the project itself which we do in the next step.
