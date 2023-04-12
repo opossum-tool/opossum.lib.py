@@ -18,7 +18,7 @@ packages = [
 ]
 
 [tool.poetry.scripts]
-spdx2opossum = 'opossum_lib.cli:main'
+spdx2opossum = 'opossum_lib.cli:spdx2opossum'
 
 [tool.poetry.dependencies]
 python = "^3.8.1"

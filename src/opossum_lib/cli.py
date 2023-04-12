@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 import click
-from spdx.model.document import Document
+from spdx.model.document import Document as SpdxDocument
 from spdx.parser.error import SPDXParsingError
 from spdx.parser.parse_anything import parse_file
 
@@ -24,6 +24,8 @@ from opossum_lib.tree_generation import generate_tree_from_graph
     "--infile",
     "-i",
     help="The file containing the document to be converted.",
+    required=True,
+    type=click.Path(exists=True),
 )
 @click.option(
     "--outfile",
@@ -32,13 +34,12 @@ from opossum_lib.tree_generation import generate_tree_from_graph
     "will be in JSON format, if the specified file path doesn't match this file "
     'extension ".json" will be appended.',
 )
-def main(infile: str, outfile: str) -> None:
+def spdx2opossum(infile: str, outfile: str) -> None:
     """
     CLI-tool for converting SPDX documents to Opossum documents.
-    To use, run: 'opossum_lib --infile <input file name> --out <output file path>'
     """
     try:
-        document: Document = parse_file(infile)
+        document: SpdxDocument = parse_file(infile)
 
     except SPDXParsingError as err:
         log_string = "\n".join(
@@ -59,4 +60,4 @@ def main(infile: str, outfile: str) -> None:
 
 
 if __name__ == "__main__":
-    main()
+    spdx2opossum()
