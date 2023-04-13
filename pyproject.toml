@@ -51,7 +51,8 @@ disallow_untyped_defs = true
 
 [[tool.mypy.overrides]]
 module = [
-    'networkx.*'
+    'networkx.*',
+    'license_expression.*'
 ]
 ignore_missing_imports = true
 

@@ -4,7 +4,7 @@
 from typing import Dict, List
 
 from networkx import DiGraph
-from spdx.document_utils import get_contained_spdx_element_ids, get_element_from_spdx_id
+from spdx.document_utils import get_contained_spdx_elements, get_element_from_spdx_id
 from spdx.model.document import Document
 from spdx.model.relationship import Relationship
 
@@ -17,13 +17,16 @@ def generate_graph_from_spdx(document: Document) -> DiGraph:
         label=document.creation_info.spdx_id,
     )
 
-    contained_elements: List[str] = get_contained_spdx_element_ids(document)
+    contained_elements = get_contained_spdx_elements(document)
     contained_element_nodes = [
         (
             spdx_id,
-            {"element": get_element_from_spdx_id(document, spdx_id), "label": spdx_id},
+            {
+                "element": element,
+                "label": element.name or spdx_id,
+            },
         )
-        for spdx_id in contained_elements
+        for spdx_id, element in contained_elements.items()
     ]
     graph.add_nodes_from(contained_element_nodes)
 
