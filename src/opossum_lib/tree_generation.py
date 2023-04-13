@@ -1,15 +1,18 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
-from networkx import DiGraph, edge_bfs, is_weakly_connected, weakly_connected_components
+from networkx import DiGraph, edge_bfs, is_weakly_connected
 from spdx.constants import DOCUMENT_SPDX_ID
 from spdx.model.document import CreationInfo
 from spdx.model.file import File
 from spdx.model.package import Package
 
-from opossum_lib.helper_methods import _get_source_for_graph_traversal
+from opossum_lib.helper_methods import (
+    _get_source_for_graph_traversal,
+    _weakly_connected_component_sub_graphs,
+)
 
 
 def generate_tree_from_graph(graph: DiGraph) -> DiGraph:
@@ -96,13 +99,3 @@ def _add_source_node(edge: Tuple[str, str], graph: DiGraph, tree: DiGraph) -> No
             edge[0]
         ]
         tree.add_node(edge[0], **source_node_data)
-
-
-def _weakly_connected_component_sub_graphs(graph: DiGraph) -> List[DiGraph]:
-    connected_sub_graphs = []
-    for connected_set in weakly_connected_components(
-        graph
-    ):  # returns only a set of nodes without edges
-        connected_sub_graphs.append(graph.subgraph(connected_set).copy())
-
-    return connected_sub_graphs
