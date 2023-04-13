@@ -55,7 +55,7 @@ def generate_graph_from_spdx(document: Document) -> DiGraph:
             if related_spdx_element_id not in graph.nodes():
                 graph.add_node(
                     related_spdx_element_id,
-                    element=get_element_from_spdx_id(document, spdx_id),
+                    element=get_element_from_spdx_id(document, related_spdx_element_id),
                     label=related_spdx_element_id,
                 )
             graph.add_edge(relationship_node_key, related_spdx_element_id)
