@@ -1,7 +1,8 @@
+#!/usr/bin/env bash
+#
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-#!/usr/bin/env bash
 
 cd "$(dirname "${BASH_SOURCE[0]}")"/..
 
