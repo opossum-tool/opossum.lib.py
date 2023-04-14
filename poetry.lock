@@ -277,14 +277,14 @@ test = ["codecov (>=2.1)", "pytest (>=7.2)", "pytest-cov (>=4.0)"]
 
 [[package]]
 name = "packaging"
-version = "23.0"
+version = "23.1"
 description = "Core utilities for Python packages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "packaging-23.0-py3-none-any.whl", hash = "sha256:714ac14496c3e68c99c29b00845f7a2b85f3bb6f1078fd9f72fd20f0570002b2"},
-    {file = "packaging-23.0.tar.gz", hash = "sha256:b6ad297f8907de0fa2fe1ccbd26fdaf387f5f47c7275fedf8cce89f99446cf97"},
+    {file = "packaging-23.1-py3-none-any.whl", hash = "sha256:994793af429502c4ea2ebf6bf664629d07c1a9fe974af92966e4b8d2df7edc61"},
+    {file = "packaging-23.1.tar.gz", hash = "sha256:a392980d2b6cffa644431898be54b0045151319d1e7ec34f0cfed48767dd334f"},
 ]
 
 [[package]]
@@ -491,7 +491,7 @@ files = [
 
 [[package]]
 name = "spdx-tools"
-version = "0.7.2.dev381+g91bb7442"
+version = "0.7.2.dev383+gbbccaa12"
 description = "SPDX parser and tools."
 category = "main"
 optional = false
@@ -518,7 +518,7 @@ test = ["pytest"]
 type = "git"
 url = "https://github.com/spdx/tools-python.git"
 reference = "main"
-resolved_reference = "bbccaa12f0f52acb79f17e563d52727f8ac3e331"
+resolved_reference = "eb0c96173fe3afe72e8a70774546cb037bc469fe"
 
 [[package]]
 name = "tomli"
