@@ -1,8 +1,7 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-import typing
-from typing import Any, Dict, List, Optional, Union
+from typing import List, Optional
 
 from networkx import DiGraph, weakly_connected_components
 from spdx.constants import DOCUMENT_SPDX_ID
@@ -39,59 +38,25 @@ def _weakly_connected_component_sub_graphs(graph: DiGraph) -> List[DiGraph]:
     return connected_sub_graphs
 
 
-def _create_file_path_from_graph_path(graph: DiGraph, path: List[str]) -> str:
-    """
-    some file names with relative paths start with "./", to avoid paths like "/./"
-    we need to remove these prefixes
-    """
+def _create_file_path_from_graph_path(path: List[str], graph: DiGraph) -> str:
+    # Some file names with relative paths start with "./", to avoid paths like "/./"
+    # we need to remove these prefixes.
+    base_path = "/" + "/".join(
+        [graph.nodes[node]["label"].replace("./", "") for node in path]
+    )
     if list(graph.successors(path[-1])):
-        return (
-            "/"
-            + "/".join([graph.nodes[node]["label"].replace("./", "") for node in path])
-            + "/"
-        )
-    else:
-        return "/" + "/".join(
-            [graph.nodes[node]["label"].replace("./", "") for node in path]
-        )
+        base_path += "/"
+    return base_path
 
 
-def _replace_node_ids_with_labels(
-    path: List[str], connected_subgraph: DiGraph
-) -> List[str]:
+def _replace_node_ids_with_labels(path: List[str], graph: DiGraph) -> List[str]:
     resulting_path = []
-    path_with_label = [
-        connected_subgraph.nodes[node]["label"].replace("./", "") for node in path
-    ]
+    path_with_label = [graph.nodes[node]["label"].replace("./", "") for node in path]
+    # Some element names again contain a file path, so we have to split a second time to
+    # map the complete file structure as a tree.
     for element_or_path in path_with_label:
         resulting_path.extend(
             [element for element in element_or_path.split("/") if element]
         )
 
     return resulting_path
-
-
-def _create_nested_dict(file_path: List[str]) -> Union[int, Dict[str, Any]]:
-    if len(file_path) == 0:
-        return 1
-    else:
-        return {file_path[0]: _create_nested_dict(file_path[1:])}
-
-
-@typing.no_type_check
-def _merge_nested_dicts(
-    dict1: Union[Dict, int], dict2: Union[Dict, int]
-) -> Dict[str, Any]:
-    if isinstance(dict2, int) and isinstance(dict1, Dict):
-        return dict1
-    if isinstance(dict1, int) and isinstance(dict2, Dict):
-        return dict2
-    if isinstance(dict1, int) and isinstance(dict2, int):
-        raise RuntimeError("A tree doesn't have two equivalent paths.")
-    for key in dict2:
-        if key not in dict1:
-            dict1[key] = dict2[key]
-        else:
-            dict1[key] = _merge_nested_dicts(dict1[key], dict2[key])
-
-    return dict1
