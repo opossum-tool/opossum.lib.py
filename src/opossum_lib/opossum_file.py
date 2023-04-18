@@ -1,14 +1,29 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from dataclasses import dataclass
-from typing import Any, Dict, List, Literal, Optional, Union
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Dict, List, Literal, Optional, Union
+
+OpossumPackageIdentifier = str
+
+
+@dataclass(frozen=True)
+class OpossumInformation:
+    metadata: Metadata
+    resources: Resource
+    externalAttributions: Dict[OpossumPackageIdentifier, OpossumPackage]
+    resourcesToAttributions: Dict[
+        OpossumPackageIdentifier, List[OpossumPackageIdentifier]
+    ]
+    attributionBreakpoints: List[str]
 
 
 @dataclass(frozen=True)
 class SourceInfo:
     name: str
-    documentConfidence: int
+    documentConfidence: Optional[int] = 0
 
 
 @dataclass(frozen=True)
@@ -44,9 +59,21 @@ class Metadata:
 
 
 @dataclass(frozen=True)
-class OpossumInformation:
-    metadata: Metadata
-    resources: Dict[str, Any]
-    externalAttributions: Dict[str, Any]
-    resourcesToAttributions: Dict[str, List[str]]
-    attributionBreakpoints: List[str]
+class Resource:
+    children: Dict[str, Resource] = field(default_factory=dict)
+
+    def add_path(self, path: List[str]) -> None:
+        if len(path) == 0:
+            return
+        first, rest = path[0], path[1:]
+        if first not in self.children:
+            self.children[first] = Resource()
+        self.children[first].add_path(rest)
+
+    def to_dict(self) -> Union[int, Dict]:
+        if len(self.children) == 0:
+            return 1
+        else:
+            return {
+                name: resource.to_dict() for name, resource in self.children.items()
+            }

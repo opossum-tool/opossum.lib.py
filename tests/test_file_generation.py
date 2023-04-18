@@ -35,7 +35,7 @@ def test_different_paths_graph() -> None:
 
     opossum_information = generate_json_file_from_tree(tree)
 
-    file_tree = opossum_information.resources
+    file_tree = opossum_information.resources.to_dict()
     assert file_tree == expected_file_tree
     TestCase().assertCountEqual(
         opossum_information.attributionBreakpoints,
@@ -66,7 +66,7 @@ def test_different_paths_graph() -> None:
     }
 
     TestCase().assertCountEqual(
-        opossum_information.externalAttributions,
+        opossum_information.externalAttributions.keys(),
         [
             "SPDXRef-DOCUMENT",
             "SPDXRef-Package-A",
@@ -104,7 +104,7 @@ def test_unconnected_paths_graph() -> None:
 
     opossum_information = generate_json_file_from_tree(tree)
 
-    file_tree = opossum_information.resources
+    file_tree = opossum_information.resources.to_dict()
     assert file_tree == expected_file_tree
     TestCase().assertCountEqual(
         opossum_information.attributionBreakpoints,
@@ -140,7 +140,7 @@ def test_unconnected_paths_graph() -> None:
     }
 
     TestCase().assertCountEqual(
-        opossum_information.externalAttributions,
+        opossum_information.externalAttributions.keys(),
         [
             "SPDXRef-DOCUMENT",
             "SPDXRef-Package-A",
@@ -170,7 +170,7 @@ def test_different_roots_graph() -> None:
     tree = generate_tree_from_graph(graph)
     opossum_information = generate_json_file_from_tree(tree)
 
-    file_tree = opossum_information.resources
+    file_tree = opossum_information.resources.to_dict()
     assert file_tree == expected_file_tree
     TestCase().assertCountEqual(
         opossum_information.attributionBreakpoints,
@@ -200,7 +200,7 @@ def test_different_roots_graph() -> None:
     }
 
     TestCase().assertCountEqual(
-        opossum_information.externalAttributions,
+        opossum_information.externalAttributions.keys(),
         [
             "SPDXRef-DOCUMENT",
             "SPDXRef-Package-A",
@@ -269,7 +269,8 @@ def test_tree_generation_for_bigger_examples(
     tree = generate_tree_from_graph(graph)
     opossum_information = generate_json_file_from_tree(tree)
 
-    file_tree = opossum_information.resources
+    file_tree = opossum_information.resources.to_dict()
+    assert isinstance(file_tree, dict)
     assert len(file_tree.keys()) == expected_top_level_keys
     assert (
         file_tree[expected_file_path_level_1[0]][expected_file_path_level_1[1]][
