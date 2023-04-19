@@ -6,8 +6,8 @@ from typing import List, Tuple
 from unittest import TestCase
 
 import pytest
-from spdx.model.package import Package
-from spdx.parser.parse_anything import parse_file
+from spdx_tools.spdx.model.package import Package
+from spdx_tools.spdx.parser.parse_anything import parse_file
 
 from opossum_lib.file_generation import generate_json_file_from_tree
 from opossum_lib.graph_generation import generate_graph_from_spdx

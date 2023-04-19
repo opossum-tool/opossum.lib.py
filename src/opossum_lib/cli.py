@@ -10,10 +10,10 @@ import sys
 from pathlib import Path
 
 import click
-from spdx.model.document import Document as SpdxDocument
-from spdx.parser.error import SPDXParsingError
-from spdx.parser.parse_anything import parse_file
-from spdx.validation.document_validator import validate_full_spdx_document
+from spdx_tools.spdx.model.document import Document as SpdxDocument
+from spdx_tools.spdx.parser.error import SPDXParsingError
+from spdx_tools.spdx.parser.parse_anything import parse_file
+from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
 
 from opossum_lib.file_generation import generate_json_file_from_tree, write_dict_to_file
 from opossum_lib.graph_generation import generate_graph_from_spdx

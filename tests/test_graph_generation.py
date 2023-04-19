@@ -6,9 +6,9 @@ from typing import List
 from unittest import TestCase
 
 import pytest
-from spdx.model.package import Package
-from spdx.parser.parse_anything import parse_file
-from spdx.validation.document_validator import validate_full_spdx_document
+from spdx_tools.spdx.model.package import Package
+from spdx_tools.spdx.parser.parse_anything import parse_file
+from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
 
 from opossum_lib.graph_generation import generate_graph_from_spdx
 from tests.helper_methods import _create_minimal_document

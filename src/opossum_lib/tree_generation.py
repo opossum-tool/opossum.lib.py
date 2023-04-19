@@ -4,10 +4,10 @@
 from typing import Dict, Optional, Tuple, Union
 
 from networkx import DiGraph, edge_bfs, is_weakly_connected
-from spdx.constants import DOCUMENT_SPDX_ID
-from spdx.model.document import CreationInfo
-from spdx.model.file import File
-from spdx.model.package import Package
+from spdx_tools.spdx.constants import DOCUMENT_SPDX_ID
+from spdx_tools.spdx.model.document import CreationInfo
+from spdx_tools.spdx.model.file import File
+from spdx_tools.spdx.model.package import Package
 
 from opossum_lib.helper_methods import (
     _get_source_for_graph_traversal,

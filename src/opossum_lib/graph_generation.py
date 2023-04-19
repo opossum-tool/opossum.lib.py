@@ -4,9 +4,12 @@
 from typing import Dict, List
 
 from networkx import DiGraph
-from spdx.document_utils import get_contained_spdx_elements, get_element_from_spdx_id
-from spdx.model.document import Document
-from spdx.model.relationship import Relationship
+from spdx_tools.spdx.document_utils import (
+    get_contained_spdx_elements,
+    get_element_from_spdx_id,
+)
+from spdx_tools.spdx.model.document import Document
+from spdx_tools.spdx.model.relationship import Relationship
 
 
 def generate_graph_from_spdx(document: Document) -> DiGraph:

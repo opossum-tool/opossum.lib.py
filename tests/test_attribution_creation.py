@@ -4,14 +4,14 @@
 from datetime import datetime
 
 from license_expression import get_spdx_licensing
-from spdx.constants import DOCUMENT_SPDX_ID
-from spdx.model.actor import Actor, ActorType
-from spdx.model.checksum import Checksum, ChecksumAlgorithm
-from spdx.model.document import CreationInfo
-from spdx.model.file import File as SpdxFile
-from spdx.model.package import Package as SpdxPackage
-from spdx.model.snippet import Snippet as SpdxSnippet
-from spdx.model.spdx_no_assertion import SpdxNoAssertion
+from spdx_tools.spdx.constants import DOCUMENT_SPDX_ID
+from spdx_tools.spdx.model.actor import Actor, ActorType
+from spdx_tools.spdx.model.checksum import Checksum, ChecksumAlgorithm
+from spdx_tools.spdx.model.document import CreationInfo
+from spdx_tools.spdx.model.file import File as SpdxFile
+from spdx_tools.spdx.model.package import Package as SpdxPackage
+from spdx_tools.spdx.model.snippet import Snippet as SpdxSnippet
+from spdx_tools.spdx.model.spdx_no_assertion import SpdxNoAssertion
 
 from opossum_lib.attribution_generation import (
     create_document_attribution,
