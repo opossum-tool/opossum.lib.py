@@ -7,10 +7,10 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 from networkx import DiGraph, shortest_path
-from spdx.model.document import CreationInfo
-from spdx.model.file import File
-from spdx.model.package import Package
-from spdx.model.snippet import Snippet
+from spdx_tools.spdx.model.document import CreationInfo
+from spdx_tools.spdx.model.file import File
+from spdx_tools.spdx.model.package import Package
+from spdx_tools.spdx.model.snippet import Snippet
 
 from opossum_lib.attribution_generation import (
     create_document_attribution,

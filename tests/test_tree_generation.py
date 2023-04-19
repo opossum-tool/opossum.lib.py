@@ -7,13 +7,13 @@ from unittest import TestCase
 
 import pytest
 from networkx import is_weakly_connected
-from spdx.model.actor import Actor, ActorType
-from spdx.model.checksum import Checksum, ChecksumAlgorithm
-from spdx.model.document import CreationInfo, Document
-from spdx.model.file import File
-from spdx.model.package import Package
-from spdx.model.relationship import Relationship, RelationshipType
-from spdx.parser.parse_anything import parse_file
+from spdx_tools.spdx.model.actor import Actor, ActorType
+from spdx_tools.spdx.model.checksum import Checksum, ChecksumAlgorithm
+from spdx_tools.spdx.model.document import CreationInfo, Document
+from spdx_tools.spdx.model.file import File
+from spdx_tools.spdx.model.package import Package
+from spdx_tools.spdx.model.relationship import Relationship, RelationshipType
+from spdx_tools.spdx.parser.parse_anything import parse_file
 
 from opossum_lib.graph_generation import generate_graph_from_spdx
 from opossum_lib.tree_generation import generate_tree_from_graph

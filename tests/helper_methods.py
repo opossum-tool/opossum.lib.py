@@ -3,12 +3,12 @@
 # SPDX-License-Identifier: Apache-2.0
 from datetime import datetime
 
-from spdx.model.actor import Actor, ActorType
-from spdx.model.checksum import Checksum, ChecksumAlgorithm
-from spdx.model.document import CreationInfo, Document
-from spdx.model.file import File
-from spdx.model.package import Package
-from spdx.model.relationship import Relationship, RelationshipType
+from spdx_tools.spdx.model.actor import Actor, ActorType
+from spdx_tools.spdx.model.checksum import Checksum, ChecksumAlgorithm
+from spdx_tools.spdx.model.document import CreationInfo, Document
+from spdx_tools.spdx.model.file import File
+from spdx_tools.spdx.model.package import Package
+from spdx_tools.spdx.model.relationship import Relationship, RelationshipType
 
 
 def _create_minimal_document() -> Document:

@@ -4,7 +4,7 @@
 from typing import List, Optional
 
 from networkx import DiGraph, weakly_connected_components
-from spdx.constants import DOCUMENT_SPDX_ID
+from spdx_tools.spdx.constants import DOCUMENT_SPDX_ID
 
 
 def _get_source_for_graph_traversal(connected_subgraph: DiGraph) -> Optional[str]:

@@ -1,10 +1,10 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from spdx.model.document import CreationInfo
-from spdx.model.file import File
-from spdx.model.package import Package
-from spdx.model.snippet import Snippet
+from spdx_tools.spdx.model.document import CreationInfo
+from spdx_tools.spdx.model.file import File
+from spdx_tools.spdx.model.package import Package
+from spdx_tools.spdx.model.snippet import Snippet
 
 from opossum_lib.opossum_file import OpossumPackage, SourceInfo
 

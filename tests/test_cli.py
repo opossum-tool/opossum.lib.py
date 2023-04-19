@@ -8,7 +8,7 @@ from typing import Tuple
 import pytest
 from _pytest.logging import LogCaptureFixture
 from click.testing import CliRunner
-from spdx.writer.tagvalue.tagvalue_writer import write_document_to_file
+from spdx_tools.spdx.writer.tagvalue.tagvalue_writer import write_document_to_file
 
 from opossum_lib.cli import spdx2opossum
 from tests.helper_methods import _create_minimal_document
