@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 from pathlib import Path
 from typing import List
-from unittest import TestCase
 
 import pytest
+from networkx import get_node_attributes
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.parser.parse_anything import parse_file
 from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
@@ -44,6 +44,8 @@ def test_generate_graph_from_spdx(
     for relationship_node_key in relationship_node_keys:
         assert relationship_node_key in graph.nodes()
 
+    assert "DESCRIBES" in get_node_attributes(graph, "label").values()
+
     assert validation_messages == []
 
 
@@ -52,30 +54,16 @@ def test_complete_connected_graph() -> None:
 
     graph = generate_graph_from_spdx(document)
 
-    TestCase().assertCountEqual(
-        graph.nodes(),
-        [
-            "SPDXRef-DOCUMENT",
-            "SPDXRef-Package-A",
-            "SPDXRef-Package-B",
-            "SPDXRef-File",
-            "SPDXRef-DOCUMENT_DESCRIBES",
-            "SPDXRef-Package-A_CONTAINS",
-            "SPDXRef-Package-B_CONTAINS",
-        ],
-    )
-    TestCase().assertCountEqual(
-        graph.edges(),
-        [
-            ("SPDXRef-DOCUMENT", "SPDXRef-DOCUMENT_DESCRIBES"),
-            ("SPDXRef-DOCUMENT_DESCRIBES", "SPDXRef-Package-A"),
-            ("SPDXRef-DOCUMENT_DESCRIBES", "SPDXRef-Package-B"),
-            ("SPDXRef-Package-A", "SPDXRef-Package-A_CONTAINS"),
-            ("SPDXRef-Package-A_CONTAINS", "SPDXRef-File"),
-            ("SPDXRef-Package-B", "SPDXRef-Package-B_CONTAINS"),
-            ("SPDXRef-Package-B_CONTAINS", "SPDXRef-File"),
-        ],
-    )
+    labels = get_node_attributes(graph, "label")
+    assert labels == {
+        "SPDXRef-DOCUMENT": "SPDXRef-DOCUMENT",
+        "SPDXRef-Package-A": "SPDXRef-Package-A",
+        "SPDXRef-Package-B": "SPDXRef-Package-B",
+        "SPDXRef-File": "SPDXRef-File",
+        "SPDXRef-DOCUMENT_DESCRIBES": "DESCRIBES",
+        "SPDXRef-Package-A_CONTAINS": "CONTAINS",
+        "SPDXRef-Package-B_CONTAINS": "CONTAINS",
+    }
 
 
 def test_complete_unconnected_graph() -> None:
@@ -90,28 +78,14 @@ def test_complete_unconnected_graph() -> None:
 
     graph = generate_graph_from_spdx(document)
 
-    TestCase().assertCountEqual(
-        graph.nodes(),
-        [
-            "SPDXRef-DOCUMENT",
-            "SPDXRef-Package-A",
-            "SPDXRef-Package-B",
-            "SPDXRef-File",
-            "SPDXRef-DOCUMENT_DESCRIBES",
-            "SPDXRef-Package-A_CONTAINS",
-            "SPDXRef-Package-B_CONTAINS",
-            "SPDXRef-Package-C",
-        ],
-    )
-    TestCase().assertCountEqual(
-        graph.edges(),
-        [
-            ("SPDXRef-DOCUMENT", "SPDXRef-DOCUMENT_DESCRIBES"),
-            ("SPDXRef-DOCUMENT_DESCRIBES", "SPDXRef-Package-A"),
-            ("SPDXRef-DOCUMENT_DESCRIBES", "SPDXRef-Package-B"),
-            ("SPDXRef-Package-A", "SPDXRef-Package-A_CONTAINS"),
-            ("SPDXRef-Package-A_CONTAINS", "SPDXRef-File"),
-            ("SPDXRef-Package-B", "SPDXRef-Package-B_CONTAINS"),
-            ("SPDXRef-Package-B_CONTAINS", "SPDXRef-File"),
-        ],
-    )
+    labels = get_node_attributes(graph, "label")
+    assert labels == {
+        "SPDXRef-DOCUMENT": "SPDXRef-DOCUMENT",
+        "SPDXRef-Package-A": "SPDXRef-Package-A",
+        "SPDXRef-Package-B": "SPDXRef-Package-B",
+        "SPDXRef-File": "SPDXRef-File",
+        "SPDXRef-DOCUMENT_DESCRIBES": "DESCRIBES",
+        "SPDXRef-Package-A_CONTAINS": "CONTAINS",
+        "SPDXRef-Package-B_CONTAINS": "CONTAINS",
+        "SPDXRef-Package-C": "SPDXRef-Package-C",
+    }
