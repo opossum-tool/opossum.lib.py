@@ -13,6 +13,7 @@ import click
 from spdx.model.document import Document as SpdxDocument
 from spdx.parser.error import SPDXParsingError
 from spdx.parser.parse_anything import parse_file
+from spdx.validation.document_validator import validate_full_spdx_document
 
 from opossum_lib.file_generation import generate_json_file_from_tree, write_dict_to_file
 from opossum_lib.graph_generation import generate_graph_from_spdx
@@ -48,6 +49,12 @@ def spdx2opossum(infile: str, outfile: str) -> None:
         )
         logging.error(log_string)
         sys.exit(1)
+    validation_messages = validate_full_spdx_document(document)
+    if validation_messages:
+        logging.warning(
+            "The given SPDX document is not valid, this might cause "
+            "issues with the conversion."
+        )
 
     graph = generate_graph_from_spdx(document)
     tree = generate_tree_from_graph(graph)
