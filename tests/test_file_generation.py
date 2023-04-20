@@ -21,7 +21,7 @@ from tests.helper_methods import (
 def test_different_paths_graph() -> None:
     """Creating a tree from a directed graph with a cycle."""
     expected_file_tree = {
-        "SPDXRef-DOCUMENT": {
+        "SPDX Lite Document": {
             "DESCRIBES": {
                 "Example package A": {"CONTAINS": {"Example file": 1}},
                 "Example package B": {"CONTAINS": {"Example file": 1}},
@@ -40,26 +40,26 @@ def test_different_paths_graph() -> None:
     TestCase().assertCountEqual(
         opossum_information.attributionBreakpoints,
         [
-            "/SPDXRef-DOCUMENT/DESCRIBES/",
-            "/SPDXRef-DOCUMENT/DESCRIBES/Example package A/CONTAINS/",
-            "/SPDXRef-DOCUMENT/DESCRIBES/Example package B/CONTAINS/",
+            "/SPDX Lite Document/DESCRIBES/",
+            "/SPDX Lite Document/DESCRIBES/Example package A/CONTAINS/",
+            "/SPDX Lite Document/DESCRIBES/Example package B/CONTAINS/",
         ],
     )
     assert opossum_information.resourcesToAttributions == {
-        "/SPDXRef-DOCUMENT/": ["SPDXRef-DOCUMENT"],
-        "/SPDXRef-DOCUMENT/DESCRIBES/Example package A/": [
+        "/SPDX Lite Document/": ["SPDXRef-DOCUMENT"],
+        "/SPDX Lite Document/DESCRIBES/Example package A/": [
             "SPDXRef-Package-A",
             "package-identifier",
         ],
-        "/SPDXRef-DOCUMENT/DESCRIBES/Example package A/CONTAINS/Example file": [
+        "/SPDX Lite Document/DESCRIBES/Example package A/CONTAINS/Example file": [
             "SPDXRef-File",
             "file-identifier",
         ],
-        "/SPDXRef-DOCUMENT/DESCRIBES/Example package B/": [
+        "/SPDX Lite Document/DESCRIBES/Example package B/": [
             "SPDXRef-Package-B",
             "package-identifier",
         ],
-        "/SPDXRef-DOCUMENT/DESCRIBES/Example package B/CONTAINS/Example file": [
+        "/SPDX Lite Document/DESCRIBES/Example package B/CONTAINS/Example file": [
             "SPDXRef-File",
             "file-identifier",
         ],
@@ -82,7 +82,7 @@ def test_different_paths_graph() -> None:
 def test_unconnected_paths_graph() -> None:
     """Creating a tree from a directed graph with a cycle."""
     expected_file_tree = {
-        "SPDXRef-DOCUMENT": {
+        "SPDX Lite Document": {
             "DESCRIBES": {
                 "Example package A": {"CONTAINS": {"Example file": 1}},
                 "Example package B": {"CONTAINS": {"Example file": 1}},
@@ -109,27 +109,27 @@ def test_unconnected_paths_graph() -> None:
     TestCase().assertCountEqual(
         opossum_information.attributionBreakpoints,
         [
-            "/SPDXRef-DOCUMENT/DESCRIBES/",
-            "/SPDXRef-DOCUMENT/DESCRIBES/Example package A/CONTAINS/",
-            "/SPDXRef-DOCUMENT/DESCRIBES/Example package B/CONTAINS/",
+            "/SPDX Lite Document/DESCRIBES/",
+            "/SPDX Lite Document/DESCRIBES/Example package A/CONTAINS/",
+            "/SPDX Lite Document/DESCRIBES/Example package B/CONTAINS/",
         ],
     )
 
     assert opossum_information.resourcesToAttributions == {
-        "/SPDXRef-DOCUMENT/": ["SPDXRef-DOCUMENT"],
-        "/SPDXRef-DOCUMENT/DESCRIBES/Example package A/": [
+        "/SPDX Lite Document/": ["SPDXRef-DOCUMENT"],
+        "/SPDX Lite Document/DESCRIBES/Example package A/": [
             "SPDXRef-Package-A",
             "package-identifier",
         ],
-        "/SPDXRef-DOCUMENT/DESCRIBES/Example package A/CONTAINS/Example file": [
+        "/SPDX Lite Document/DESCRIBES/Example package A/CONTAINS/Example file": [
             "SPDXRef-File",
             "file-identifier",
         ],
-        "/SPDXRef-DOCUMENT/DESCRIBES/Example package B/": [
+        "/SPDX Lite Document/DESCRIBES/Example package B/": [
             "SPDXRef-Package-B",
             "package-identifier",
         ],
-        "/SPDXRef-DOCUMENT/DESCRIBES/Example package B/CONTAINS/Example file": [
+        "/SPDX Lite Document/DESCRIBES/Example package B/CONTAINS/Example file": [
             "SPDXRef-File",
             "file-identifier",
         ],
@@ -156,11 +156,11 @@ def test_unconnected_paths_graph() -> None:
 
 def test_different_roots_graph() -> None:
     """Creating a tree from a connected graph where some edges are not reachable
-    from the SPDXRef-DOCUMENT node. This means that the connected graph has multiple
+    from the SPDX Lite Document node. This means that the connected graph has multiple
     sources and thus the result should be disconnected."""
     expected_file_tree = {
         "File-B": {"DESCRIBES": {"Package-B": 1}},
-        "SPDXRef-DOCUMENT": {
+        "Document": {
             "DESCRIBES": {"Package-A": {"CONTAINS": {"File-A": 1}}, "Package-B": 1}
         },
     }
@@ -175,8 +175,8 @@ def test_different_roots_graph() -> None:
     TestCase().assertCountEqual(
         opossum_information.attributionBreakpoints,
         [
-            "/SPDXRef-DOCUMENT/DESCRIBES/",
-            "/SPDXRef-DOCUMENT/DESCRIBES/Package-A/CONTAINS/",
+            "/Document/DESCRIBES/",
+            "/Document/DESCRIBES/Package-A/CONTAINS/",
             "/File-B/DESCRIBES/",
         ],
     )
@@ -184,16 +184,16 @@ def test_different_roots_graph() -> None:
     assert opossum_information.resourcesToAttributions == {
         "/File-B/": ["SPDXRef-File-B", "file-identifier"],
         "/File-B/DESCRIBES/Package-B": ["SPDXRef-Package-B", "package-identifier"],
-        "/SPDXRef-DOCUMENT/": ["SPDXRef-DOCUMENT"],
-        "/SPDXRef-DOCUMENT/DESCRIBES/Package-A/": [
+        "/Document/": ["SPDXRef-DOCUMENT"],
+        "/Document/DESCRIBES/Package-A/": [
             "SPDXRef-Package-A",
             "package-identifier",
         ],
-        "/SPDXRef-DOCUMENT/DESCRIBES/Package-A/CONTAINS/File-A": [
+        "/Document/DESCRIBES/Package-A/CONTAINS/File-A": [
             "SPDXRef-File-A",
             "file-identifier",
         ],
-        "/SPDXRef-DOCUMENT/DESCRIBES/Package-B": [
+        "/Document/DESCRIBES/Package-B": [
             "SPDXRef-Package-B",
             "package-identifier",
         ],
@@ -222,37 +222,38 @@ def test_different_roots_graph() -> None:
             "SPDXJSONExample-v2.3.spdx.json",
             3,
             (
-                "SPDXRef-DOCUMENT",
+                "SPDX-Tools-v2.0",
                 "COPY_OF",
                 "DocumentRef-spdx-tool-1.2:SPDXRef-ToolsElement",
             ),
             (
-                "SPDXRef-DOCUMENT",
+                "SPDX-Tools-v2.0",
                 "CONTAINS",
                 "glibc",
                 "DYNAMIC_LINK",
                 "Saxon",
             ),
             [
-                "/SPDXRef-DOCUMENT/CONTAINS/glibc/CONTAINS/"
+                "/SPDX-Tools-v2.0/CONTAINS/glibc/CONTAINS/"
                 "lib-source/commons-lang3-3.1-sources.jar/GENERATED_FROM/",
-                "/SPDXRef-DOCUMENT/CONTAINS/glibc/DYNAMIC_LINK/",
+                "/SPDX-Tools-v2.0/CONTAINS/glibc/DYNAMIC_LINK/",
             ],
         ),
         (
             "SPDX.spdx",
             2,
-            ("SPDXRef-DOCUMENT", "DESCRIBES", "Package B"),
+            ("SPDX Lite Document", "DESCRIBES", "Package B"),
             (
-                "SPDXRef-DOCUMENT",
+                "SPDX Lite Document",
                 "DESCRIBES",
                 "Package A",
                 "CONTAINS",
                 "File-C",
             ),
             [
-                "/SPDXRef-DOCUMENT/DESCRIBES/Package A/CONTAINS/",
-                "/SPDXRef-DOCUMENT/DESCRIBES/Package A/COPY_OF/" "Package C/CONTAINS/",
+                "/SPDX Lite Document/DESCRIBES/Package A/CONTAINS/",
+                "/SPDX Lite Document/DESCRIBES/Package A/COPY_OF/"
+                "Package C/CONTAINS/",
             ],
         ),
     ],
