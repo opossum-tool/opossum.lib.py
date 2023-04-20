@@ -56,12 +56,12 @@ def test_complete_connected_graph() -> None:
 
     labels = get_node_attributes(graph, "label")
     assert labels == {
-        "SPDXRef-DOCUMENT": "SPDXRef-DOCUMENT",
-        "SPDXRef-Package-A": "SPDXRef-Package-A",
-        "SPDXRef-Package-B": "SPDXRef-Package-B",
-        "SPDXRef-File": "SPDXRef-File",
+        "SPDXRef-DOCUMENT": "SPDX Lite Document",
         "SPDXRef-DOCUMENT_DESCRIBES": "DESCRIBES",
+        "SPDXRef-File": "Example file",
+        "SPDXRef-Package-A": "Example package A",
         "SPDXRef-Package-A_CONTAINS": "CONTAINS",
+        "SPDXRef-Package-B": "Example package B",
         "SPDXRef-Package-B_CONTAINS": "CONTAINS",
     }
 
@@ -80,12 +80,12 @@ def test_complete_unconnected_graph() -> None:
 
     labels = get_node_attributes(graph, "label")
     assert labels == {
-        "SPDXRef-DOCUMENT": "SPDXRef-DOCUMENT",
-        "SPDXRef-Package-A": "SPDXRef-Package-A",
-        "SPDXRef-Package-B": "SPDXRef-Package-B",
-        "SPDXRef-File": "SPDXRef-File",
+        "SPDXRef-DOCUMENT": "SPDX Lite Document",
         "SPDXRef-DOCUMENT_DESCRIBES": "DESCRIBES",
+        "SPDXRef-File": "Example file",
+        "SPDXRef-Package-A": "Example package A",
         "SPDXRef-Package-A_CONTAINS": "CONTAINS",
+        "SPDXRef-Package-B": "Example package B",
         "SPDXRef-Package-B_CONTAINS": "CONTAINS",
-        "SPDXRef-Package-C": "SPDXRef-Package-C",
+        "SPDXRef-Package-C": "Package without connection to document",
     }
