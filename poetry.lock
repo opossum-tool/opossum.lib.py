@@ -491,17 +491,19 @@ files = [
 
 [[package]]
 name = "spdx-tools"
-version = "0.7.2.dev383+gbbccaa12"
+version = "0.8.0a1"
 description = "SPDX parser and tools."
 category = "main"
 optional = false
 python-versions = ">=3.7"
-files = []
-develop = false
+files = [
+    {file = "spdx-tools-0.8.0a1.tar.gz", hash = "sha256:a38368acf15df4d2e96f79ea4fafcd5c028df9340d681eb9d3f50e81c111e8d1"},
+    {file = "spdx_tools-0.8.0a1-py3-none-any.whl", hash = "sha256:73ba58a4f349894da1f11da65be2d2d0dc88840a63e9211a9ed928dbfc02d454"},
+]
 
 [package.dependencies]
 click = "*"
-license_expression = "*"
+license-expression = "*"
 ply = "*"
 pyyaml = "*"
 rdflib = "*"
@@ -511,14 +513,9 @@ xmltodict = "*"
 
 [package.extras]
 code-style = ["black", "flake8", "isort"]
+development = ["black", "flake8", "isort", "networkx", "pytest"]
 graph-generation = ["networkx", "pygraphviz"]
 test = ["pytest"]
-
-[package.source]
-type = "git"
-url = "https://github.com/spdx/tools-python.git"
-reference = "main"
-resolved_reference = "8d7d7b7d38ba5c50ddaa3d0023c620566dfc4e49"
 
 [[package]]
 name = "tomli"
@@ -587,4 +584,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "6774a646ce58f5efb0a6846b616e0b713fabd3cfb51ac7df808a0802bb40ddbb"
+content-hash = "9d5f4949514bcf2333ee337d2bf24b84a11cbe5b64b5fc41f3c005db8511d7d5"

@@ -25,7 +25,7 @@ spdx2opossum = 'opossum_lib.cli:spdx2opossum'
 
 [tool.poetry.dependencies]
 python = "^3.8.1"
-spdx-tools = {git = "https://github.com/spdx/tools-python.git", rev = "main"}
+spdx-tools = "0.8.0a1"
 networkx = "^3.0"
 click = "^8.1.3"
 
