@@ -1,10 +1,11 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
+import copy
 import json
-from dataclasses import asdict
+from dataclasses import fields
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 from networkx import DiGraph, shortest_path
 from spdx_tools.spdx.model.document import CreationInfo
@@ -39,13 +40,22 @@ def write_dict_to_file(
     opossum_information: OpossumInformation, file_path: Path
 ) -> None:
     with file_path.open("w") as out:
-        json.dump(
-            asdict(opossum_information, dict_factory=dicts_without_none), out, indent=4
-        )
+        json.dump(to_dict(opossum_information), out, indent=4)
 
 
-def dicts_without_none(x: List[Tuple[str, Any]]) -> Dict[Any, Any]:
-    return {k: v for (k, v) in x if v is not None}
+def to_dict(element: Any) -> Any:
+    if isinstance(element, Resource):
+        return element.to_dict()
+    if isinstance(element, (Metadata, OpossumPackage, OpossumInformation, SourceInfo)):
+        result = []
+        for f in fields(element):
+            value = to_dict(getattr(element, f.name))
+            result.append((f.name, value))
+        return {k: v for (k, v) in result if v is not None}
+    elif isinstance(element, dict):
+        return type(element)((to_dict(k), to_dict(v)) for k, v in element.items())
+    else:
+        return copy.deepcopy(element)
 
 
 def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
