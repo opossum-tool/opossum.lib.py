@@ -39,10 +39,8 @@ def _weakly_connected_component_sub_graphs(graph: DiGraph) -> List[DiGraph]:
 
 
 def _create_file_path_from_graph_path(path: List[str], graph: DiGraph) -> str:
-    # Some file names with relative paths start with "./", to avoid paths like "/./"
-    # we need to remove these prefixes.
     base_path = "/" + "/".join(
-        [graph.nodes[node]["label"].replace("./", "") for node in path]
+        [_replace_prefix(graph.nodes[node]["label"]) for node in path]
     )
     if list(graph.successors(path[-1])):
         base_path += "/"
@@ -51,12 +49,22 @@ def _create_file_path_from_graph_path(path: List[str], graph: DiGraph) -> str:
 
 def _replace_node_ids_with_labels(path: List[str], graph: DiGraph) -> List[str]:
     resulting_path = []
-    path_with_label = [graph.nodes[node]["label"].replace("./", "") for node in path]
-    # Some element names again contain a file path, so we have to split a second time to
-    # map the complete file structure as a tree.
+    path_with_label = [_replace_prefix(graph.nodes[node]["label"]) for node in path]
     for element_or_path in path_with_label:
         resulting_path.extend(
             [element for element in element_or_path.split("/") if element]
         )
 
     return resulting_path
+
+
+def _replace_prefix(label: str) -> str:
+    """
+    Some spdx element names start with "./" or "/", to avoid paths like "/./" or
+    "//" we need to remove these prefixes.
+    """
+    if label.startswith("./"):
+        return label[2:]
+    elif label.startswith("/"):
+        return label[1:]
+    return label
