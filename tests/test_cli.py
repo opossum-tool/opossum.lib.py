@@ -27,12 +27,17 @@ def test_cli_with_system_exit_code_0(tmp_path: Path, options: Tuple[str, str]) -
             str(tmp_path / "output"),
         ],
     )
+    with open(
+        Path(__file__).resolve().parent / "data" / "expected_opossum.json"
+    ) as file:
+        expected_opossum_dict = json.load(file)
 
     assert result.exit_code == 0
 
     with open(tmp_path / "output.json") as file:
         opossum_dict = json.load(file)
     assert "metadata" in opossum_dict
+    assert opossum_dict == expected_opossum_dict
 
 
 def test_cli_with_system_exit_code_1() -> None:
