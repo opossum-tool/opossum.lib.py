@@ -1,11 +1,10 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-import copy
 import json
 from dataclasses import fields
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List, Union
 
 from networkx import DiGraph, shortest_path
 from spdx_tools.spdx.model.document import CreationInfo
@@ -43,7 +42,22 @@ def write_dict_to_file(
         json.dump(to_dict(opossum_information), out, indent=4)
 
 
-def to_dict(element: Any) -> Any:
+def to_dict(
+    element: Union[
+        Resource,
+        Metadata,
+        OpossumPackage,
+        OpossumInformation,
+        SourceInfo,
+        str,
+        int,
+        bool,
+        Dict[str, OpossumPackage],
+        Dict[str, List[str]],
+        List[str],
+        None,
+    ]
+) -> Union[Dict, str, List[str], bool, int, None]:
     if isinstance(element, Resource):
         return element.to_dict()
     if isinstance(element, (Metadata, OpossumPackage, OpossumInformation, SourceInfo)):
@@ -53,9 +67,9 @@ def to_dict(element: Any) -> Any:
             result.append((f.name, value))
         return {k: v for (k, v) in result if v is not None}
     elif isinstance(element, dict):
-        return type(element)((to_dict(k), to_dict(v)) for k, v in element.items())
+        return {k: to_dict(v) for k, v in element.items()}
     else:
-        return copy.deepcopy(element)
+        return element
 
 
 def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
