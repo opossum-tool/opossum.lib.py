@@ -9,6 +9,7 @@ from spdx_tools.spdx.model.actor import Actor, ActorType
 from spdx_tools.spdx.model.checksum import Checksum, ChecksumAlgorithm
 from spdx_tools.spdx.model.document import CreationInfo
 from spdx_tools.spdx.model.file import File as SpdxFile
+from spdx_tools.spdx.model.package import ExternalPackageRef, ExternalPackageRefCategory
 from spdx_tools.spdx.model.package import Package as SpdxPackage
 from spdx_tools.spdx.model.snippet import Snippet as SpdxSnippet
 from spdx_tools.spdx.model.spdx_no_assertion import SpdxNoAssertion
@@ -31,6 +32,13 @@ def test_create_package_attribution() -> None:
         license_concluded=get_spdx_licensing().parse("MIT AND LGPL-2.0"),
         comment="Package comment",
         copyright_text=SpdxNoAssertion(),
+        external_references=[
+            ExternalPackageRef(
+                ExternalPackageRefCategory.PACKAGE_MANAGER,
+                "purl",
+                "pkg:maven/org.apache.jena/apache-jena@3.12.0",
+            )
+        ],
     )
     package_attribution = create_package_attribution(package)
 
@@ -42,6 +50,7 @@ def test_create_package_attribution() -> None:
         copyright=str(package.copyright_text),
         url=str(package.download_location),
         licenseName=str(package.license_concluded),
+        packagePURLAppendix="pkg:maven/org.apache.jena/apache-jena@3.12.0",
     )
 
 

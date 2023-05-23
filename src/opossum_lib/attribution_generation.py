@@ -1,12 +1,21 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
+from typing import Optional
+
 from spdx_tools.spdx.model.document import CreationInfo
 from spdx_tools.spdx.model.file import File
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.model.snippet import Snippet
 
 from opossum_lib.opossum_file import OpossumPackage, SourceInfo
+
+
+def _get_purl(package: Package) -> Optional[str]:
+    for external_reference in package.external_references:
+        if external_reference.reference_type == "purl":
+            return external_reference.locator
+    return None
 
 
 def create_package_attribution(package: Package) -> OpossumPackage:
@@ -16,6 +25,7 @@ def create_package_attribution(package: Package) -> OpossumPackage:
         packageName=package.name,
         url=str(package.download_location),
         packageVersion=package.version,
+        packagePURLAppendix=_get_purl(package),
         copyright=str(package.copyright_text),
         comment=package.comment,
         licenseName=str(package.license_concluded),
