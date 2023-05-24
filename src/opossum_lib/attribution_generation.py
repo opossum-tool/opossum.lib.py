@@ -20,7 +20,7 @@ def _get_purl(package: Package) -> Optional[str]:
 
 
 def create_package_attribution(package: Package) -> OpossumPackage:
-    source = SourceInfo(package.spdx_id)
+    source = SourceInfo("SPDX-Package")
     package_attribution = OpossumPackage(
         source=source,
         packageName=package.name,
@@ -36,7 +36,7 @@ def create_package_attribution(package: Package) -> OpossumPackage:
 
 
 def create_file_attribution(file: File) -> OpossumPackage:
-    source = SourceInfo(file.spdx_id)
+    source = SourceInfo("SPDX-File")
     file_attribution = OpossumPackage(
         source=source,
         packageName=file.name.split("/")[-1],
@@ -48,7 +48,7 @@ def create_file_attribution(file: File) -> OpossumPackage:
 
 
 def create_snippet_attribution(snippet: Snippet) -> OpossumPackage:
-    source = SourceInfo(snippet.spdx_id)
+    source = SourceInfo("SPDX-Snippet")
     snippet_attribution = OpossumPackage(
         source=source,
         packageName=snippet.name,

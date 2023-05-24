@@ -26,6 +26,7 @@ from opossum_lib.helper_methods import (
     _weakly_connected_component_sub_graphs,
 )
 from opossum_lib.opossum_file import (
+    ExternalAttributionSource,
     Metadata,
     OpossumInformation,
     OpossumPackage,
@@ -49,6 +50,7 @@ def to_dict(
         OpossumPackage,
         OpossumInformation,
         SourceInfo,
+        ExternalAttributionSource,
         str,
         int,
         bool,
@@ -60,7 +62,16 @@ def to_dict(
 ) -> Union[Dict, str, List[str], bool, int, None]:
     if isinstance(element, Resource):
         return element.to_dict()
-    if isinstance(element, (Metadata, OpossumPackage, OpossumInformation, SourceInfo)):
+    if isinstance(
+        element,
+        (
+            Metadata,
+            OpossumPackage,
+            OpossumInformation,
+            SourceInfo,
+            ExternalAttributionSource,
+        ),
+    ):
         result = []
         for f in fields(element):
             value = to_dict(getattr(element, f.name))
@@ -78,14 +89,11 @@ def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
     resources_to_attributions: Dict[str, List[str]] = dict()
     external_attributions: Dict[str, OpossumPackage] = dict()
     attribution_breakpoints = []
-
-    external_attributions["file-identifier"] = OpossumPackage(source=SourceInfo("File"))
-    external_attributions["package-identifier"] = OpossumPackage(
-        source=SourceInfo("Package")
-    )
-    external_attributions["snippet-identifier"] = OpossumPackage(
-        source=SourceInfo("Snippet")
-    )
+    external_attribution_sources = {
+        "SPDX-File": ExternalAttributionSource("SPDX-File", 500),
+        "SPDX-Package": ExternalAttributionSource("SPDX-Package", 500),
+        "SPDX-Snippet": ExternalAttributionSource("SPDX-Snippet", 500),
+    }
 
     for connected_subgraph in _weakly_connected_component_sub_graphs(tree):
         source = _get_source_for_graph_traversal(connected_subgraph)
@@ -118,6 +126,7 @@ def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
         externalAttributions=external_attributions,
         resourcesToAttributions=resources_to_attributions,
         attributionBreakpoints=attribution_breakpoints,
+        externalAttributionSources=external_attribution_sources,
     )
     return opossum_information
 
@@ -136,7 +145,6 @@ def create_attribution_and_link_with_resource(
         )
         resources_to_attributions[file_path] = [
             node_element.spdx_id,
-            "package-identifier",
         ]
     elif isinstance(node_element, File):
         external_attributions[node_element.spdx_id] = create_file_attribution(
@@ -144,7 +152,6 @@ def create_attribution_and_link_with_resource(
         )
         resources_to_attributions[file_path] = [
             node_element.spdx_id,
-            "file-identifier",
         ]
     elif isinstance(node_element, Snippet):
         external_attributions[node_element.spdx_id] = create_snippet_attribution(
@@ -152,7 +159,6 @@ def create_attribution_and_link_with_resource(
         )
         resources_to_attributions[file_path] = [
             node_element.spdx_id,
-            "snippet-identifier",
         ]
     elif isinstance(node_element, CreationInfo):
         external_attributions[node_element.spdx_id] = create_document_attribution(

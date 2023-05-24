@@ -18,6 +18,9 @@ class OpossumInformation:
         OpossumPackageIdentifier, List[OpossumPackageIdentifier]
     ]
     attributionBreakpoints: List[str]
+    externalAttributionSources: Dict[str, ExternalAttributionSource] = field(
+        default_factory=dict
+    )
 
 
 @dataclass(frozen=True)
@@ -77,3 +80,9 @@ class Resource:
             return {
                 name: resource.to_dict() for name, resource in self.children.items()
             }
+
+
+@dataclass(frozen=True)
+class ExternalAttributionSource:
+    name: str
+    priority: int

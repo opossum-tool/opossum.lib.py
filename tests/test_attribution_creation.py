@@ -43,7 +43,7 @@ def test_create_package_attribution() -> None:
     package_attribution = create_package_attribution(package)
 
     assert package_attribution == OpossumPackage(
-        source=SourceInfo(package.spdx_id),
+        source=SourceInfo("SPDX-Package"),
         comment=package.comment,
         packageName=package.name,
         packageVersion=package.version,
@@ -66,7 +66,7 @@ def test_create_file_attribution() -> None:
     file_attribution = create_file_attribution(file)
 
     assert file_attribution == OpossumPackage(
-        source=SourceInfo(file.spdx_id),
+        source=SourceInfo("SPDX-File"),
         comment=file.comment,
         packageName=file.name,
         copyright=str(file.copyright_text),
@@ -87,7 +87,7 @@ def test_create_snippet_attribution() -> None:
     snippet_attribution = create_snippet_attribution(snippet)
 
     assert snippet_attribution == OpossumPackage(
-        source=SourceInfo(snippet.spdx_id),
+        source=SourceInfo("SPDX-Snippet"),
         comment=snippet.comment,
         packageName=snippet.name,
         licenseName=str(snippet.license_concluded),
