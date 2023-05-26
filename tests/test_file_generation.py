@@ -9,6 +9,11 @@ import pytest
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.parser.parse_anything import parse_file
 
+from opossum_lib.constants import (
+    SPDX_FILE_IDENTIFIER,
+    SPDX_PACKAGE_IDENTIFIER,
+    SPDX_SNIPPET_IDENTIFIER,
+)
 from opossum_lib.file_generation import generate_json_file_from_tree
 from opossum_lib.graph_generation import generate_graph_from_spdx
 from opossum_lib.opossum_file import ExternalAttributionSource
@@ -69,9 +74,13 @@ def test_different_paths_graph() -> None:
     )
 
     assert opossum_information.externalAttributionSources == {
-        "SPDX-File": ExternalAttributionSource("SPDX-File", 500),
-        "SPDX-Package": ExternalAttributionSource("SPDX-Package", 500),
-        "SPDX-Snippet": ExternalAttributionSource("SPDX-Snippet", 500),
+        SPDX_FILE_IDENTIFIER: ExternalAttributionSource(SPDX_FILE_IDENTIFIER, 500),
+        SPDX_PACKAGE_IDENTIFIER: ExternalAttributionSource(
+            SPDX_PACKAGE_IDENTIFIER, 500
+        ),
+        SPDX_SNIPPET_IDENTIFIER: ExternalAttributionSource(
+            SPDX_SNIPPET_IDENTIFIER, 500
+        ),
     }
 
 

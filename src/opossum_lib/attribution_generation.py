@@ -8,7 +8,12 @@ from spdx_tools.spdx.model.file import File
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.model.snippet import Snippet
 
-from opossum_lib.constants import PURL
+from opossum_lib.constants import (
+    PURL,
+    SPDX_FILE_IDENTIFIER,
+    SPDX_PACKAGE_IDENTIFIER,
+    SPDX_SNIPPET_IDENTIFIER,
+)
 from opossum_lib.opossum_file import OpossumPackage, SourceInfo
 
 
@@ -20,7 +25,7 @@ def _get_purl(package: Package) -> Optional[str]:
 
 
 def create_package_attribution(package: Package) -> OpossumPackage:
-    source = SourceInfo("SPDX-Package")
+    source = SourceInfo(SPDX_PACKAGE_IDENTIFIER)
     package_attribution = OpossumPackage(
         source=source,
         packageName=package.name,
@@ -36,7 +41,7 @@ def create_package_attribution(package: Package) -> OpossumPackage:
 
 
 def create_file_attribution(file: File) -> OpossumPackage:
-    source = SourceInfo("SPDX-File")
+    source = SourceInfo(SPDX_FILE_IDENTIFIER)
     file_attribution = OpossumPackage(
         source=source,
         packageName=file.name.split("/")[-1],
@@ -48,7 +53,7 @@ def create_file_attribution(file: File) -> OpossumPackage:
 
 
 def create_snippet_attribution(snippet: Snippet) -> OpossumPackage:
-    source = SourceInfo("SPDX-Snippet")
+    source = SourceInfo(SPDX_SNIPPET_IDENTIFIER)
     snippet_attribution = OpossumPackage(
         source=source,
         packageName=snippet.name,

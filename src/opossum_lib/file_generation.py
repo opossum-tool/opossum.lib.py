@@ -18,6 +18,11 @@ from opossum_lib.attribution_generation import (
     create_package_attribution,
     create_snippet_attribution,
 )
+from opossum_lib.constants import (
+    SPDX_FILE_IDENTIFIER,
+    SPDX_PACKAGE_IDENTIFIER,
+    SPDX_SNIPPET_IDENTIFIER,
+)
 from opossum_lib.helper_methods import (
     _create_file_path_from_graph_path,
     _get_source_for_graph_traversal,
@@ -90,9 +95,13 @@ def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
     external_attributions: Dict[str, OpossumPackage] = dict()
     attribution_breakpoints = []
     external_attribution_sources = {
-        "SPDX-File": ExternalAttributionSource("SPDX-File", 500),
-        "SPDX-Package": ExternalAttributionSource("SPDX-Package", 500),
-        "SPDX-Snippet": ExternalAttributionSource("SPDX-Snippet", 500),
+        SPDX_FILE_IDENTIFIER: ExternalAttributionSource(SPDX_FILE_IDENTIFIER, 500),
+        SPDX_PACKAGE_IDENTIFIER: ExternalAttributionSource(
+            SPDX_PACKAGE_IDENTIFIER, 500
+        ),
+        SPDX_SNIPPET_IDENTIFIER: ExternalAttributionSource(
+            SPDX_SNIPPET_IDENTIFIER, 500
+        ),
     }
 
     for connected_subgraph in _weakly_connected_component_sub_graphs(tree):
