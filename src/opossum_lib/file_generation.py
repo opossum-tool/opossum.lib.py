@@ -20,6 +20,7 @@ from opossum_lib.attribution_generation import (
     create_snippet_attribution,
 )
 from opossum_lib.constants import (
+    COMPRESSION_LEVEL,
     SPDX_FILE_IDENTIFIER,
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,
@@ -46,7 +47,7 @@ def write_dict_to_file(
     opossum_information: OpossumInformation, file_path: Path
 ) -> None:
     with ZipFile(
-        file_path, "w", compression=ZIP_DEFLATED, compresslevel=5
+        file_path, "w", compression=ZIP_DEFLATED, compresslevel=COMPRESSION_LEVEL
     ) as z:
         z.writestr("input.json", json.dumps(to_dict(opossum_information), indent=4))
 
