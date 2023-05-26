@@ -32,8 +32,8 @@ from opossum_lib.tree_generation import generate_tree_from_graph
     "--outfile",
     "-o",
     help="The file path to write the generated opossum document to. The generated file "
-    "will be in JSON format, if the specified file path doesn't match this file "
-    'extension ".json" will be appended.',
+    "will be an opossum file, if the specified file path doesn't match this file "
+    'extension ".opossum" will be appended.',
 )
 def spdx2opossum(infile: str, outfile: str) -> None:
     """
@@ -61,8 +61,8 @@ def spdx2opossum(infile: str, outfile: str) -> None:
 
     opossum_information = generate_json_file_from_tree(tree)
 
-    if not outfile.endswith(".json"):
-        outfile += ".json"
+    if not outfile.endswith(".opossum"):
+        outfile += ".opossum"
     write_dict_to_file(opossum_information, Path(outfile))
 
 

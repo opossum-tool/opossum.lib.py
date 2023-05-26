@@ -38,9 +38,9 @@ Options:
   -i, --infile PATH   The file containing the document to be converted.
                       [required]
   -o, --outfile TEXT  The file path to write the generated opossum document
-                      to. The generated file will be in JSON format, if the
+                      to. The generated file will be an opossum file, if the
                       specified file path doesn't match this file extension
-                      ".json" will be appended.
+                      ".opossum" will be appended.
   --help              Show this message and exit.
 
 ```
