@@ -9,8 +9,14 @@ import pytest
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.parser.parse_anything import parse_file
 
+from opossum_lib.constants import (
+    SPDX_FILE_IDENTIFIER,
+    SPDX_PACKAGE_IDENTIFIER,
+    SPDX_SNIPPET_IDENTIFIER,
+)
 from opossum_lib.file_generation import generate_json_file_from_tree
 from opossum_lib.graph_generation import generate_graph_from_spdx
+from opossum_lib.opossum_file import ExternalAttributionSource
 from opossum_lib.tree_generation import generate_tree_from_graph
 from tests.helper_methods import (
     _create_minimal_document,
@@ -47,21 +53,13 @@ def test_different_paths_graph() -> None:
     )
     assert opossum_information.resourcesToAttributions == {
         "/SPDX Lite Document/": ["SPDXRef-DOCUMENT"],
-        "/SPDX Lite Document/DESCRIBES/Example package A/": [
-            "SPDXRef-Package-A",
-            "package-identifier",
-        ],
+        "/SPDX Lite Document/DESCRIBES/Example package A/": ["SPDXRef-Package-A"],
         "/SPDX Lite Document/DESCRIBES/Example package A/CONTAINS/Example file": [
-            "SPDXRef-File",
-            "file-identifier",
+            "SPDXRef-File"
         ],
-        "/SPDX Lite Document/DESCRIBES/Example package B/": [
-            "SPDXRef-Package-B",
-            "package-identifier",
-        ],
+        "/SPDX Lite Document/DESCRIBES/Example package B/": ["SPDXRef-Package-B"],
         "/SPDX Lite Document/DESCRIBES/Example package B/CONTAINS/Example file": [
-            "SPDXRef-File",
-            "file-identifier",
+            "SPDXRef-File"
         ],
     }
 
@@ -70,13 +68,20 @@ def test_different_paths_graph() -> None:
         [
             "SPDXRef-DOCUMENT",
             "SPDXRef-Package-A",
-            "package-identifier",
             "SPDXRef-File",
-            "file-identifier",
             "SPDXRef-Package-B",
-            "snippet-identifier",
         ],
     )
+
+    assert opossum_information.externalAttributionSources == {
+        SPDX_FILE_IDENTIFIER: ExternalAttributionSource(SPDX_FILE_IDENTIFIER, 500),
+        SPDX_PACKAGE_IDENTIFIER: ExternalAttributionSource(
+            SPDX_PACKAGE_IDENTIFIER, 500
+        ),
+        SPDX_SNIPPET_IDENTIFIER: ExternalAttributionSource(
+            SPDX_SNIPPET_IDENTIFIER, 500
+        ),
+    }
 
 
 def test_unconnected_paths_graph() -> None:
@@ -117,26 +122,15 @@ def test_unconnected_paths_graph() -> None:
 
     assert opossum_information.resourcesToAttributions == {
         "/SPDX Lite Document/": ["SPDXRef-DOCUMENT"],
-        "/SPDX Lite Document/DESCRIBES/Example package A/": [
-            "SPDXRef-Package-A",
-            "package-identifier",
-        ],
+        "/SPDX Lite Document/DESCRIBES/Example package A/": ["SPDXRef-Package-A"],
         "/SPDX Lite Document/DESCRIBES/Example package A/CONTAINS/Example file": [
-            "SPDXRef-File",
-            "file-identifier",
+            "SPDXRef-File"
         ],
-        "/SPDX Lite Document/DESCRIBES/Example package B/": [
-            "SPDXRef-Package-B",
-            "package-identifier",
-        ],
+        "/SPDX Lite Document/DESCRIBES/Example package B/": ["SPDXRef-Package-B"],
         "/SPDX Lite Document/DESCRIBES/Example package B/CONTAINS/Example file": [
-            "SPDXRef-File",
-            "file-identifier",
+            "SPDXRef-File"
         ],
-        "/Package without connection to document": [
-            "SPDXRef-Package-C",
-            "package-identifier",
-        ],
+        "/Package without connection to document": ["SPDXRef-Package-C"],
     }
 
     TestCase().assertCountEqual(
@@ -144,11 +138,8 @@ def test_unconnected_paths_graph() -> None:
         [
             "SPDXRef-DOCUMENT",
             "SPDXRef-Package-A",
-            "package-identifier",
             "SPDXRef-File",
-            "file-identifier",
             "SPDXRef-Package-B",
-            "snippet-identifier",
             "SPDXRef-Package-C",
         ],
     )
@@ -182,21 +173,12 @@ def test_different_roots_graph() -> None:
     )
 
     assert opossum_information.resourcesToAttributions == {
-        "/File-B/": ["SPDXRef-File-B", "file-identifier"],
-        "/File-B/DESCRIBES/Package-B": ["SPDXRef-Package-B", "package-identifier"],
+        "/File-B/": ["SPDXRef-File-B"],
+        "/File-B/DESCRIBES/Package-B": ["SPDXRef-Package-B"],
         "/Document/": ["SPDXRef-DOCUMENT"],
-        "/Document/DESCRIBES/Package-A/": [
-            "SPDXRef-Package-A",
-            "package-identifier",
-        ],
-        "/Document/DESCRIBES/Package-A/CONTAINS/File-A": [
-            "SPDXRef-File-A",
-            "file-identifier",
-        ],
-        "/Document/DESCRIBES/Package-B": [
-            "SPDXRef-Package-B",
-            "package-identifier",
-        ],
+        "/Document/DESCRIBES/Package-A/": ["SPDXRef-Package-A"],
+        "/Document/DESCRIBES/Package-A/CONTAINS/File-A": ["SPDXRef-File-A"],
+        "/Document/DESCRIBES/Package-B": ["SPDXRef-Package-B"],
     }
 
     TestCase().assertCountEqual(
@@ -204,12 +186,9 @@ def test_different_roots_graph() -> None:
         [
             "SPDXRef-DOCUMENT",
             "SPDXRef-Package-A",
-            "package-identifier",
             "SPDXRef-File-A",
             "SPDXRef-File-B",
-            "file-identifier",
             "SPDXRef-Package-B",
-            "snippet-identifier",
         ],
     )
 

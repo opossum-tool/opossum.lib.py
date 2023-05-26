@@ -20,6 +20,11 @@ from opossum_lib.attribution_generation import (
     create_package_attribution,
     create_snippet_attribution,
 )
+from opossum_lib.constants import (
+    SPDX_FILE_IDENTIFIER,
+    SPDX_PACKAGE_IDENTIFIER,
+    SPDX_SNIPPET_IDENTIFIER,
+)
 from opossum_lib.opossum_file import OpossumPackage, SourceInfo
 
 
@@ -43,7 +48,7 @@ def test_create_package_attribution() -> None:
     package_attribution = create_package_attribution(package)
 
     assert package_attribution == OpossumPackage(
-        source=SourceInfo(package.spdx_id),
+        source=SourceInfo(SPDX_PACKAGE_IDENTIFIER),
         comment=package.comment,
         packageName=package.name,
         packageVersion=package.version,
@@ -66,7 +71,7 @@ def test_create_file_attribution() -> None:
     file_attribution = create_file_attribution(file)
 
     assert file_attribution == OpossumPackage(
-        source=SourceInfo(file.spdx_id),
+        source=SourceInfo(SPDX_FILE_IDENTIFIER),
         comment=file.comment,
         packageName=file.name,
         copyright=str(file.copyright_text),
@@ -87,7 +92,7 @@ def test_create_snippet_attribution() -> None:
     snippet_attribution = create_snippet_attribution(snippet)
 
     assert snippet_attribution == OpossumPackage(
-        source=SourceInfo(snippet.spdx_id),
+        source=SourceInfo(SPDX_SNIPPET_IDENTIFIER),
         comment=snippet.comment,
         packageName=snippet.name,
         licenseName=str(snippet.license_concluded),
