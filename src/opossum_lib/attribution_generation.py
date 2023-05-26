@@ -8,12 +8,13 @@ from spdx_tools.spdx.model.file import File
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.model.snippet import Snippet
 
+from opossum_lib.constants import PURL
 from opossum_lib.opossum_file import OpossumPackage, SourceInfo
 
 
 def _get_purl(package: Package) -> Optional[str]:
     for external_reference in package.external_references:
-        if external_reference.reference_type == "purl":
+        if external_reference.reference_type == PURL:
             return external_reference.locator
     return None
 
