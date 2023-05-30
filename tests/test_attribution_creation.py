@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 from datetime import datetime
+from io import StringIO
 
 from license_expression import get_spdx_licensing
 from spdx_tools.spdx.constants import DOCUMENT_SPDX_ID
@@ -13,6 +14,10 @@ from spdx_tools.spdx.model.package import ExternalPackageRef, ExternalPackageRef
 from spdx_tools.spdx.model.package import Package as SpdxPackage
 from spdx_tools.spdx.model.snippet import Snippet as SpdxSnippet
 from spdx_tools.spdx.model.spdx_no_assertion import SpdxNoAssertion
+from spdx_tools.spdx.writer.tagvalue.creation_info_writer import write_creation_info
+from spdx_tools.spdx.writer.tagvalue.file_writer import write_file
+from spdx_tools.spdx.writer.tagvalue.package_writer import write_package
+from spdx_tools.spdx.writer.tagvalue.snippet_writer import write_snippet
 
 from opossum_lib.attribution_generation import (
     create_document_attribution,
@@ -45,11 +50,13 @@ def test_create_package_attribution() -> None:
             )
         ],
     )
+    package_data = StringIO()
+    write_package(package, package_data)
     package_attribution = create_package_attribution(package)
 
     assert package_attribution == OpossumPackage(
         source=SourceInfo(SPDX_PACKAGE_IDENTIFIER),
-        comment=package.comment,
+        comment=package_data.getvalue(),
         packageName=package.name,
         packageVersion=package.version,
         copyright=str(package.copyright_text),
@@ -68,11 +75,13 @@ def test_create_file_attribution() -> None:
         comment="File comment",
         copyright_text="Copyright (c) 2023 someone",
     )
+    file_data = StringIO()
+    write_file(file, file_data)
     file_attribution = create_file_attribution(file)
 
     assert file_attribution == OpossumPackage(
         source=SourceInfo(SPDX_FILE_IDENTIFIER),
-        comment=file.comment,
+        comment=file_data.getvalue(),
         packageName=file.name,
         copyright=str(file.copyright_text),
         licenseName=str(file.license_concluded),
@@ -89,11 +98,13 @@ def test_create_snippet_attribution() -> None:
         comment="Snippet comment",
         copyright_text=SpdxNoAssertion(),
     )
+    snippet_data = StringIO()
+    write_snippet(snippet, snippet_data)
     snippet_attribution = create_snippet_attribution(snippet)
 
     assert snippet_attribution == OpossumPackage(
         source=SourceInfo(SPDX_SNIPPET_IDENTIFIER),
-        comment=snippet.comment,
+        comment=snippet_data.getvalue(),
         packageName=snippet.name,
         licenseName=str(snippet.license_concluded),
         copyright=str(snippet.copyright_text),
@@ -109,10 +120,13 @@ def test_create_document_attribution() -> None:
         creators=[Actor(ActorType.PERSON, "Name")],
         created=datetime.utcnow(),
     )
+    creation_info_data = StringIO()
+    write_creation_info(creation_info, creation_info_data)
     document_attribution = create_document_attribution(creation_info)
 
     assert document_attribution == OpossumPackage(
         source=SourceInfo(DOCUMENT_SPDX_ID),
         packageName=creation_info.name,
         licenseName=creation_info.data_license,
+        comment=creation_info_data.getvalue(),
     )
