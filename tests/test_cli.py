@@ -4,6 +4,7 @@
 import json
 from pathlib import Path
 from typing import Tuple
+from zipfile import ZipFile
 
 import pytest
 from _pytest.logging import LogCaptureFixture
@@ -34,8 +35,9 @@ def test_cli_with_system_exit_code_0(tmp_path: Path, options: Tuple[str, str]) -
 
     assert result.exit_code == 0
 
-    with open(tmp_path / "output.json") as file:
-        opossum_dict = json.load(file)
+    with ZipFile(str(tmp_path / "output.opossum"), "r") as z:
+        with z.open("input.json") as file:
+            opossum_dict = json.load(file)
     assert "metadata" in opossum_dict
     assert opossum_dict == expected_opossum_dict
 

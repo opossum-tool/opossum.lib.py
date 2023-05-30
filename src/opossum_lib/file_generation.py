@@ -5,6 +5,7 @@ import json
 from dataclasses import fields
 from pathlib import Path
 from typing import Dict, List, Union
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from networkx import DiGraph, shortest_path
 from spdx_tools.spdx.model.document import CreationInfo
@@ -19,6 +20,7 @@ from opossum_lib.attribution_generation import (
     create_snippet_attribution,
 )
 from opossum_lib.constants import (
+    COMPRESSION_LEVEL,
     SPDX_FILE_IDENTIFIER,
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,
@@ -44,8 +46,10 @@ from opossum_lib.opossum_file import (
 def write_dict_to_file(
     opossum_information: OpossumInformation, file_path: Path
 ) -> None:
-    with file_path.open("w") as out:
-        json.dump(to_dict(opossum_information), out, indent=4)
+    with ZipFile(
+        file_path, "w", compression=ZIP_DEFLATED, compresslevel=COMPRESSION_LEVEL
+    ) as z:
+        z.writestr("input.json", json.dumps(to_dict(opossum_information), indent=4))
 
 
 def to_dict(
