@@ -39,6 +39,10 @@ def test_cli_with_system_exit_code_0(tmp_path: Path, options: Tuple[str, str]) -
         with z.open("input.json") as file:
             opossum_dict = json.load(file)
     assert "metadata" in opossum_dict
+    # we are using randomly generated UUIDs for the project-id, therefore
+    # we need to exclude the "metadata" section from the comparison
+    opossum_dict.pop("metadata")
+    expected_opossum_dict.pop("metadata")
     assert opossum_dict == expected_opossum_dict
 
 

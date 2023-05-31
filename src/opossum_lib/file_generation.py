@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 import json
+import uuid
 from dataclasses import fields
 from pathlib import Path
 from typing import Dict, List, Union
@@ -189,5 +190,5 @@ def create_attribution_and_link_with_resource(
 def create_metadata(tree: DiGraph) -> Metadata:
     doc_name = tree.nodes["SPDXRef-DOCUMENT"]["element"].name
     created = tree.nodes["SPDXRef-DOCUMENT"]["element"].created
-    metadata = Metadata("tools-python-opossum-crossover", created.isoformat(), doc_name)
+    metadata = Metadata(str(uuid.uuid4()), created.isoformat(), doc_name)
     return metadata

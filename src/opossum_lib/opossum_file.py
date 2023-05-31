@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Literal, Optional, Union
 
 OpossumPackageIdentifier = str
+ResourcePath = str
 
 
 @dataclass(frozen=True)
@@ -14,10 +15,8 @@ class OpossumInformation:
     metadata: Metadata
     resources: Resource
     externalAttributions: Dict[OpossumPackageIdentifier, OpossumPackage]
-    resourcesToAttributions: Dict[
-        OpossumPackageIdentifier, List[OpossumPackageIdentifier]
-    ]
-    attributionBreakpoints: List[str]
+    resourcesToAttributions: Dict[ResourcePath, List[OpossumPackageIdentifier]]
+    attributionBreakpoints: List[str] = field(default_factory=list)
     externalAttributionSources: Dict[str, ExternalAttributionSource] = field(
         default_factory=dict
     )
@@ -80,6 +79,15 @@ class Resource:
             return {
                 name: resource.to_dict() for name, resource in self.children.items()
             }
+
+    def get_paths(self) -> List[str]:
+        if len(self.children) == 0:
+            return ["/"]
+        paths = []
+        for name, resource in self.children.items():
+            path = ["/" + name + path for path in resource.get_paths()]
+            paths.extend(path)
+        return paths
 
 
 @dataclass(frozen=True)
