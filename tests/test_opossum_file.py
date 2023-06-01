@@ -12,3 +12,13 @@ def test_resource_to_dict() -> None:
         resource.add_path(path)
 
     assert resource.to_dict() == {"A": {"B": {"C": 1}, "D": 1}}
+
+
+def test_resource_get_path() -> None:
+    list_of_paths = [["A", "B", "C"], ["A", "D"], ["D", "E", "F"]]
+    resource = Resource()
+
+    for path in list_of_paths:
+        resource.add_path(path)
+
+    assert resource.get_paths() == ["/A/B/C/", "/A/D/", "/D/E/F/"]
