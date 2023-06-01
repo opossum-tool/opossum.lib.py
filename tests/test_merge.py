@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-
-from unittest import TestCase, mock
+from typing import Dict, List
+from unittest import mock
 
 import pytest
 
@@ -17,7 +17,9 @@ from opossum_lib.opossum_file import (
     Metadata,
     OpossumInformation,
     OpossumPackage,
+    OpossumPackageIdentifier,
     Resource,
+    ResourcePath,
     SourceInfo,
 )
 
@@ -35,7 +37,7 @@ def test_merge_opossum_information(opossum_package: OpossumPackage) -> None:
         Metadata("test-data-id", "29-05-2023", "second test data"),
         Resource({"A": Resource({"D": Resource({"C": Resource({})})})}),
         {"SPDXRef-File": opossum_package},
-        {"/A/D/C/": ["SPDXRef-File"]},
+        {"/A/D/C": ["SPDXRef-File"]},
     )
 
     merged_information = merge_opossum_information(
@@ -52,7 +54,7 @@ def test_merge_opossum_information(opossum_package: OpossumPackage) -> None:
     }
     assert merged_information.resourcesToAttributions == {
         "/A/B/": ["project-id-SPDXRef-Package"],
-        "/A/D/C/": ["test-data-id-SPDXRef-File"],
+        "/A/D/C": ["test-data-id-SPDXRef-File"],
     }
 
 
@@ -78,23 +80,38 @@ def test_merge_resources() -> None:
     )
 
 
-def test_merge_resources_to_attributions() -> None:
-    resources_to_attributions = [
-        {"resources/Path": ["identifier-A", "identifier-B"]},
-        {"resources/Path": ["identifier-C"]},
-        {"resources/Path/different": ["identifier-A"]},
-    ]
-    resources_to_attribution = _merge_resources_to_attributions(
+@pytest.mark.parametrize(
+    "resources_to_attributions, expected_resources_to_attributions",
+    [
+        (
+            [
+                {"resources/Path": ["identifier-A", "identifier-B"]},
+                {"resources/Path": ["identifier-C"]},
+                {"resources/Path/different": ["identifier-A"]},
+            ],
+            {
+                "resources/Path": ["identifier-A", "identifier-B", "identifier-C"],
+                "resources/Path/different": ["identifier-A"],
+            },
+        ),
+        (
+            [{"resources/Path": ["uuid_1"]}, {"resources/Path": ["uuid_1", "uuid_2"]}],
+            {
+                "resources/Path": ["uuid_1", "uuid_2"],
+            },
+        ),
+    ],
+)
+def test_merge_resources_to_attributions(
+    resources_to_attributions: List[Dict[ResourcePath, List[OpossumPackageIdentifier]]],
+    expected_resources_to_attributions: Dict[
+        ResourcePath, List[OpossumPackageIdentifier]
+    ],
+) -> None:
+    merged_resources_to_attributions = _merge_resources_to_attributions(
         resources_to_attributions
     )
-
-    assert "resources/Path" in resources_to_attribution
-    TestCase().assertCountEqual(
-        resources_to_attribution["resources/Path"],
-        ["identifier-A", "identifier-B", "identifier-C"],
-    )
-    assert "resources/Path/different" in resources_to_attribution
-    assert resources_to_attribution["resources/Path/different"] == ["identifier-A"]
+    assert merged_resources_to_attributions == expected_resources_to_attributions
 
 
 @mock.patch("opossum_lib.opossum_file.OpossumPackage", autospec=True)
