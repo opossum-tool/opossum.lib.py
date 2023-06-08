@@ -36,7 +36,9 @@ def _create_minimal_document() -> Document:
     file = File(
         name="Example file",
         spdx_id="SPDXRef-File",
-        checksums=[Checksum(ChecksumAlgorithm.SHA1, "")],
+        checksums=[
+            Checksum(ChecksumAlgorithm.SHA1, "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12")
+        ],
     )
 
     relationships = [

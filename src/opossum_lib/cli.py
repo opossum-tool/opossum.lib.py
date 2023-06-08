@@ -31,6 +31,8 @@ from opossum_lib.tree_generation import generate_tree_from_graph
 @click.option(
     "--outfile",
     "-o",
+    default="output.opossum",
+    show_default=True,
     help="The file path to write the generated opossum document to. The generated file "
     "will be an opossum file, if the specified file path doesn't match this file "
     'extension ".opossum" will be appended.',
@@ -63,6 +65,10 @@ def spdx2opossum(infile: str, outfile: str) -> None:
 
     if not outfile.endswith(".opossum"):
         outfile += ".opossum"
+
+    if Path.is_file(Path(outfile)):
+        logging.warning(f"{outfile} already exists and will be overwritten.")
+
     write_dict_to_file(opossum_information, Path(outfile))
 
 
