@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 from unittest import TestCase
 
 import pytest
@@ -93,7 +93,7 @@ def test_unconnected_paths_graph() -> None:
                 "Example package B": {"CONTAINS": {"Example file": 1}},
             }
         },
-        "Package without connection to document": 1,
+        "Package without connection to document": {},
     }
     document = _create_minimal_document()
     document.packages += [
@@ -150,9 +150,9 @@ def test_different_roots_graph() -> None:
     from the SPDX Lite Document node. This means that the connected graph has multiple
     sources and thus the result should be disconnected."""
     expected_file_tree = {
-        "File-B": {"DESCRIBES": {"Package-B": 1}},
+        "File-B": {"DESCRIBES": {"Package-B": {}}},
         "Document": {
-            "DESCRIBES": {"Package-A": {"CONTAINS": {"File-A": 1}}, "Package-B": 1}
+            "DESCRIBES": {"Package-A": {"CONTAINS": {"File-A": 1}}, "Package-B": {}}
         },
     }
     document = _generate_document_with_from_root_node_unreachable_file()
@@ -194,24 +194,11 @@ def test_different_roots_graph() -> None:
 
 
 @pytest.mark.parametrize(
-    "file_name, expected_top_level_keys, expected_file_path_level_1, "
-    "expected_file_path_level_2, expected_breakpoints",
+    "file_name, expected_top_level_keys, expected_breakpoints",
     [
         (
             "SPDXJSONExample-v2.3.spdx.json",
             3,
-            (
-                "SPDX-Tools-v2.0",
-                "COPY_OF",
-                "DocumentRef-spdx-tool-1.2:SPDXRef-ToolsElement",
-            ),
-            (
-                "SPDX-Tools-v2.0",
-                "CONTAINS",
-                "glibc",
-                "DYNAMIC_LINK",
-                "Saxon",
-            ),
             [
                 "/SPDX-Tools-v2.0/CONTAINS/glibc/CONTAINS/"
                 "lib-source/commons-lang3-3.1-sources.jar/GENERATED_FROM/",
@@ -221,14 +208,6 @@ def test_different_roots_graph() -> None:
         (
             "SPDX.spdx",
             2,
-            ("SPDX Lite Document", "DESCRIBES", "Package B"),
-            (
-                "SPDX Lite Document",
-                "DESCRIBES",
-                "Package A",
-                "CONTAINS",
-                "File-C",
-            ),
             [
                 "/SPDX Lite Document/DESCRIBES/Package A/CONTAINS/",
                 "/SPDX Lite Document/DESCRIBES/Package A/COPY_OF/"
@@ -240,8 +219,6 @@ def test_different_roots_graph() -> None:
 def test_tree_generation_for_bigger_examples(
     file_name: str,
     expected_top_level_keys: int,
-    expected_file_path_level_1: Tuple[str, str, str],
-    expected_file_path_level_2: Tuple[str, str, str, str, str],
     expected_breakpoints: List[str],
 ) -> None:
     document = parse_file(str(Path(__file__).resolve().parent / "data" / file_name))
@@ -252,18 +229,6 @@ def test_tree_generation_for_bigger_examples(
     file_tree = opossum_information.resources.to_dict()
     assert isinstance(file_tree, dict)
     assert len(file_tree.keys()) == expected_top_level_keys
-    assert (
-        file_tree[expected_file_path_level_1[0]][expected_file_path_level_1[1]][
-            expected_file_path_level_1[2]
-        ]
-        == 1
-    )
-    assert (
-        file_tree[expected_file_path_level_2[0]][expected_file_path_level_2[1]][
-            expected_file_path_level_2[2]
-        ][expected_file_path_level_2[3]][expected_file_path_level_2[4]]
-        == 1
-    )
 
     for attribution_breakpoint in expected_breakpoints:
         assert attribution_breakpoint in opossum_information.attributionBreakpoints

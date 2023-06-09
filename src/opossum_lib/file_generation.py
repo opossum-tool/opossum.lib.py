@@ -40,6 +40,7 @@ from opossum_lib.opossum_file import (
     OpossumPackage,
     OpossumPackageIdentifier,
     Resource,
+    ResourceType,
     SourceInfo,
 )
 
@@ -95,7 +96,7 @@ def to_dict(
 
 def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
     metadata = create_metadata(tree)
-    resources = Resource()
+    resources = Resource(type=ResourceType.TOP_LEVEL)
     resources_to_attributions: Dict[str, List[str]] = dict()
     external_attributions: Dict[str, OpossumPackage] = dict()
     attribution_breakpoints = []
@@ -120,7 +121,6 @@ def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
             path_with_labels: List[str] = _replace_node_ids_with_labels(
                 path, connected_subgraph
             )
-            resources.add_path(path_with_labels)
             file_path: str = _create_file_path_from_graph_path(path, connected_subgraph)
             if _node_represents_a_spdx_element(connected_subgraph, node):
                 create_attribution_and_link_with_resource(
@@ -130,8 +130,16 @@ def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
                     node,
                     connected_subgraph,
                 )
+                node_element = tree.nodes[node]["element"]
+                if isinstance(node_element, Package):
+                    resources.add_path(path_with_labels, ResourceType.FOLDER)
+                elif isinstance(node_element, (Snippet, File)):
+                    resources.add_path(path_with_labels, ResourceType.FILE)
+                else:
+                    resources.add_path(path_with_labels, ResourceType.OTHER)
 
             else:
+                resources.add_path(path_with_labels, ResourceType.OTHER)
                 attribution_breakpoints.append(file_path)
 
     opossum_information = OpossumInformation(

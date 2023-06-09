@@ -4,7 +4,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Literal, Optional, Union
+from enum import Enum, auto
+from typing import Dict, List, Literal, Optional, Tuple, Union
 
 OpossumPackageIdentifier = str
 ResourcePath = str
@@ -60,32 +61,74 @@ class Metadata:
     buildDate: Optional[str] = None
 
 
+class ResourceType(Enum):
+    FILE = auto()
+    FOLDER = auto()
+    TOP_LEVEL = auto()
+    OTHER = auto()
+
+
 @dataclass(frozen=True)
 class Resource:
+    type: ResourceType
     children: Dict[str, Resource] = field(default_factory=dict)
 
-    def add_path(self, path: List[str]) -> None:
+    def add_path(self, path: List[str], type_of_last_element: ResourceType) -> None:
         if len(path) == 0:
             return
         first, rest = path[0], path[1:]
+        if self.leaf_element_exists_but_resource_type_differs(
+            first, rest, type_of_last_element
+        ):
+            raise TypeError(
+                "Couldn't add path to resource: ResourceType of leaf elements with"
+                "the same path differ."
+            )
         if first not in self.children:
-            self.children[first] = Resource()
-        self.children[first].add_path(rest)
+            if len(rest) != 0:
+                self.children[first] = Resource(type=ResourceType.FOLDER)
+            else:
+                self.children[first] = Resource(type=type_of_last_element)
+
+        self.children[first].add_path(rest, type_of_last_element)
+
+    def leaf_element_exists_but_resource_type_differs(
+        self, first: str, rest: List[str], type_of_last_element: ResourceType
+    ) -> bool:
+        return (
+            first in self.children
+            and len(self.children[first].children) == 0
+            and len(rest) == 0
+            and self.type != type_of_last_element
+        )
 
     def to_dict(self) -> Union[int, Dict]:
         if len(self.children) == 0:
-            return 1
+            if self.type == ResourceType.FILE:
+                return 1
+            elif self.type == ResourceType.FOLDER:
+                return {}
+            else:
+                return 1
         else:
             return {
                 name: resource.to_dict() for name, resource in self.children.items()
             }
 
-    def get_paths(self) -> List[str]:
+    def get_paths(self) -> List[Tuple[str, ResourceType]]:
         if len(self.children) == 0:
-            return ["/"]
+            if self.type == ResourceType.FOLDER:
+                return [("/", self.type)]
+            elif self.type == ResourceType.FILE:
+                return [("", self.type)]
+            else:
+                return [("", self.type)]
         paths = []
         for name, resource in self.children.items():
-            path = ["/" + name + path for path in resource.get_paths()]
+            path = [
+                ("/" + name + path, resource_type)
+                for (path, resource_type) in resource.get_paths()
+            ]
             paths.extend(path)
         return paths
 

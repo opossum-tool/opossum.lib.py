@@ -8,6 +8,7 @@ from opossum_lib.opossum_file import (
     OpossumPackageIdentifier,
     Resource,
     ResourcePath,
+    ResourceType,
 )
 
 
@@ -86,10 +87,12 @@ def expand_opossum_package_identifier(
 
 
 def _merge_resources(resources: List[Resource]) -> Resource:
-    merged_resource = Resource()
+    merged_resource = Resource(ResourceType.TOP_LEVEL)
     for resource in resources:
-        for resource_path in resource.get_paths():
-            merged_resource.add_path(resource_path.split("/")[1:-1])
+        for resource_path, type_of_last_element in resource.get_paths():
+            merged_resource.add_path(
+                resource_path.split("/")[1:-1], type_of_last_element
+            )
     return merged_resource
 
 
