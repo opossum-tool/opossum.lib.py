@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 from typing import List, Optional
 
 from networkx import DiGraph, weakly_connected_components

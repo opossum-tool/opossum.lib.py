@@ -44,7 +44,9 @@ def test_resource_get_path() -> None:
     ]
 
 
-def test_resource_add_path_type_error() -> None:
+def test_resource_add_path_throws_err_if_leaf_element_exists_with_different_type() -> (
+    None
+):
     resource = Resource(ResourceType.TOP_LEVEL)
     resource.add_path(["A", "B", "C"], ResourceType.FOLDER)
 

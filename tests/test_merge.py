@@ -98,9 +98,9 @@ def test_merge_resources() -> None:
         (["A", "D"], ResourceType.FILE),
     ]
     resource = Resource(ResourceType.TOP_LEVEL)
-
     for path, resource_type in list_of_paths_with_resource_types:
         resource.add_path(path, resource_type)
+
     list_of_paths_with_resource_type = [
         (["C", "D", "E"], ResourceType.FOLDER),
         (["A", "B", "C"], ResourceType.FILE),
@@ -108,9 +108,9 @@ def test_merge_resources() -> None:
         (["A", "D"], ResourceType.FILE),
     ]
     resource2 = Resource(ResourceType.TOP_LEVEL)
-
     for path, resource_type in list_of_paths_with_resource_type:
         resource2.add_path(path, resource_type)
+
     resources = [resource, resource2]
     merged_resource = _merge_resources(resources)
 

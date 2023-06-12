@@ -34,7 +34,7 @@ def test_different_paths_graph() -> None:
         }
     }
     document = _create_minimal_document()
-    opossum_information = document_to_opossum_information(document)
+    opossum_information = _get_opossum_information_from_document(document)
 
     file_tree = opossum_information.resources.to_dict()
     assert file_tree == expected_file_tree
@@ -98,7 +98,7 @@ def test_unconnected_paths_graph() -> None:
             download_location="https://download.location.com",
         )
     ]
-    opossum_information = document_to_opossum_information(document)
+    opossum_information = _get_opossum_information_from_document(document)
 
     file_tree = opossum_information.resources.to_dict()
     assert file_tree == expected_file_tree
@@ -147,7 +147,7 @@ def test_different_roots_graph() -> None:
         },
     }
     document = _generate_document_with_from_root_node_unreachable_file()
-    opossum_information = document_to_opossum_information(document)
+    opossum_information = _get_opossum_information_from_document(document)
 
     file_tree = opossum_information.resources.to_dict()
     assert file_tree == expected_file_tree
@@ -182,7 +182,7 @@ def test_different_roots_graph() -> None:
 
 
 def test_tree_generation_for_bigger_examples_json() -> None:
-    opossum_information = file_name_to_opossum_information(
+    opossum_information = _get_opossum_information_from_file(
         "SPDXJSONExample-v2.3.spdx.json"
     )
     file_tree = opossum_information.resources.to_dict()
@@ -211,7 +211,7 @@ def test_tree_generation_for_bigger_examples_json() -> None:
 
 
 def test_tree_generation_for_bigger_examples_spdx() -> None:
-    opossum_information = file_name_to_opossum_information("SPDX.spdx")
+    opossum_information = _get_opossum_information_from_file("SPDX.spdx")
     file_tree = opossum_information.resources.to_dict()
     expected_breakpoints = [
         "/SPDX Lite Document/DESCRIBES/Package A/CONTAINS/",
@@ -232,12 +232,12 @@ def test_tree_generation_for_bigger_examples_spdx() -> None:
     )
 
 
-def file_name_to_opossum_information(file_name: str) -> OpossumInformation:
+def _get_opossum_information_from_file(file_name: str) -> OpossumInformation:
     document = parse_file(str(Path(__file__).resolve().parent / "data" / file_name))
-    return document_to_opossum_information(document)
+    return _get_opossum_information_from_document(document)
 
 
-def document_to_opossum_information(document: Document) -> OpossumInformation:
+def _get_opossum_information_from_document(document: Document) -> OpossumInformation:
     graph = generate_graph_from_spdx(document)
     tree = generate_tree_from_graph(graph)
     opossum_information = generate_json_file_from_tree(tree)
