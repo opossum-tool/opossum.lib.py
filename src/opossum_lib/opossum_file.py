@@ -7,6 +7,8 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Dict, List, Literal, Optional, Tuple, Union
 
+from opossum_lib.helper_methods import is_leaf_element
+
 OpossumPackageIdentifier = str
 ResourcePath = str
 
@@ -77,36 +79,38 @@ class Resource:
         if len(path) == 0:
             return
         first, rest = path[0], path[1:]
-        if self.leaf_element_exists_but_resource_type_differs(
-            first, rest, type_of_last_element
+        if is_leaf_element(rest) and self.leaf_element_exists_but_resource_type_differs(
+            first, type_of_last_element
         ):
             raise TypeError(
                 "Couldn't add path to resource: ResourceType of leaf elements with"
-                "the same path differ."
+                " the same path differ."
             )
         if first not in self.children:
-            if len(rest) != 0:
-                self.children[first] = Resource(type=ResourceType.FOLDER)
-            else:
+            if is_leaf_element(rest):
                 self.children[first] = Resource(type=type_of_last_element)
+            else:
+                self.children[first] = Resource(type=ResourceType.FOLDER)
 
         self.children[first].add_path(rest, type_of_last_element)
 
     def leaf_element_exists_but_resource_type_differs(
-        self, first: str, rest: List[str], type_of_last_element: ResourceType
+        self, leaf_element: str, type_of_last_element: ResourceType
     ) -> bool:
         return (
-            first in self.children
-            and len(self.children[first].children) == 0
-            and len(rest) == 0
-            and self.type != type_of_last_element
+            self.leaf_element_already_exists(leaf_element)
+            and self.children[leaf_element].type != type_of_last_element
+        )
+
+    def leaf_element_already_exists(self, leaf_element: str) -> bool:
+        return (
+            leaf_element in self.children
+            and len(self.children[leaf_element].children) == 0
         )
 
     def to_dict(self) -> Union[int, Dict]:
         if len(self.children) == 0:
-            if self.type == ResourceType.FILE:
-                return 1
-            elif self.type == ResourceType.FOLDER:
+            if self.type == ResourceType.FOLDER:
                 return {}
             else:
                 return 1
@@ -115,19 +119,17 @@ class Resource:
                 name: resource.to_dict() for name, resource in self.children.items()
             }
 
-    def get_paths(self) -> List[Tuple[str, ResourceType]]:
+    def get_paths_with_resource_types(self) -> List[Tuple[str, ResourceType]]:
         if len(self.children) == 0:
             if self.type == ResourceType.FOLDER:
                 return [("/", self.type)]
-            elif self.type == ResourceType.FILE:
-                return [("", self.type)]
             else:
                 return [("", self.type)]
         paths = []
         for name, resource in self.children.items():
             path = [
                 ("/" + name + path, resource_type)
-                for (path, resource_type) in resource.get_paths()
+                for (path, resource_type) in resource.get_paths_with_resource_types()
             ]
             paths.extend(path)
         return paths

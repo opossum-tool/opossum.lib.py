@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
+from __future__ import annotations
+
 from typing import List, Optional
 
 from networkx import DiGraph, weakly_connected_components
@@ -68,3 +70,7 @@ def _replace_prefix(label: str) -> str:
     elif label.startswith("/"):
         return label[1:]
     return label
+
+
+def is_leaf_element(child_elements: List[str]) -> bool:
+    return len(child_elements) == 0

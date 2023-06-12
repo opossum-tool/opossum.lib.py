@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
+import pytest
+
 from opossum_lib.opossum_file import Resource, ResourceType
 
 
@@ -35,8 +37,16 @@ def test_resource_get_path() -> None:
     for path, resource_type in list_of_paths:
         resource.add_path(path, resource_type)
 
-    assert resource.get_paths() == [
+    assert resource.get_paths_with_resource_types() == [
         ("/A/B/C/", ResourceType.FOLDER),
         ("/A/D", ResourceType.FILE),
         ("/D/E/F", ResourceType.OTHER),
     ]
+
+
+def test_resource_add_path_type_error() -> None:
+    resource = Resource(ResourceType.TOP_LEVEL)
+    resource.add_path(["A", "B", "C"], ResourceType.FOLDER)
+
+    with pytest.raises(TypeError):
+        resource.add_path(["A", "B", "C"], ResourceType.FILE)
