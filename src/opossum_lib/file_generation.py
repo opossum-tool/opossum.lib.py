@@ -5,7 +5,7 @@ import json
 import uuid
 from dataclasses import fields
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, List, Tuple, Union
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from networkx import DiGraph, shortest_path
@@ -30,7 +30,7 @@ from opossum_lib.helper_methods import (
     _create_file_path_from_graph_path,
     _get_source_for_graph_traversal,
     _node_represents_a_spdx_element,
-    _replace_node_ids_with_labels,
+    _replace_node_ids_with_labels_and_add_resource_type,
     _weakly_connected_component_sub_graphs,
 )
 from opossum_lib.opossum_file import (
@@ -118,9 +118,12 @@ def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
             )
         for node in connected_subgraph.nodes():
             path: List[str] = shortest_path(connected_subgraph, source, node)
-            path_with_labels: List[str] = _replace_node_ids_with_labels(
+            path_with_labels: List[
+                Tuple[str, ResourceType]
+            ] = _replace_node_ids_with_labels_and_add_resource_type(
                 path, connected_subgraph
             )
+            resources.add_path(path_with_labels)
             file_path: str = _create_file_path_from_graph_path(path, connected_subgraph)
             if _node_represents_a_spdx_element(connected_subgraph, node):
                 create_attribution_and_link_with_resource(
@@ -130,16 +133,8 @@ def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
                     node,
                     connected_subgraph,
                 )
-                node_element = tree.nodes[node]["element"]
-                if isinstance(node_element, Package):
-                    resources.add_path(path_with_labels, ResourceType.FOLDER)
-                elif isinstance(node_element, (Snippet, File)):
-                    resources.add_path(path_with_labels, ResourceType.FILE)
-                else:
-                    resources.add_path(path_with_labels, ResourceType.OTHER)
 
             else:
-                resources.add_path(path_with_labels, ResourceType.OTHER)
                 attribution_breakpoints.append(file_path)
 
     opossum_information = OpossumInformation(

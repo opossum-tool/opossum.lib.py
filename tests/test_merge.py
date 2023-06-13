@@ -92,24 +92,36 @@ def test_merge_opossum_information(opossum_package: OpossumPackage) -> None:
 
 def test_merge_resources() -> None:
     list_of_paths_with_resource_types = [
-        (["A"], ResourceType.FOLDER),
-        (["A", "B", "C"], ResourceType.FILE),
-        (["A", "B"], ResourceType.FOLDER),
-        (["A", "D"], ResourceType.FILE),
+        [("A", ResourceType.FOLDER)],
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FOLDER),
+            ("C", ResourceType.FILE),
+        ],
+        [("A", ResourceType.FOLDER), ("D", ResourceType.FILE)],
     ]
+
     resource = Resource(ResourceType.TOP_LEVEL)
-    for path, resource_type in list_of_paths_with_resource_types:
-        resource.add_path(path, resource_type)
+    for path in list_of_paths_with_resource_types:
+        resource.add_path(path)
 
     list_of_paths_with_resource_type = [
-        (["C", "D", "E"], ResourceType.FOLDER),
-        (["A", "B", "C"], ResourceType.FILE),
-        (["A", "B"], ResourceType.FOLDER),
-        (["A", "D"], ResourceType.FILE),
+        [("A", ResourceType.FOLDER)],
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FOLDER),
+            ("C", ResourceType.FILE),
+        ],
+        [("A", ResourceType.FOLDER), ("D", ResourceType.FILE)],
+        [
+            ("C", ResourceType.FOLDER),
+            ("D", ResourceType.FOLDER),
+            ("E", ResourceType.FOLDER),
+        ],
     ]
     resource2 = Resource(ResourceType.TOP_LEVEL)
-    for path, resource_type in list_of_paths_with_resource_type:
-        resource2.add_path(path, resource_type)
+    for path in list_of_paths_with_resource_type:
+        resource2.add_path(path)
 
     resources = [resource, resource2]
     merged_resource = _merge_resources(resources)
