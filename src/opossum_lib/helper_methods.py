@@ -1,10 +1,13 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from networkx import DiGraph, weakly_connected_components
 from spdx_tools.spdx.constants import DOCUMENT_SPDX_ID
+from spdx_tools.spdx.model import File, Package, Snippet
+
+from opossum_lib.opossum_file import ResourceType
 
 
 def _get_source_for_graph_traversal(connected_subgraph: DiGraph) -> Optional[str]:
@@ -47,12 +50,24 @@ def _create_file_path_from_graph_path(path: List[str], graph: DiGraph) -> str:
     return base_path
 
 
-def _replace_node_ids_with_labels(path: List[str], graph: DiGraph) -> List[str]:
+def _replace_node_ids_with_labels_and_add_resource_type(
+    path: List[str], graph: DiGraph
+) -> List[Tuple[str, ResourceType]]:
     resulting_path = []
-    path_with_label = [_replace_prefix(graph.nodes[node]["label"]) for node in path]
-    for element_or_path in path_with_label:
+    path_with_label_and_resource_type = [
+        (
+            _replace_prefix(graph.nodes[node]["label"]),
+            _get_resource_type(graph.nodes[node]),
+        )
+        for node in path
+    ]
+    for element_or_path, resource_type in path_with_label_and_resource_type:
         resulting_path.extend(
-            [element for element in element_or_path.split("/") if element]
+            [
+                (element, resource_type)
+                for element in element_or_path.split("/")
+                if element
+            ]
         )
 
     return resulting_path
@@ -68,3 +83,13 @@ def _replace_prefix(label: str) -> str:
     elif label.startswith("/"):
         return label[1:]
     return label
+
+
+def _get_resource_type(node_attributes: Dict[str, Any]) -> ResourceType:
+    element = node_attributes.get("element", None)
+    if isinstance(element, Package):
+        return ResourceType.FOLDER
+    elif isinstance(element, (Snippet, File)):
+        return ResourceType.FILE
+    else:
+        return ResourceType.OTHER

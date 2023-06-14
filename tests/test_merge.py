@@ -20,6 +20,7 @@ from opossum_lib.opossum_file import (
     OpossumPackageIdentifier,
     Resource,
     ResourcePath,
+    ResourceType,
     SourceInfo,
 )
 
@@ -28,14 +29,34 @@ from opossum_lib.opossum_file import (
 def test_merge_opossum_information(opossum_package: OpossumPackage) -> None:
     opossum_information = OpossumInformation(
         Metadata("project-id", "30-05-2023", "test data"),
-        Resource({"A": Resource({"B": Resource({})})}),
+        Resource(
+            ResourceType.TOP_LEVEL,
+            {
+                "A": Resource(
+                    ResourceType.FOLDER, {"B": Resource(ResourceType.FOLDER, {})}
+                )
+            },
+        ),
         {"SPDXRef-Package": opossum_package},
         {"/A/B/": ["SPDXRef-Package"]},
     )
 
     opossum_information_2 = OpossumInformation(
         Metadata("test-data-id", "29-05-2023", "second test data"),
-        Resource({"A": Resource({"D": Resource({"C": Resource({})})})}),
+        Resource(
+            ResourceType.TOP_LEVEL,
+            {
+                "A": Resource(
+                    ResourceType.FOLDER,
+                    {
+                        "D": Resource(
+                            ResourceType.FOLDER,
+                            {"C": Resource(ResourceType.FILE, {})},
+                        )
+                    },
+                )
+            },
+        ),
         {"SPDXRef-File": opossum_package},
         {"/A/D/C": ["SPDXRef-File"]},
     )
@@ -46,7 +67,18 @@ def test_merge_opossum_information(opossum_package: OpossumPackage) -> None:
 
     assert merged_information.metadata == opossum_information.metadata
     assert merged_information.resources == Resource(
-        {"A": Resource({"B": Resource({}), "D": Resource({"C": Resource({})})})}
+        ResourceType.TOP_LEVEL,
+        {
+            "A": Resource(
+                ResourceType.FOLDER,
+                {
+                    "B": Resource(ResourceType.FOLDER, {}),
+                    "D": Resource(
+                        ResourceType.FOLDER, {"C": Resource(ResourceType.FILE, {})}
+                    ),
+                },
+            )
+        },
     )
     assert merged_information.externalAttributions == {
         "project-id-SPDXRef-Package": opossum_package,
@@ -59,24 +91,62 @@ def test_merge_opossum_information(opossum_package: OpossumPackage) -> None:
 
 
 def test_merge_resources() -> None:
-    list_of_paths = [["A"], ["A", "B", "C"], ["A", "B"], ["A", "D"]]
-    resource = Resource()
+    list_of_paths_with_resource_types = [
+        [("A", ResourceType.FOLDER)],
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FOLDER),
+            ("C", ResourceType.FILE),
+        ],
+        [("A", ResourceType.FOLDER), ("D", ResourceType.FILE)],
+    ]
 
-    for path in list_of_paths:
+    resource = Resource(ResourceType.TOP_LEVEL)
+    for path in list_of_paths_with_resource_types:
         resource.add_path(path)
-    list_of_paths = [["C", "D", "E"], ["A", "B", "C"], ["A", "B"], ["A", "D"]]
-    resource2 = Resource()
 
-    for path in list_of_paths:
+    list_of_paths_with_resource_type = [
+        [("A", ResourceType.FOLDER)],
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FOLDER),
+            ("C", ResourceType.FILE),
+        ],
+        [("A", ResourceType.FOLDER), ("D", ResourceType.FILE)],
+        [
+            ("C", ResourceType.FOLDER),
+            ("D", ResourceType.FOLDER),
+            ("E", ResourceType.FOLDER),
+        ],
+    ]
+    resource2 = Resource(ResourceType.TOP_LEVEL)
+    for path in list_of_paths_with_resource_type:
         resource2.add_path(path)
+
     resources = [resource, resource2]
     merged_resource = _merge_resources(resources)
 
     assert merged_resource == Resource(
+        ResourceType.TOP_LEVEL,
         {
-            "A": Resource({"B": Resource({"C": Resource({})}), "D": Resource({})}),
-            "C": Resource({"D": Resource({"E": Resource({})})}),
-        }
+            "A": Resource(
+                ResourceType.FOLDER,
+                {
+                    "B": Resource(
+                        ResourceType.FOLDER, {"C": Resource(ResourceType.FILE, {})}
+                    ),
+                    "D": Resource(ResourceType.FILE, {}),
+                },
+            ),
+            "C": Resource(
+                ResourceType.FOLDER,
+                {
+                    "D": Resource(
+                        ResourceType.FOLDER, {"E": Resource(ResourceType.FOLDER, {})}
+                    )
+                },
+            ),
+        },
     )
 
 

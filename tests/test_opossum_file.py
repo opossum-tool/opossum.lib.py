@@ -1,12 +1,23 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from opossum_lib.opossum_file import Resource
+import pytest
+
+from opossum_lib.opossum_file import Resource, ResourceType
 
 
-def test_resource_to_dict() -> None:
-    list_of_paths = [["A"], ["A", "B", "C"], ["A", "B"], ["A", "D"]]
-    resource = Resource()
+def test_resource_to_dict_with_file_as_leaf() -> None:
+    list_of_paths = [
+        [("A", ResourceType.FOLDER)],
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FILE),
+            ("C", ResourceType.FILE),
+        ],
+        [("A", ResourceType.FOLDER), ("B", ResourceType.FILE)],
+        [("A", ResourceType.FOLDER), ("D", ResourceType.FILE)],
+    ]
+    resource = Resource(ResourceType.TOP_LEVEL)
 
     for path in list_of_paths:
         resource.add_path(path)
@@ -14,11 +25,103 @@ def test_resource_to_dict() -> None:
     assert resource.to_dict() == {"A": {"B": {"C": 1}, "D": 1}}
 
 
-def test_resource_get_path() -> None:
-    list_of_paths = [["A", "B", "C"], ["A", "D"], ["D", "E", "F"]]
-    resource = Resource()
+def test_resource_to_dict_with_package_as_leaf() -> None:
+    list_of_paths = [
+        [("A", ResourceType.FOLDER)],
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FILE),
+            ("C", ResourceType.FOLDER),
+        ],
+        [("A", ResourceType.FOLDER), ("B", ResourceType.FILE)],
+        [("A", ResourceType.FOLDER), ("D", ResourceType.FOLDER)],
+    ]
+    resource = Resource(ResourceType.TOP_LEVEL)
 
     for path in list_of_paths:
         resource.add_path(path)
 
-    assert resource.get_paths() == ["/A/B/C/", "/A/D/", "/D/E/F/"]
+    assert resource.to_dict() == {"A": {"B": {"C": {}}, "D": {}}}
+
+
+def test_resource_get_path() -> None:
+    list_of_paths = [
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FILE),
+            ("C", ResourceType.FOLDER),
+        ],
+        [
+            ("A", ResourceType.FOLDER),
+            ("D", ResourceType.FILE),
+        ],
+        [
+            ("D", ResourceType.FOLDER),
+            ("E", ResourceType.FILE),
+            ("F", ResourceType.OTHER),
+        ],
+    ]
+    resource = Resource(ResourceType.TOP_LEVEL)
+
+    for path in list_of_paths:
+        resource.add_path(path)
+
+    assert resource.get_paths_with_resource_types() == [
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FILE),
+            ("C", ResourceType.FOLDER),
+        ],
+        [
+            ("A", ResourceType.FOLDER),
+            ("D", ResourceType.FILE),
+        ],
+        [
+            ("D", ResourceType.FOLDER),
+            ("E", ResourceType.FILE),
+            ("F", ResourceType.OTHER),
+        ],
+    ]
+
+
+def test_resource_add_path_throws_err_if_leaf_element_exists_with_different_type() -> (
+    None
+):
+    resource = Resource(ResourceType.TOP_LEVEL)
+    resource.add_path(
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FILE),
+            ("C", ResourceType.FOLDER),
+        ]
+    )
+
+    with pytest.raises(TypeError):
+        resource.add_path(
+            [
+                ("A", ResourceType.FOLDER),
+                ("B", ResourceType.FILE),
+                ("C", ResourceType.FILE),
+            ]
+        )
+
+
+def test_resource_add_path_throws_err_if_element_exists_with_different_type() -> None:
+    resource = Resource(ResourceType.TOP_LEVEL)
+    resource.add_path(
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FILE),
+            ("C", ResourceType.FOLDER),
+            ("D", ResourceType.FILE),
+        ]
+    )
+
+    with pytest.raises(TypeError):
+        resource.add_path(
+            [
+                ("A", ResourceType.FOLDER),
+                ("B", ResourceType.FILE),
+                ("C", ResourceType.FILE),
+            ]
+        )

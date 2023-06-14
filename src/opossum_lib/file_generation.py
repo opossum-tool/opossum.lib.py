@@ -5,7 +5,7 @@ import json
 import uuid
 from dataclasses import fields
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, List, Tuple, Union
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from networkx import DiGraph, shortest_path
@@ -30,7 +30,7 @@ from opossum_lib.helper_methods import (
     _create_file_path_from_graph_path,
     _get_source_for_graph_traversal,
     _node_represents_a_spdx_element,
-    _replace_node_ids_with_labels,
+    _replace_node_ids_with_labels_and_add_resource_type,
     _weakly_connected_component_sub_graphs,
 )
 from opossum_lib.opossum_file import (
@@ -40,6 +40,7 @@ from opossum_lib.opossum_file import (
     OpossumPackage,
     OpossumPackageIdentifier,
     Resource,
+    ResourceType,
     SourceInfo,
 )
 
@@ -95,7 +96,7 @@ def to_dict(
 
 def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
     metadata = create_metadata(tree)
-    resources = Resource()
+    resources = Resource(type=ResourceType.TOP_LEVEL)
     resources_to_attributions: Dict[str, List[str]] = dict()
     external_attributions: Dict[str, OpossumPackage] = dict()
     attribution_breakpoints = []
@@ -117,7 +118,9 @@ def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
             )
         for node in connected_subgraph.nodes():
             path: List[str] = shortest_path(connected_subgraph, source, node)
-            path_with_labels: List[str] = _replace_node_ids_with_labels(
+            path_with_labels: List[
+                Tuple[str, ResourceType]
+            ] = _replace_node_ids_with_labels_and_add_resource_type(
                 path, connected_subgraph
             )
             resources.add_path(path_with_labels)

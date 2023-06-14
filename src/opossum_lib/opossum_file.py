@@ -4,7 +4,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Literal, Optional, Union
+from enum import Enum, auto
+from typing import Dict, List, Literal, Optional, Tuple, Union
 
 OpossumPackageIdentifier = str
 ResourcePath = str
@@ -60,34 +61,71 @@ class Metadata:
     buildDate: Optional[str] = None
 
 
+class ResourceType(Enum):
+    FILE = auto()
+    FOLDER = auto()
+    TOP_LEVEL = auto()
+    OTHER = auto()
+
+
 @dataclass(frozen=True)
 class Resource:
+    type: ResourceType
     children: Dict[str, Resource] = field(default_factory=dict)
 
-    def add_path(self, path: List[str]) -> None:
-        if len(path) == 0:
+    def add_path(
+        self, path_with_resource_types: List[Tuple[str, ResourceType]]
+    ) -> None:
+        if len(path_with_resource_types) == 0:
             return
-        first, rest = path[0], path[1:]
+        (first, resource_type), rest = (
+            path_with_resource_types[0],
+            path_with_resource_types[1:],
+        )
+        if self.element_exists_but_resource_type_differs(first, resource_type):
+            raise TypeError(
+                "Couldn't add path to resource: ResourceType of elements with"
+                " the same path differ."
+            )
         if first not in self.children:
-            self.children[first] = Resource()
+            self.children[first] = Resource(type=resource_type)
         self.children[first].add_path(rest)
 
+    def element_exists_but_resource_type_differs(
+        self, element: str, resource_type: ResourceType
+    ) -> bool:
+        if element in self.children:
+            return self.children[element].type != resource_type
+        return False
+
     def to_dict(self) -> Union[int, Dict]:
-        if len(self.children) == 0:
-            return 1
+        if not self.has_children():
+            if self.type == ResourceType.FOLDER:
+                return {}
+            else:
+                return 1
         else:
             return {
                 name: resource.to_dict() for name, resource in self.children.items()
             }
 
-    def get_paths(self) -> List[str]:
-        if len(self.children) == 0:
-            return ["/"]
+    def get_paths_with_resource_types(self) -> List[List[Tuple[str, ResourceType]]]:
         paths = []
         for name, resource in self.children.items():
-            path = ["/" + name + path for path in resource.get_paths()]
-            paths.extend(path)
+            path = [(name, resource.type)]
+            if resource.has_children():
+                paths.extend(
+                    [
+                        path + element
+                        for element in resource.get_paths_with_resource_types()
+                    ]
+                )
+            else:
+                paths.extend([path])
         return paths
+
+    def has_children(self) -> bool:
+        return len(self.children) > 0
 
 
 @dataclass(frozen=True)
