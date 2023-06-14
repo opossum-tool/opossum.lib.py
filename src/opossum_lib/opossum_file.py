@@ -92,10 +92,10 @@ class Resource:
         self.children[first].add_path(rest)
 
     def element_exists_but_resource_type_differs(
-        self, element: str, type_of_last_element: ResourceType
+        self, element: str, resource_type: ResourceType
     ) -> bool:
         if element in self.children:
-            return self.children[element].type != type_of_last_element
+            return self.children[element].type != resource_type
         return False
 
     def to_dict(self) -> Union[int, Dict]:
