@@ -98,6 +98,25 @@ class Resource:
             return self.children[element].type != resource_type
         return False
 
+    def drop_element(
+        self, path_to_element_to_drop: List[Tuple[str, ResourceType]]
+    ) -> Resource:
+        paths_in_resource = self.get_paths_with_resource_types()
+        if path_to_element_to_drop not in paths_in_resource:
+            raise ValueError(
+                f"Element {path_to_element_to_drop} doesn't exist in resource!"
+            )
+
+        else:
+            resource = Resource(ResourceType.TOP_LEVEL)
+            paths_in_resource.remove(path_to_element_to_drop)
+            paths_in_resource.append(path_to_element_to_drop[:-1])
+
+            for path_to_element_to_drop in paths_in_resource:
+                resource.add_path(path_to_element_to_drop)
+
+            return resource
+
     def to_dict(self) -> Union[int, Dict]:
         if not self.has_children():
             if self.type == ResourceType.FOLDER:

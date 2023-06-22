@@ -125,3 +125,68 @@ def test_resource_add_path_throws_err_if_element_exists_with_different_type() ->
                 ("C", ResourceType.FILE),
             ]
         )
+
+
+def test_resource_drop_element_error() -> None:
+    resource = Resource(ResourceType.TOP_LEVEL)
+    resource.add_path(
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FILE),
+            ("E", ResourceType.FOLDER),
+            ("D", ResourceType.FILE),
+        ]
+    )
+
+    with pytest.raises(ValueError):
+        resource.drop_element(
+            [
+                ("A", ResourceType.FOLDER),
+                ("B", ResourceType.FILE),
+                ("C", ResourceType.FILE),
+            ]
+        )
+
+
+def test_resource_drop_element_error_not_leaf() -> None:
+    resource = Resource(ResourceType.TOP_LEVEL)
+    resource.add_path(
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FILE),
+            ("C", ResourceType.FOLDER),
+            ("D", ResourceType.FILE),
+        ]
+    )
+
+    with pytest.raises(ValueError):
+        resource.drop_element(
+            [
+                ("A", ResourceType.FOLDER),
+                ("B", ResourceType.FILE),
+                ("C", ResourceType.FILE),
+            ]
+        )
+
+
+def test_resource_drop_element() -> None:
+    resource = Resource(ResourceType.TOP_LEVEL)
+    resource.add_path(
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FILE),
+            ("C", ResourceType.FOLDER),
+        ]
+    )
+
+    resource_without_element = resource.drop_element(
+        [
+            ("A", ResourceType.FOLDER),
+            ("B", ResourceType.FILE),
+            ("C", ResourceType.FOLDER),
+        ]
+    )
+
+    assert resource_without_element.get_paths_with_resource_types() == [
+        [("A", ResourceType.FOLDER), ("B", ResourceType.FILE)]
+    ]
