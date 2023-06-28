@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Dict, List, Literal, Optional, Tuple, Union
@@ -75,9 +76,10 @@ class Resource:
 
     def add_path(
         self, path_with_resource_types: List[Tuple[str, ResourceType]]
-    ) -> None:
+    ) -> Resource:
+        resource = deepcopy(self)
         if len(path_with_resource_types) == 0:
-            return
+            return resource
         (first, resource_type), rest = (
             path_with_resource_types[0],
             path_with_resource_types[1:],
@@ -88,8 +90,10 @@ class Resource:
                 " the same path differ."
             )
         if first not in self.children:
-            self.children[first] = Resource(type=resource_type)
-        self.children[first].add_path(rest)
+            resource.children[first] = Resource(type=resource_type)
+        resource.children[first] = resource.children[first].add_path(rest)
+
+        return resource
 
     def element_exists_but_resource_type_differs(
         self, element: str, resource_type: ResourceType
@@ -101,7 +105,7 @@ class Resource:
     def drop_element(
         self, path_to_element_to_drop: List[Tuple[str, ResourceType]]
     ) -> Resource:
-        paths_in_resource = self.get_paths_with_resource_types()
+        paths_in_resource = self.get_paths_of_all_leaf_nodes_with_types()
         if path_to_element_to_drop not in paths_in_resource:
             raise ValueError(
                 f"Element {path_to_element_to_drop} doesn't exist in resource!"
@@ -113,7 +117,7 @@ class Resource:
             paths_in_resource.append(path_to_element_to_drop[:-1])
 
             for path_to_element_to_drop in paths_in_resource:
-                resource.add_path(path_to_element_to_drop)
+                resource = resource.add_path(path_to_element_to_drop)
 
             return resource
 
@@ -128,7 +132,9 @@ class Resource:
                 name: resource.to_dict() for name, resource in self.children.items()
             }
 
-    def get_paths_with_resource_types(self) -> List[List[Tuple[str, ResourceType]]]:
+    def get_paths_of_all_leaf_nodes_with_types(
+        self,
+    ) -> List[List[Tuple[str, ResourceType]]]:
         paths = []
         for name, resource in self.children.items():
             path = [(name, resource.type)]
@@ -136,7 +142,7 @@ class Resource:
                 paths.extend(
                     [
                         path + element
-                        for element in resource.get_paths_with_resource_types()
+                        for element in resource.get_paths_of_all_leaf_nodes_with_types()
                     ]
                 )
             else:
