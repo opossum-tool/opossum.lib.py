@@ -89,8 +89,8 @@ def expand_opossum_package_identifier(
 def _merge_resources(resources: List[Resource]) -> Resource:
     merged_resource = Resource(ResourceType.TOP_LEVEL)
     for resource in resources:
-        for path in resource.get_paths_with_resource_types():
-            merged_resource.add_path(path)
+        for path in resource.get_paths_of_all_leaf_nodes_with_types():
+            merged_resource = merged_resource.add_path(path)
     return merged_resource
 
 
