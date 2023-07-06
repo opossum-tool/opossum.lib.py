@@ -52,7 +52,8 @@ To test your changes run
 poetry run pytest  # in the root of the repo
 ```
 
-The package provides a script `(./scripts/linter_and_formatting.sh)` to make your changes compliant with the expected 
+The package uses pre-commit hooks to check the code style of your changes. 
+It also provides a script `(./scripts/linter_and_formatting.sh)` to make your changes compliant with the expected 
 code style. To use this script under linux run
 ```
 ./scripts/linter_and_formatting.sh  # in the root of the repo
