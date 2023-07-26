@@ -594,13 +594,13 @@ files = [
 
 [[package]]
 name = "spdx-tools"
-version = "0.8.0rc3"
+version = "0.8.0"
 description = "SPDX parser and tools."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "spdx-tools-0.8.0rc3.tar.gz", hash = "sha256:e56faff943e39b70ea69cd7a0d61ca739f6c277d188b5ee6ad2f691af5c92ee7"},
-    {file = "spdx_tools-0.8.0rc3-py3-none-any.whl", hash = "sha256:3a820b7e21146a95fd912cc75570526b6e9e450f9a091a08efb5b847d2372a86"},
+    {file = "spdx-tools-0.8.0.tar.gz", hash = "sha256:66809bf78783b47147dcaf69a63bb9d561eb45e6b2ec15c2e8fe1550e24ae1cd"},
+    {file = "spdx_tools-0.8.0-py3-none-any.whl", hash = "sha256:d57669c2e66f3ba2bfe253a3d9952e8761858e1af4084cd5bec43994099eda9d"},
 ]
 
 [package.dependencies]
@@ -687,4 +687,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "5b329a8975fbdd1207af54d7c8cf6d14f601b7f023175c230dbbac64e40ed727"
+content-hash = "e47595396f1c6d4be6cd884298574f74150c16226928c99ca0f49fe26eac2d93"
