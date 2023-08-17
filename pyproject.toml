@@ -27,7 +27,7 @@ spdx2opossum = 'opossum_lib.cli:spdx2opossum'
 python = "^3.8.1"
 spdx-tools = "^0.8.0"
 networkx = "^3.0"
-click = "^8.1.6"
+click = "^8.1.7"
 pre-commit = "^3.3.3"
 
 [tool.poetry.group.test.dependencies]
