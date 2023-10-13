@@ -13,7 +13,7 @@ Created: 2023-03-14T08:49:00Z
 PackageName: Package A
 SPDXID: SPDXRef-Package-A
 PackageDownloadLocation: https://download.com
-FilesAnalyzed: True
+FilesAnalyzed: true
 
 ## File Information
 FileName: File-A
@@ -29,13 +29,13 @@ FileChecksum: SHA1: d6a770ba38583ed4bb4525bd96e50461655d2759
 PackageName: Package B
 SPDXID: SPDXRef-Package-B
 PackageDownloadLocation: https://download.com
-FilesAnalyzed: True
+FilesAnalyzed: true
 
 ## Package Information
 PackageName: Package C
 SPDXID: SPDXRef-Package-C
 PackageDownloadLocation: https://download.com
-FilesAnalyzed: True
+FilesAnalyzed: true
 
 ## File Information
 FileName: File-B

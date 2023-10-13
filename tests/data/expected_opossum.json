@@ -40,7 +40,7 @@
         "name":"SPDX-Package",
         "documentConfidence":0
       },
-      "comment":"## Package Information\nPackageName: Package A\nSPDXID: SPDXRef-Package-A\nPackageDownloadLocation: https://download.com\nFilesAnalyzed: True\n",
+      "comment":"## Package Information\nPackageName: Package A\nSPDXID: SPDXRef-Package-A\nPackageDownloadLocation: https://download.com\nFilesAnalyzed: true\n",
       "packageName":"Package A",
       "copyright":"None",
       "licenseName":"None",
@@ -51,7 +51,7 @@
         "name":"SPDX-Package",
         "documentConfidence":0
       },
-      "comment":"## Package Information\nPackageName: Package B\nSPDXID: SPDXRef-Package-B\nPackageDownloadLocation: https://download.com\nFilesAnalyzed: True\n",
+      "comment":"## Package Information\nPackageName: Package B\nSPDXID: SPDXRef-Package-B\nPackageDownloadLocation: https://download.com\nFilesAnalyzed: true\n",
       "packageName":"Package B",
       "copyright":"None",
       "licenseName":"None",
@@ -82,7 +82,7 @@
         "name":"SPDX-Package",
         "documentConfidence":0
       },
-      "comment":"## Package Information\nPackageName: Package C\nSPDXID: SPDXRef-Package-C\nPackageDownloadLocation: https://download.com\nFilesAnalyzed: True\n",
+      "comment":"## Package Information\nPackageName: Package C\nSPDXID: SPDXRef-Package-C\nPackageDownloadLocation: https://download.com\nFilesAnalyzed: true\n",
       "packageName":"Package C",
       "copyright":"None",
       "licenseName":"None",

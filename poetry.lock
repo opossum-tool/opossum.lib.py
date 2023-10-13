@@ -594,13 +594,13 @@ files = [
 
 [[package]]
 name = "spdx-tools"
-version = "0.8.1"
+version = "0.8.2"
 description = "SPDX parser and tools."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "spdx-tools-0.8.1.tar.gz", hash = "sha256:c83652cd65b5726058dcbdaab85839dbe484c43ea6f61046137516aa1b8428ae"},
-    {file = "spdx_tools-0.8.1-py3-none-any.whl", hash = "sha256:84eb4e524d2020da6120f19eab2e4ab1bb4e08453037ebe689159f74f7058684"},
+    {file = "spdx-tools-0.8.2.tar.gz", hash = "sha256:aea4ac9c2c375e7f439b1cef5ff32ef34914c083de0f61e08ed67cd3d9deb2a9"},
+    {file = "spdx_tools-0.8.2-py3-none-any.whl", hash = "sha256:8c336c873f9caaf110693a1d38c007031e67bea53aa4b881007b680be66de934"},
 ]
 
 [package.dependencies]
@@ -618,7 +618,7 @@ xmltodict = "*"
 code-style = ["black", "flake8", "isort"]
 development = ["black", "flake8", "isort", "networkx", "pytest"]
 graph-generation = ["networkx", "pygraphviz"]
-test = ["pyshacl", "pytest"]
+test = ["pyshacl", "pytest", "tzdata"]
 
 [[package]]
 name = "tomli"
@@ -687,4 +687,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "b7cd1062c44dd6dab33a8723f49ac17821c3cc8caa9e998ea2982b022c4c98b1"
+content-hash = "ecbe578942540ea0a20d985a277f9140e7d85f0fc2f7aec3e47f3f5949a422cc"
