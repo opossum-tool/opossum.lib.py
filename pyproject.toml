@@ -8,6 +8,7 @@ description = "A library for handling Opossum files with Python"
 authors = [
     "Meret Behrens <meret.behrens@tngtech.com>",
     "Jakob Schubert <jakob.schubert@tngtech.com>",
+    "Maximilian Huber <maximilian.huber@tngtech.com>",
 ]
 license = "Apache-2.0"
 
@@ -38,6 +39,10 @@ black = "^23.11.0"
 isort = "^5.12.0"
 flake8 = "^6.1.0"
 mypy = "^1.7.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [virtualenvs]
 in-project = true
