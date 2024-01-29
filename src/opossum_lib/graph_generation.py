@@ -21,9 +21,9 @@ def generate_graph_from_spdx(document: Document) -> DiGraph:
 
 def _create_label_for_node(graph: DiGraph, node: str) -> str:
     if _node_represents_a_spdx_element(graph, node):
-        element_node: Optional[
-            Union[CreationInfo, File, Package, Snippet]
-        ] = graph.nodes[node]["element"]
+        element_node: Optional[Union[CreationInfo, File, Package, Snippet]] = (
+            graph.nodes[node]["element"]
+        )
         if element_node:
             return element_node.name or element_node.spdx_id
         else:
