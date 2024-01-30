@@ -118,10 +118,10 @@ def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
             )
         for node in connected_subgraph.nodes():
             path: List[str] = shortest_path(connected_subgraph, source, node)
-            path_with_labels: List[
-                Tuple[str, ResourceType]
-            ] = _replace_node_ids_with_labels_and_add_resource_type(
-                path, connected_subgraph
+            path_with_labels: List[Tuple[str, ResourceType]] = (
+                _replace_node_ids_with_labels_and_add_resource_type(
+                    path, connected_subgraph
+                )
             )
             resources = resources.add_path(path_with_labels)
             file_path: str = _create_file_path_from_graph_path(path, connected_subgraph)
