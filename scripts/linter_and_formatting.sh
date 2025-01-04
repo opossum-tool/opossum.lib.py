@@ -8,17 +8,17 @@ cd "$(dirname "${BASH_SOURCE[0]}")"/..
 
 echo "sorting imports"
 echo "-----------------------"
-poetry run isort src/ tests/
+uv run isort src/ tests/
 
 echo "autoformatting code"
 echo "-----------------------"
-poetry run black src/ tests/
+uv run black src/ tests/
 
 echo "run flake"
 echo "-----------------------"
-poetry run flake8 src/ tests/
+uv run flake8 src/ tests/
 
 echo "running mypy"
 echo "-----------------------"
 
-poetry run python -m mypy src/ tests/
+uv run python -m mypy src/ tests/

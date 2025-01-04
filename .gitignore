@@ -5,9 +5,11 @@ __pycache__/
 
 .DS_Store
 .idea/*
-.python-version
 .vscode/*
 
 .mypy_cache/
 
 .venv/
+dist/
+
+**/*.egg-info/*

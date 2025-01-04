@@ -1,46 +1,41 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-[tool.poetry]
+[project]
 name = "opossum.lib.py"
 version = "0.1"
 description = "A library for handling Opossum files with Python"
-authors = [
-    "Meret Behrens <meret.behrens@tngtech.com>",
-    "Jakob Schubert <jakob.schubert@tngtech.com>",
-]
-license = "Apache-2.0"
-
+requires-python = ">=3.12,<4"
 readme = "README.md"
-
-
-repository = "https://github.com/opossum-tool/opossum.lib.py"
-
-packages = [
-    { include = "opossum_lib", from="src" }
+license = {file = "LICENSE"}
+dependencies = [
+    "spdx-tools>=0.8.3,<0.9",
+    "networkx~=3.0",
+    "click>=8.1.8,<9",
 ]
 
-[tool.poetry.scripts]
-spdx2opossum = 'opossum_lib.cli:spdx2opossum'
+[project.urls]
+Repository = "https://github.com/opossum-tool/opossum.lib.py"
 
-[tool.poetry.dependencies]
-python = "^3.8.1"
-spdx-tools = "^0.8.3"
-networkx = "^3.0"
-click = "^8.1.8"
-pre-commit = "^3.5.0"
+[project.scripts]
+spdx2opossum = "opossum_lib.cli:spdx2opossum"
 
-[tool.poetry.group.test.dependencies]
-pytest = "^8.3.4"
+[dependency-groups]
+test = ["pytest>=8.3.4,<9"]
+dev = [
+    "black>=24.8.0,<25",
+    "isort>=5.13.2,<6",
+    "flake8>=7.1.1,<8",
+    "mypy>=1.14.1,<2",
+    "pre-commit>=4.0.1,<5",
+]
 
-[tool.poetry.group.dev.dependencies]
-black = "^24.8.0"
-isort = "^5.13.2"
-flake8 = "^7.1.1"
-mypy = "^1.14.1"
-
-[virtualenvs]
-in-project = true
+[tool.uv]
+default-groups = [
+    "test",
+    "dev",
+]
+package = true
 
 [tool.isort]
 profile = "black"
