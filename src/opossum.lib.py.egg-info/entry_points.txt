@@ -1,0 +1,2 @@
+[console_scripts]
+spdx2opossum = opossum_lib.cli:spdx2opossum
