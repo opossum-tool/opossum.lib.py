@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from typing import Any, Dict, List
+from typing import Any
 
 from opossum_lib.opossum_file import (
     OpossumInformation,
@@ -13,7 +13,7 @@ from opossum_lib.opossum_file import (
 
 
 def merge_opossum_information(
-    elements_to_merge: List[OpossumInformation],
+    elements_to_merge: list[OpossumInformation],
 ) -> OpossumInformation:
     expanded_opossum_information = [
         expand_opossum_package_identifier(opossum_information)
@@ -86,7 +86,7 @@ def expand_opossum_package_identifier(
     )
 
 
-def _merge_resources(resources: List[Resource]) -> Resource:
+def _merge_resources(resources: list[Resource]) -> Resource:
     merged_resource = Resource(ResourceType.TOP_LEVEL)
     for resource in resources:
         for path in resource.get_paths_of_all_leaf_nodes_with_types():
@@ -95,10 +95,10 @@ def _merge_resources(resources: List[Resource]) -> Resource:
 
 
 def _merge_resources_to_attributions(
-    resources_to_attributions: List[Dict[ResourcePath, List[OpossumPackageIdentifier]]]
-) -> Dict[ResourcePath, List[OpossumPackageIdentifier]]:
-    merged_resources_to_attributions: Dict[
-        ResourcePath, List[OpossumPackageIdentifier]
+    resources_to_attributions: list[dict[ResourcePath, list[OpossumPackageIdentifier]]],
+) -> dict[ResourcePath, list[OpossumPackageIdentifier]]:
+    merged_resources_to_attributions: dict[
+        ResourcePath, list[OpossumPackageIdentifier]
     ] = dict()
     for resource_to_attribution in resources_to_attributions:
         for resource_path, identifiers in resource_to_attribution.items():
@@ -112,8 +112,8 @@ def _merge_resources_to_attributions(
 
 
 def _merge_attribution_breakpoints(
-    attribution_breakpoints_to_merge: List[List[str]],
-) -> List[str]:
+    attribution_breakpoints_to_merge: list[list[str]],
+) -> list[str]:
     merged_attribution_breakpoints = []
     for attribution_breakpoints in attribution_breakpoints_to_merge:
         merged_attribution_breakpoints.extend(
@@ -126,8 +126,8 @@ def _merge_attribution_breakpoints(
     return merged_attribution_breakpoints
 
 
-def _merge_dicts_without_duplicates(dicts: List[Dict[str, Any]]) -> Dict[str, Any]:
-    merged_dict: Dict[str, Any] = dict()
+def _merge_dicts_without_duplicates(dicts: list[dict[str, Any]]) -> dict[str, Any]:
+    merged_dict: dict[str, Any] = dict()
     for single_dict in dicts:
         for key, value in single_dict.items():
             if key in merged_dict and merged_dict.get(key) != value:

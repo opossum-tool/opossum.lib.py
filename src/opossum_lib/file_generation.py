@@ -5,7 +5,6 @@ import json
 import uuid
 from dataclasses import fields
 from pathlib import Path
-from typing import Dict, List, Tuple, Union
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from networkx import DiGraph, shortest_path
@@ -55,33 +54,29 @@ def write_dict_to_file(
 
 
 def to_dict(
-    element: Union[
-        Resource,
-        Metadata,
-        OpossumPackage,
-        OpossumInformation,
-        SourceInfo,
-        ExternalAttributionSource,
-        str,
-        int,
-        bool,
-        Dict[str, OpossumPackage],
-        Dict[str, List[str]],
-        List[str],
-        None,
-    ]
-) -> Union[Dict, str, List[str], bool, int, None]:
+    element: Resource
+    | Metadata
+    | OpossumPackage
+    | OpossumInformation
+    | SourceInfo
+    | ExternalAttributionSource
+    | str
+    | int
+    | bool
+    | dict[str, OpossumPackage]
+    | dict[str, list[str]]
+    | list[str]
+    | None,
+) -> dict | str | list[str] | bool | int | None:
     if isinstance(element, Resource):
         return element.to_dict()
     if isinstance(
         element,
-        (
-            Metadata,
-            OpossumPackage,
-            OpossumInformation,
-            SourceInfo,
-            ExternalAttributionSource,
-        ),
+        Metadata
+        | OpossumPackage
+        | OpossumInformation
+        | SourceInfo
+        | ExternalAttributionSource,
     ):
         result = []
         for f in fields(element):
@@ -97,8 +92,8 @@ def to_dict(
 def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
     metadata = create_metadata(tree)
     resources = Resource(type=ResourceType.TOP_LEVEL)
-    resources_to_attributions: Dict[str, List[str]] = dict()
-    external_attributions: Dict[str, OpossumPackage] = dict()
+    resources_to_attributions: dict[str, list[str]] = dict()
+    external_attributions: dict[str, OpossumPackage] = dict()
     attribution_breakpoints = []
     external_attribution_sources = {
         SPDX_FILE_IDENTIFIER: ExternalAttributionSource(SPDX_FILE_IDENTIFIER, 500),
@@ -117,8 +112,8 @@ def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
                 "A tree should always have a node without incoming edge."
             )
         for node in connected_subgraph.nodes():
-            path: List[str] = shortest_path(connected_subgraph, source, node)
-            path_with_labels: List[Tuple[str, ResourceType]] = (
+            path: list[str] = shortest_path(connected_subgraph, source, node)
+            path_with_labels: list[tuple[str, ResourceType]] = (
                 _replace_node_ids_with_labels_and_add_resource_type(
                     path, connected_subgraph
                 )
@@ -149,8 +144,8 @@ def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
 
 
 def create_attribution_and_link_with_resource(
-    external_attributions: Dict[OpossumPackageIdentifier, OpossumPackage],
-    resources_to_attributions: Dict[OpossumPackageIdentifier, List[str]],
+    external_attributions: dict[OpossumPackageIdentifier, OpossumPackage],
+    resources_to_attributions: dict[OpossumPackageIdentifier, list[str]],
     file_path: str,
     node: str,
     tree: DiGraph,

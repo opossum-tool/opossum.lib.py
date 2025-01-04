@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from networkx import DiGraph, weakly_connected_components
 from spdx_tools.spdx.constants import DOCUMENT_SPDX_ID
@@ -10,7 +10,7 @@ from spdx_tools.spdx.model import File, Package, Snippet
 from opossum_lib.opossum_file import ResourceType
 
 
-def _get_source_for_graph_traversal(connected_subgraph: DiGraph) -> Optional[str]:
+def _get_source_for_graph_traversal(connected_subgraph: DiGraph) -> str | None:
     return (
         DOCUMENT_SPDX_ID
         if DOCUMENT_SPDX_ID in connected_subgraph.nodes
@@ -18,7 +18,7 @@ def _get_source_for_graph_traversal(connected_subgraph: DiGraph) -> Optional[str
     )
 
 
-def _get_node_without_incoming_edge(graph: DiGraph) -> Optional[str]:
+def _get_node_without_incoming_edge(graph: DiGraph) -> str | None:
     for node, degree in graph.in_degree():
         if degree == 0 and _node_represents_a_spdx_element(graph, node):
             return str(node)
@@ -31,7 +31,7 @@ def _node_represents_a_spdx_element(graph: DiGraph, node: str) -> bool:
     return "element" in graph.nodes[node]
 
 
-def _weakly_connected_component_sub_graphs(graph: DiGraph) -> List[DiGraph]:
+def _weakly_connected_component_sub_graphs(graph: DiGraph) -> list[DiGraph]:
     connected_sub_graphs = []
     for connected_set in weakly_connected_components(
         graph
@@ -41,7 +41,7 @@ def _weakly_connected_component_sub_graphs(graph: DiGraph) -> List[DiGraph]:
     return connected_sub_graphs
 
 
-def _create_file_path_from_graph_path(path: List[str], graph: DiGraph) -> str:
+def _create_file_path_from_graph_path(path: list[str], graph: DiGraph) -> str:
     base_path = "/" + "/".join(
         [_replace_prefix(graph.nodes[node]["label"]) for node in path]
     )
@@ -51,8 +51,8 @@ def _create_file_path_from_graph_path(path: List[str], graph: DiGraph) -> str:
 
 
 def _replace_node_ids_with_labels_and_add_resource_type(
-    path: List[str], graph: DiGraph
-) -> List[Tuple[str, ResourceType]]:
+    path: list[str], graph: DiGraph
+) -> list[tuple[str, ResourceType]]:
     resulting_path = []
     path_with_label_and_resource_type = [
         (
@@ -85,11 +85,11 @@ def _replace_prefix(label: str) -> str:
     return label
 
 
-def _get_resource_type(node_attributes: Dict[str, Any]) -> ResourceType:
-    element = node_attributes.get("element", None)
+def _get_resource_type(node_attributes: dict[str, Any]) -> ResourceType:
+    element = node_attributes.get("element")
     if isinstance(element, Package):
         return ResourceType.FOLDER
-    elif isinstance(element, (Snippet, File)):
+    elif isinstance(element, Snippet | File):
         return ResourceType.FILE
     else:
         return ResourceType.OTHER

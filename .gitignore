@@ -8,6 +8,7 @@ __pycache__/
 .vscode/*
 
 .mypy_cache/
+.ruff_cache
 
 .venv/
 dist/

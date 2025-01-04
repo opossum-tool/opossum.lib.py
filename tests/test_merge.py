@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from typing import Dict, List
 from unittest import mock
 
 import pytest
@@ -173,9 +172,9 @@ def test_merge_resources() -> None:
     ],
 )
 def test_merge_resources_to_attributions(
-    resources_to_attributions: List[Dict[ResourcePath, List[OpossumPackageIdentifier]]],
-    expected_resources_to_attributions: Dict[
-        ResourcePath, List[OpossumPackageIdentifier]
+    resources_to_attributions: list[dict[ResourcePath, list[OpossumPackageIdentifier]]],
+    expected_resources_to_attributions: dict[
+        ResourcePath, list[OpossumPackageIdentifier]
     ],
 ) -> None:
     merged_resources_to_attributions = _merge_resources_to_attributions(

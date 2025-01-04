@@ -53,14 +53,8 @@ Options:
 To test your changes, run
 
 ```bash
-uv run pytest
+uv run ruff check
+uv run ruff format --check
 uv run python -m mypy src/ tests/
-```
-
-The package uses pre-commit hooks to check the code style of your changes.
-It also provides a script `(./scripts/linter_and_formatting.sh)` to make your changes compliant with the expected
-code style. To use this script under linux run
-
-```bash
-./scripts/linter_and_formatting.sh  # in the root of the repo
+uv run pytest
 ```

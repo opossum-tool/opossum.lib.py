@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 import json
 from pathlib import Path
-from typing import Tuple
 from zipfile import ZipFile
 
 import pytest
@@ -16,7 +15,7 @@ from tests.helper_methods import _create_minimal_document
 
 
 @pytest.mark.parametrize("options", [("--infile", "--outfile"), ("-i", "-o")])
-def test_cli_with_system_exit_code_0(tmp_path: Path, options: Tuple[str, str]) -> None:
+def test_cli_with_system_exit_code_0(tmp_path: Path, options: tuple[str, str]) -> None:
     runner = CliRunner()
 
     result = runner.invoke(
@@ -35,9 +34,11 @@ def test_cli_with_system_exit_code_0(tmp_path: Path, options: Tuple[str, str]) -
 
     assert result.exit_code == 0
 
-    with ZipFile(str(tmp_path / "output.opossum"), "r") as z:
-        with z.open("input.json") as file:
-            opossum_dict = json.load(file)
+    with (
+        ZipFile(str(tmp_path / "output.opossum"), "r") as z,
+        z.open("input.json") as file,
+    ):
+        opossum_dict = json.load(file)
     assert "metadata" in opossum_dict
     # we are using randomly generated UUIDs for the project-id, therefore
     # we need to exclude the "metadata" section from the comparison
