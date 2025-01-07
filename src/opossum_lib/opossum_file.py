@@ -6,7 +6,7 @@ from __future__ import annotations
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Dict, List, Literal, Optional, Tuple, Union
+from typing import Literal
 
 OpossumPackageIdentifier = str
 ResourcePath = str
@@ -16,10 +16,10 @@ ResourcePath = str
 class OpossumInformation:
     metadata: Metadata
     resources: Resource
-    externalAttributions: Dict[OpossumPackageIdentifier, OpossumPackage]
-    resourcesToAttributions: Dict[ResourcePath, List[OpossumPackageIdentifier]]
-    attributionBreakpoints: List[str] = field(default_factory=list)
-    externalAttributionSources: Dict[str, ExternalAttributionSource] = field(
+    externalAttributions: dict[OpossumPackageIdentifier, OpossumPackage]
+    resourcesToAttributions: dict[ResourcePath, list[OpossumPackageIdentifier]]
+    attributionBreakpoints: list[str] = field(default_factory=list)
+    externalAttributionSources: dict[str, ExternalAttributionSource] = field(
         default_factory=dict
     )
 
@@ -27,29 +27,29 @@ class OpossumInformation:
 @dataclass(frozen=True)
 class SourceInfo:
     name: str
-    documentConfidence: Optional[int] = 0
+    documentConfidence: int | None = 0
 
 
 @dataclass(frozen=True)
 class OpossumPackage:
     source: SourceInfo
-    attributionConfidence: Optional[int] = None
-    comment: Optional[str] = None
-    packageName: Optional[str] = None
-    packageVersion: Optional[str] = None
-    packageNamespace: Optional[str] = None
-    packageType: Optional[str] = None
-    packagePURLAppendix: Optional[str] = None
-    copyright: Optional[str] = None
-    licenseName: Optional[str] = None
-    licenseText: Optional[str] = None
-    url: Optional[str] = None
-    firstParty: Optional[bool] = None
-    excludeFromNotice: Optional[bool] = None
-    preSelected: Optional[bool] = None
-    followUp: Optional[Literal["FOLLOW_UP"]] = None
-    originId: Optional[str] = None
-    criticality: Optional[Union[Literal["high"], Literal["medium"]]] = None
+    attributionConfidence: int | None = None
+    comment: str | None = None
+    packageName: str | None = None
+    packageVersion: str | None = None
+    packageNamespace: str | None = None
+    packageType: str | None = None
+    packagePURLAppendix: str | None = None
+    copyright: str | None = None
+    licenseName: str | None = None
+    licenseText: str | None = None
+    url: str | None = None
+    firstParty: bool | None = None
+    excludeFromNotice: bool | None = None
+    preSelected: bool | None = None
+    followUp: Literal["FOLLOW_UP"] | None = None
+    originId: str | None = None
+    criticality: Literal["high"] | Literal["medium"] | None = None
 
 
 @dataclass(frozen=True)
@@ -57,9 +57,9 @@ class Metadata:
     projectId: str
     fileCreationDate: str
     projectTitle: str
-    projectVersion: Optional[str] = None
-    expectedReleaseDate: Optional[str] = None
-    buildDate: Optional[str] = None
+    projectVersion: str | None = None
+    expectedReleaseDate: str | None = None
+    buildDate: str | None = None
 
 
 class ResourceType(Enum):
@@ -72,10 +72,10 @@ class ResourceType(Enum):
 @dataclass(frozen=True)
 class Resource:
     type: ResourceType
-    children: Dict[str, Resource] = field(default_factory=dict)
+    children: dict[str, Resource] = field(default_factory=dict)
 
     def add_path(
-        self, path_with_resource_types: List[Tuple[str, ResourceType]]
+        self, path_with_resource_types: list[tuple[str, ResourceType]]
     ) -> Resource:
         resource = deepcopy(self)
         if len(path_with_resource_types) == 0:
@@ -103,7 +103,7 @@ class Resource:
         return False
 
     def drop_element(
-        self, path_to_element_to_drop: List[Tuple[str, ResourceType]]
+        self, path_to_element_to_drop: list[tuple[str, ResourceType]]
     ) -> Resource:
         paths_in_resource = self.get_paths_of_all_leaf_nodes_with_types()
         if path_to_element_to_drop not in paths_in_resource:
@@ -121,7 +121,7 @@ class Resource:
 
             return resource
 
-    def to_dict(self) -> Union[int, Dict]:
+    def to_dict(self) -> int | dict:
         if not self.has_children():
             if self.type == ResourceType.FOLDER:
                 return {}
@@ -134,7 +134,7 @@ class Resource:
 
     def get_paths_of_all_leaf_nodes_with_types(
         self,
-    ) -> List[List[Tuple[str, ResourceType]]]:
+    ) -> list[list[tuple[str, ResourceType]]]:
         paths = []
         for name, resource in self.children.items():
             path = [(name, resource.type)]

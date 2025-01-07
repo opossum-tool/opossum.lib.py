@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 from pathlib import Path
-from typing import List
 
 import pytest
 from networkx import get_node_attributes
@@ -30,7 +29,7 @@ def test_generate_graph_from_spdx(
     file_name: str,
     nodes_count: int,
     edges_count: int,
-    relationship_node_keys: List[str],
+    relationship_node_keys: list[str],
 ) -> None:
     document = parse_file(str(Path(__file__).resolve().parent / "data" / file_name))
     validation_messages = validate_full_spdx_document(document)

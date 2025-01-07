@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 from io import StringIO
-from typing import Optional
 
 from spdx_tools.spdx.model.document import CreationInfo
 from spdx_tools.spdx.model.file import File
@@ -22,7 +21,7 @@ from opossum_lib.constants import (
 from opossum_lib.opossum_file import OpossumPackage, SourceInfo
 
 
-def _get_purl(package: Package) -> Optional[str]:
+def _get_purl(package: Package) -> str | None:
     for external_reference in package.external_references:
         if external_reference.reference_type == PURL:
             return external_reference.locator

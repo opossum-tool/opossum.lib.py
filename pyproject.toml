@@ -23,11 +23,9 @@ spdx2opossum = "opossum_lib.cli:spdx2opossum"
 [dependency-groups]
 test = ["pytest>=8.3.4,<9"]
 dev = [
-    "black>=24.8.0,<25",
-    "isort>=5.13.2,<6",
-    "flake8>=7.1.1,<8",
     "mypy>=1.14.1,<2",
     "pre-commit>=4.0.1,<5",
+    "ruff>=0.8.6",
 ]
 
 [tool.uv]
@@ -36,9 +34,6 @@ default-groups = [
     "dev",
 ]
 package = true
-
-[tool.isort]
-profile = "black"
 
 [tool.mypy]
 warn_return_any = true
@@ -54,3 +49,27 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
+extend-select = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+docstring-code-format = true

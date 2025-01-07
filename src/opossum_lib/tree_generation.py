@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from typing import Dict, Optional, Tuple, Union
 
 from networkx import DiGraph, edge_bfs, is_weakly_connected
 from spdx_tools.spdx.constants import DOCUMENT_SPDX_ID
@@ -21,17 +20,14 @@ def generate_tree_from_graph(graph: DiGraph) -> DiGraph:
 
 def _generate_tree_from_graph_recursively(
     graph: DiGraph,
-    source: Optional[str] = DOCUMENT_SPDX_ID,
-    created_tree: Optional[DiGraph] = None,
+    source: str | None = DOCUMENT_SPDX_ID,
+    created_tree: DiGraph | None = None,
 ) -> DiGraph:
     if not graph.edges():
         return graph.copy()
 
     if is_weakly_connected(graph):
-        if created_tree:
-            created_tree = created_tree.copy()
-        else:
-            created_tree = DiGraph()
+        created_tree = created_tree.copy() if created_tree else DiGraph()
         edges_bfs = edge_bfs(graph, source)
 
         visited_edges = []
@@ -53,10 +49,7 @@ def _generate_tree_from_graph_recursively(
             created_tree.add_edges_from(tree_component.edges(data=True))
 
     else:  # get connected components
-        if created_tree:
-            created_tree = created_tree.copy()
-        else:
-            created_tree = DiGraph()
+        created_tree = created_tree.copy() if created_tree else DiGraph()
         for connected_subgraph in _weakly_connected_component_sub_graphs(graph):
             # if the documents node is not in the subgraph we choose
             # any elements node without incoming edge
@@ -71,14 +64,14 @@ def _generate_tree_from_graph_recursively(
 
 
 def _add_edge_and_associated_nodes_to_tree(
-    edge: Tuple[str, str], created_tree: DiGraph, graph: DiGraph
+    edge: tuple[str, str], created_tree: DiGraph, graph: DiGraph
 ) -> None:
     _add_source_node(edge, graph, created_tree)
     _add_target_node_and_edge(edge, graph, created_tree)
 
 
 def _add_target_node_and_edge(
-    edge: Tuple[str, str], graph: DiGraph, tree: DiGraph
+    edge: tuple[str, str], graph: DiGraph, tree: DiGraph
 ) -> None:
     if edge[1] not in tree:
         target_node_data = graph.nodes[edge[1]]
@@ -93,9 +86,9 @@ def _add_target_node_and_edge(
         tree.add_edge(edge[0], duplicated_node)
 
 
-def _add_source_node(edge: Tuple[str, str], graph: DiGraph, tree: DiGraph) -> None:
+def _add_source_node(edge: tuple[str, str], graph: DiGraph, tree: DiGraph) -> None:
     if edge[0] not in tree:
-        source_node_data: Dict[str, Union[CreationInfo, Package, File]] = graph.nodes[
+        source_node_data: dict[str, CreationInfo | Package | File] = graph.nodes[
             edge[0]
         ]
         tree.add_node(edge[0], **source_node_data)
