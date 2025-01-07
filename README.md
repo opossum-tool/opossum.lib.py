@@ -3,6 +3,7 @@ SPDX-FileCopyrightText: 2023 TNG Technology Consulting GmbH <https://www.tngtech
 
 SPDX-License-Identifier: Apache-2.0
 -->
+
 # opossum.lib.py
 
 [![REUSE status](https://api.reuse.software/badge/git.fsfe.org/reuse/api)](https://api.reuse.software/info/git.fsfe.org/reuse/api)
@@ -20,17 +21,19 @@ This is a work in progress and not yet stable.
 
 # Installation
 
-This package uses [poetry](https://python-poetry.org/) for installation and dependency management. 
-To install the local clone of this repo run
-```
-poetry install  # in the root of the repo
+This package uses [uv](https://docs.astral.sh/uv/) for installation and dependency management.
+After installing uv, you can set up the project with
+
+```bash
+uv sync
 ```
 
 # How to use
 
 ## Command-line usage
-```
-Usage: spdx2opossum [OPTIONS]
+
+```bash
+Usage: uv run spdx2opossum [OPTIONS]
 
   CLI-tool for converting SPDX documents to Opossum documents.
 
@@ -44,17 +47,20 @@ Options:
   --help              Show this message and exit.
 
 ```
+
 # Development
 
-To test your changes run 
+To test your changes, run
 
-```
-poetry run pytest  # in the root of the repo
+```bash
+uv run pytest
+uv run python -m mypy src/ tests/
 ```
 
-The package uses pre-commit hooks to check the code style of your changes. 
-It also provides a script `(./scripts/linter_and_formatting.sh)` to make your changes compliant with the expected 
+The package uses pre-commit hooks to check the code style of your changes.
+It also provides a script `(./scripts/linter_and_formatting.sh)` to make your changes compliant with the expected
 code style. To use this script under linux run
-```
+
+```bash
 ./scripts/linter_and_formatting.sh  # in the root of the repo
 ```

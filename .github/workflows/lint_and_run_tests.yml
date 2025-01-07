@@ -10,7 +10,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-
 jobs:
   linter:
     runs-on: ${{ matrix.os }}
@@ -20,54 +19,33 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
-        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.12']
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
-      - name: cache poetry install
-        uses: actions/cache@v3
-        with:
-          path: ~/.local
-          key: poetry-${{ matrix.os }}-${{ matrix.python-version }}-1.4.0-0
-
-      - name: Install poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 1.4.0
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-      - name: cache deps
-        id: cache-deps
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: pydeps-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-
-      # We use a cache for the projects dependencies but want to avoid caching the projects code.
-      # --no-root installs all dependencies but not the project itself which we do in the next step.
-      - name: Install package dependencies
-        run: poetry install --no-interaction --no-root
-        if: steps.cache--deps.outputs.cache-hit != 'true'
-
-      - run: poetry install --no-interaction
+      - name: Install the project
+        run: uv sync --locked
 
       - name: Run isort
-        run: poetry run isort src/ tests/ --check
+        run: uv run isort src/ tests/ --check
 
       - name: Run black
-        run: poetry run black src/ tests/ --check
+        run: uv run black src/ tests/ --check
 
       - name: Run flake8
-        run: poetry run flake8 src/ tests/
+        run: uv run flake8 src/ tests/
 
       - name: Run mypy
-        run: poetry run python -m mypy src/ tests/
+        run: uv run python -m mypy src/ tests/
 
   test:
     runs-on: ${{ matrix.os }}
@@ -77,42 +55,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
-        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.12']
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
-      - name: cache poetry install
-        uses: actions/cache@v3
-        with:
-          path: ~/.local
-          key: poetry-${{ matrix.os }}-${{ matrix.python-version }}-1.4.0-0
-
-      - name: Install poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 1.4.0
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-      - name: cache deps
-        id: cache-deps
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: pydeps-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-
-      # We use a cache for the projects dependencies but want to avoid caching the projects code.
-      # --no-root installs all dependencies but not the project itself which we do in the next step.
-      - name: Install package dependencies
-        run: poetry install --no-interaction --no-root
-        if: steps.cache--deps.outputs.cache-hit != 'true'
-
-      - run: poetry install --no-interaction
+      - name: Install the project
+        run: uv sync --locked
 
       - name: Run tests
-        run: poetry run pytest
+        run: uv run pytest
