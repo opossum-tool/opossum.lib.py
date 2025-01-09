@@ -13,8 +13,8 @@ from spdx_tools.spdx.model.file import File
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.model.snippet import Snippet
 
-from opossum_lib.constants import COMPRESSION_LEVEL
-from opossum_lib.opossum_file import (
+from .constants import COMPRESSION_LEVEL
+from .opossum.opossum_file import (
     ExternalAttributionSource,
     Metadata,
     OpossumInformation,
@@ -24,18 +24,18 @@ from opossum_lib.opossum_file import (
     ResourceType,
     SourceInfo,
 )
-from opossum_lib.spdx.attribution_generation import (
+from .spdx.attribution_generation import (
     create_document_attribution,
     create_file_attribution,
     create_package_attribution,
     create_snippet_attribution,
 )
-from opossum_lib.spdx.constants import (
+from .spdx.constants import (
     SPDX_FILE_IDENTIFIER,
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,
 )
-from opossum_lib.spdx.helper_methods import (
+from .spdx.helper_methods import (
     _create_file_path_from_graph_path,
     _get_source_for_graph_traversal,
     _node_represents_a_spdx_element,

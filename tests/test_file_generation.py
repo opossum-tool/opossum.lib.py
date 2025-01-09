@@ -9,7 +9,10 @@ from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.parser.parse_anything import parse_file
 
 from opossum_lib.file_generation import generate_json_file_from_tree
-from opossum_lib.opossum_file import ExternalAttributionSource, OpossumInformation
+from opossum_lib.opossum.opossum_file import (
+    ExternalAttributionSource,
+    OpossumInformation,
+)
 from opossum_lib.spdx.constants import (
     SPDX_FILE_IDENTIFIER,
     SPDX_PACKAGE_IDENTIFIER,

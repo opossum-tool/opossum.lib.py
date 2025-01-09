@@ -15,9 +15,9 @@ from spdx_tools.spdx.parser.error import SPDXParsingError
 from spdx_tools.spdx.parser.parse_anything import parse_file
 from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
 
-from opossum_lib.file_generation import generate_json_file_from_tree, write_dict_to_file
-from opossum_lib.spdx.graph_generation import generate_graph_from_spdx
-from opossum_lib.spdx.tree_generation import generate_tree_from_graph
+from .file_generation import generate_json_file_from_tree, write_dict_to_file
+from .spdx.graph_generation import generate_graph_from_spdx
+from .spdx.tree_generation import generate_tree_from_graph
 
 
 @click.command()

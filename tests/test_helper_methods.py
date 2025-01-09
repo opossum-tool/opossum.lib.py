@@ -6,7 +6,7 @@ from unittest import TestCase
 import pytest
 from networkx import DiGraph
 
-from opossum_lib.opossum_file import ResourceType
+from opossum_lib.opossum.opossum_file import ResourceType
 from opossum_lib.spdx.helper_methods import (
     _create_file_path_from_graph_path,
     _replace_node_ids_with_labels_and_add_resource_type,

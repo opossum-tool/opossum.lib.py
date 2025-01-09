@@ -5,14 +5,14 @@ from unittest import mock
 
 import pytest
 
-from opossum_lib.merger import (
+from opossum_lib.opossum.merger import (
     _merge_dicts_without_duplicates,
     _merge_resources,
     _merge_resources_to_attributions,
     expand_opossum_package_identifier,
     merge_opossum_information,
 )
-from opossum_lib.opossum_file import (
+from opossum_lib.opossum.opossum_file import (
     Metadata,
     OpossumInformation,
     OpossumPackage,
@@ -24,7 +24,7 @@ from opossum_lib.opossum_file import (
 )
 
 
-@mock.patch("opossum_lib.opossum_file.OpossumPackage", autospec=True)
+@mock.patch("opossum_lib.opossum.opossum_file.OpossumPackage", autospec=True)
 def test_merge_opossum_information(opossum_package: OpossumPackage) -> None:
     opossum_information = OpossumInformation(
         Metadata("project-id", "30-05-2023", "test data"),
@@ -183,7 +183,7 @@ def test_merge_resources_to_attributions(
     assert merged_resources_to_attributions == expected_resources_to_attributions
 
 
-@mock.patch("opossum_lib.opossum_file.OpossumPackage", autospec=True)
+@mock.patch("opossum_lib.opossum.opossum_file.OpossumPackage", autospec=True)
 def test_merge_dicts_without_duplicates(opossum_package: OpossumPackage) -> None:
     dicts = [{"A": opossum_package}, {"B": opossum_package}]
     merged_dict = _merge_dicts_without_duplicates(dicts)
@@ -191,7 +191,7 @@ def test_merge_dicts_without_duplicates(opossum_package: OpossumPackage) -> None
     assert merged_dict == {"A": opossum_package, "B": opossum_package}
 
 
-@mock.patch("opossum_lib.opossum_file.SourceInfo", autospec=True)
+@mock.patch("opossum_lib.opossum.opossum_file.SourceInfo", autospec=True)
 def test_merge_dicts_without_duplicates_type_error(
     source_info: SourceInfo,
 ) -> None:
@@ -203,8 +203,8 @@ def test_merge_dicts_without_duplicates_type_error(
         _merge_dicts_without_duplicates(dicts)
 
 
-@mock.patch("opossum_lib.opossum_file.Resource")
-@mock.patch("opossum_lib.opossum_file.OpossumPackage")
+@mock.patch("opossum_lib.opossum.opossum_file.Resource")
+@mock.patch("opossum_lib.opossum.opossum_file.OpossumPackage")
 def test_expand_opossum_package_identifier(
     opossum_package: OpossumPackage, resource: Resource
 ) -> None:

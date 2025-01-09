@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 import pytest
 
-from opossum_lib.opossum_file import Resource, ResourceType
+from opossum_lib.opossum.opossum_file import Resource, ResourceType
 
 
 def test_resource_to_dict_with_file_as_leaf() -> None:

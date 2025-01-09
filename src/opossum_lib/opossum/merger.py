@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 from typing import Any
 
-from opossum_lib.opossum_file import (
+from opossum_lib.opossum.opossum_file import (
     OpossumInformation,
     OpossumPackageIdentifier,
     Resource,
