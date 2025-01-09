@@ -13,29 +13,7 @@ from spdx_tools.spdx.model.file import File
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.model.snippet import Snippet
 
-from opossum_lib.attribution_generation import (
-    create_document_attribution,
-    create_file_attribution,
-    create_package_attribution,
-    create_snippet_attribution,
-)
-from opossum_lib.constants import (
-    COMPRESSION_LEVEL
-)
-
-from opossum_lib.spdx.constants import (
-    SPDX_FILE_IDENTIFIER,
-    SPDX_PACKAGE_IDENTIFIER,
-    SPDX_SNIPPET_IDENTIFIER,
-)
-
-from opossum_lib.helper_methods import (
-    _create_file_path_from_graph_path,
-    _get_source_for_graph_traversal,
-    _node_represents_a_spdx_element,
-    _replace_node_ids_with_labels_and_add_resource_type,
-    _weakly_connected_component_sub_graphs,
-)
+from opossum_lib.constants import COMPRESSION_LEVEL
 from opossum_lib.opossum_file import (
     ExternalAttributionSource,
     Metadata,
@@ -45,6 +23,24 @@ from opossum_lib.opossum_file import (
     Resource,
     ResourceType,
     SourceInfo,
+)
+from opossum_lib.spdx.attribution_generation import (
+    create_document_attribution,
+    create_file_attribution,
+    create_package_attribution,
+    create_snippet_attribution,
+)
+from opossum_lib.spdx.constants import (
+    SPDX_FILE_IDENTIFIER,
+    SPDX_PACKAGE_IDENTIFIER,
+    SPDX_SNIPPET_IDENTIFIER,
+)
+from opossum_lib.spdx.helper_methods import (
+    _create_file_path_from_graph_path,
+    _get_source_for_graph_traversal,
+    _node_represents_a_spdx_element,
+    _replace_node_ids_with_labels_and_add_resource_type,
+    _weakly_connected_component_sub_graphs,
 )
 
 

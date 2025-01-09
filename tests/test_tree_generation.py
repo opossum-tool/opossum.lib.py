@@ -15,8 +15,8 @@ from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.model.relationship import Relationship, RelationshipType
 from spdx_tools.spdx.parser.parse_anything import parse_file
 
-from opossum_lib.graph_generation import generate_graph_from_spdx
-from opossum_lib.tree_generation import generate_tree_from_graph
+from opossum_lib.spdx.graph_generation import generate_graph_from_spdx
+from opossum_lib.spdx.tree_generation import generate_tree_from_graph
 from tests.helper_methods import (
     _create_minimal_document,
     _generate_document_with_from_root_node_unreachable_file,

@@ -8,15 +8,15 @@ from spdx_tools.spdx.model import Document
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.parser.parse_anything import parse_file
 
+from opossum_lib.file_generation import generate_json_file_from_tree
+from opossum_lib.opossum_file import ExternalAttributionSource, OpossumInformation
 from opossum_lib.spdx.constants import (
     SPDX_FILE_IDENTIFIER,
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,
 )
-from opossum_lib.file_generation import generate_json_file_from_tree
-from opossum_lib.graph_generation import generate_graph_from_spdx
-from opossum_lib.opossum_file import ExternalAttributionSource, OpossumInformation
-from opossum_lib.tree_generation import generate_tree_from_graph
+from opossum_lib.spdx.graph_generation import generate_graph_from_spdx
+from opossum_lib.spdx.tree_generation import generate_tree_from_graph
 from tests.helper_methods import (
     _create_minimal_document,
     _generate_document_with_from_root_node_unreachable_file,
