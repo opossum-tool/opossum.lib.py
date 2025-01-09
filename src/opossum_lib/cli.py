@@ -20,12 +20,16 @@ from opossum_lib.graph_generation import generate_graph_from_spdx
 from opossum_lib.tree_generation import generate_tree_from_graph
 
 
-@click.command()
+@click.group()
+def opossum_file() -> None:
+    pass
+
+
+@opossum_file.command()
 @click.option(
-    "--infile",
-    "-i",
-    help="The file containing the document to be converted.",
-    required=True,
+    "-spdx",
+    help="SPDX files used as input.",
+    multiple=True,
     type=click.Path(exists=True),
 )
 @click.option(
@@ -34,15 +38,26 @@ from opossum_lib.tree_generation import generate_tree_from_graph
     default="output.opossum",
     show_default=True,
     help="The file path to write the generated opossum document to. The generated file "
-    "will be an opossum file, if the specified file path doesn't match this file "
+    "will be an opossum file. If the specified file path doesn't match this file, "
     'extension ".opossum" will be appended.',
 )
-def spdx2opossum(infile: str, outfile: str) -> None:
+def generate(spdx: list[str], outfile: str) -> None:
     """
-    CLI-tool for converting SPDX documents to Opossum documents.
+    CLI-tool for converting and merging various documents to Opossum documents.
+    Currently supported input formats:
+
+      - SPDX
     """
+    if len(spdx) == 0:
+        logging.warning("No input provided. Exiting.")
+        sys.exit(1)
+    if len(spdx) > 1:
+        logging.error("Merging of multiple SPDX files not yet supported!")
+        sys.exit(1)
+
+    the_spdx_file = spdx[0]
     try:
-        document: SpdxDocument = parse_file(infile)
+        document: SpdxDocument = parse_file(the_spdx_file)
 
     except SPDXParsingError as err:
         log_string = "\n".join(
@@ -73,4 +88,4 @@ def spdx2opossum(infile: str, outfile: str) -> None:
 
 
 if __name__ == "__main__":
-    spdx2opossum()
+    opossum_file()
