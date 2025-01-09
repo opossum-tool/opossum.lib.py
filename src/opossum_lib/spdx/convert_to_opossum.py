@@ -12,7 +12,7 @@ from spdx_tools.spdx.parser.error import SPDXParsingError
 from spdx_tools.spdx.parser.parse_anything import parse_file
 from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
 
-from ..opossum.opossum_file import (
+from opossum_lib.opossum.opossum_file import (
     ExternalAttributionSource,
     Metadata,
     OpossumInformation,
@@ -22,26 +22,26 @@ from ..opossum.opossum_file import (
     ResourceType,
     SourceInfo,
 )
-from .attribution_generation import (
+from opossum_lib.spdx.attribution_generation import (
     create_document_attribution,
     create_file_attribution,
     create_package_attribution,
     create_snippet_attribution,
 )
-from .constants import (
+from opossum_lib.spdx.constants import (
     SPDX_FILE_IDENTIFIER,
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,
 )
-from .graph_generation import generate_graph_from_spdx
-from .helper_methods import (
+from opossum_lib.spdx.graph_generation import generate_graph_from_spdx
+from opossum_lib.spdx.helper_methods import (
     _create_file_path_from_graph_path,
     _get_source_for_graph_traversal,
     _node_represents_a_spdx_element,
     _replace_node_ids_with_labels_and_add_resource_type,
     _weakly_connected_component_sub_graphs,
 )
-from .tree_generation import generate_tree_from_graph
+from opossum_lib.spdx.tree_generation import generate_tree_from_graph
 
 
 def convert_spdx_to_opossum_information(filename: str) -> OpossumInformation:

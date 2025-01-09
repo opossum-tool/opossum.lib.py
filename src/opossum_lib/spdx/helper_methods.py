@@ -7,7 +7,7 @@ from networkx import DiGraph, weakly_connected_components
 from spdx_tools.spdx.constants import DOCUMENT_SPDX_ID
 from spdx_tools.spdx.model import File, Package, Snippet
 
-from ..opossum.opossum_file import ResourceType
+from opossum_lib.opossum.opossum_file import ResourceType
 
 
 def _get_source_for_graph_traversal(connected_subgraph: DiGraph) -> str | None:
