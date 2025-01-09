@@ -15,7 +15,9 @@ from spdx_tools.spdx.parser.error import SPDXParsingError
 from spdx_tools.spdx.parser.parse_anything import parse_file
 from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
 
-from .file_generation import generate_json_file_from_tree, write_dict_to_file
+from opossum_lib.opossum.file_generation import write_opossum_information_to_file
+from opossum_lib.spdx.convert_to_opossum import convert_tree_to_opossum_information
+
 from .spdx.graph_generation import generate_graph_from_spdx
 from .spdx.tree_generation import generate_tree_from_graph
 
@@ -61,7 +63,7 @@ def spdx2opossum(infile: str, outfile: str) -> None:
     graph = generate_graph_from_spdx(document)
     tree = generate_tree_from_graph(graph)
 
-    opossum_information = generate_json_file_from_tree(tree)
+    opossum_information = convert_tree_to_opossum_information(tree)
 
     if not outfile.endswith(".opossum"):
         outfile += ".opossum"
@@ -69,7 +71,7 @@ def spdx2opossum(infile: str, outfile: str) -> None:
     if Path.is_file(Path(outfile)):
         logging.warning(f"{outfile} already exists and will be overwritten.")
 
-    write_dict_to_file(opossum_information, Path(outfile))
+    write_opossum_information_to_file(opossum_information, Path(outfile))
 
 
 if __name__ == "__main__":

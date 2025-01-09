@@ -8,7 +8,6 @@ from spdx_tools.spdx.model import Document
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.parser.parse_anything import parse_file
 
-from opossum_lib.file_generation import generate_json_file_from_tree
 from opossum_lib.opossum.opossum_file import (
     ExternalAttributionSource,
     OpossumInformation,
@@ -18,6 +17,7 @@ from opossum_lib.spdx.constants import (
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,
 )
+from opossum_lib.spdx.convert_to_opossum import convert_tree_to_opossum_information
 from opossum_lib.spdx.graph_generation import generate_graph_from_spdx
 from opossum_lib.spdx.tree_generation import generate_tree_from_graph
 from tests.helper_methods import (
@@ -243,5 +243,5 @@ def _get_opossum_information_from_file(file_name: str) -> OpossumInformation:
 def _get_opossum_information_from_document(document: Document) -> OpossumInformation:
     graph = generate_graph_from_spdx(document)
     tree = generate_tree_from_graph(graph)
-    opossum_information = generate_json_file_from_tree(tree)
+    opossum_information = convert_tree_to_opossum_information(tree)
     return opossum_information

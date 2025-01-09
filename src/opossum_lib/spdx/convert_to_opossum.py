@@ -1,11 +1,4 @@
-# SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
-#
-# SPDX-License-Identifier: Apache-2.0
-import json
 import uuid
-from dataclasses import fields
-from pathlib import Path
-from zipfile import ZIP_DEFLATED, ZipFile
 
 from networkx import DiGraph, shortest_path
 from spdx_tools.spdx.model.document import CreationInfo
@@ -13,8 +6,7 @@ from spdx_tools.spdx.model.file import File
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.model.snippet import Snippet
 
-from .constants import COMPRESSION_LEVEL
-from .opossum.opossum_file import (
+from ..opossum.opossum_file import (
     ExternalAttributionSource,
     Metadata,
     OpossumInformation,
@@ -24,18 +16,18 @@ from .opossum.opossum_file import (
     ResourceType,
     SourceInfo,
 )
-from .spdx.attribution_generation import (
+from .attribution_generation import (
     create_document_attribution,
     create_file_attribution,
     create_package_attribution,
     create_snippet_attribution,
 )
-from .spdx.constants import (
+from .constants import (
     SPDX_FILE_IDENTIFIER,
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,
 )
-from .spdx.helper_methods import (
+from .helper_methods import (
     _create_file_path_from_graph_path,
     _get_source_for_graph_traversal,
     _node_represents_a_spdx_element,
@@ -44,52 +36,7 @@ from .spdx.helper_methods import (
 )
 
 
-def write_dict_to_file(
-    opossum_information: OpossumInformation, file_path: Path
-) -> None:
-    with ZipFile(
-        file_path, "w", compression=ZIP_DEFLATED, compresslevel=COMPRESSION_LEVEL
-    ) as z:
-        z.writestr("input.json", json.dumps(to_dict(opossum_information), indent=4))
-
-
-def to_dict(
-    element: Resource
-    | Metadata
-    | OpossumPackage
-    | OpossumInformation
-    | SourceInfo
-    | ExternalAttributionSource
-    | str
-    | int
-    | bool
-    | dict[str, OpossumPackage]
-    | dict[str, list[str]]
-    | list[str]
-    | None,
-) -> dict | str | list[str] | bool | int | None:
-    if isinstance(element, Resource):
-        return element.to_dict()
-    if isinstance(
-        element,
-        Metadata
-        | OpossumPackage
-        | OpossumInformation
-        | SourceInfo
-        | ExternalAttributionSource,
-    ):
-        result = []
-        for f in fields(element):
-            value = to_dict(getattr(element, f.name))
-            result.append((f.name, value))
-        return {k: v for (k, v) in result if v is not None}
-    elif isinstance(element, dict):
-        return {k: to_dict(v) for k, v in element.items()}
-    else:
-        return element
-
-
-def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
+def convert_tree_to_opossum_information(tree: DiGraph) -> OpossumInformation:
     metadata = create_metadata(tree)
     resources = Resource(type=ResourceType.TOP_LEVEL)
     resources_to_attributions: dict[str, list[str]] = dict()
