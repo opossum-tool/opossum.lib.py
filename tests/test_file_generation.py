@@ -8,7 +8,7 @@ from spdx_tools.spdx.model import Document
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.parser.parse_anything import parse_file
 
-from opossum_lib.constants import (
+from opossum_lib.spdx.constants import (
     SPDX_FILE_IDENTIFIER,
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,

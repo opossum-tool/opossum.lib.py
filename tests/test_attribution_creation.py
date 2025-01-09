@@ -25,7 +25,7 @@ from opossum_lib.attribution_generation import (
     create_package_attribution,
     create_snippet_attribution,
 )
-from opossum_lib.constants import (
+from opossum_lib.spdx.constants import (
     SPDX_FILE_IDENTIFIER,
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,

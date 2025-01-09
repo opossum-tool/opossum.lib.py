@@ -20,11 +20,15 @@ from opossum_lib.attribution_generation import (
     create_snippet_attribution,
 )
 from opossum_lib.constants import (
-    COMPRESSION_LEVEL,
+    COMPRESSION_LEVEL
+)
+
+from opossum_lib.spdx.constants import (
     SPDX_FILE_IDENTIFIER,
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,
 )
+
 from opossum_lib.helper_methods import (
     _create_file_path_from_graph_path,
     _get_source_for_graph_traversal,
