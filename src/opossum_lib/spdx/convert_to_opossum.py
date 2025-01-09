@@ -1,10 +1,16 @@
+import logging
+import sys
 import uuid
 
 from networkx import DiGraph, shortest_path
 from spdx_tools.spdx.model.document import CreationInfo
+from spdx_tools.spdx.model.document import Document as SpdxDocument
 from spdx_tools.spdx.model.file import File
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.model.snippet import Snippet
+from spdx_tools.spdx.parser.error import SPDXParsingError
+from spdx_tools.spdx.parser.parse_anything import parse_file
+from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
 
 from ..opossum.opossum_file import (
     ExternalAttributionSource,
@@ -27,6 +33,7 @@ from .constants import (
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,
 )
+from .graph_generation import generate_graph_from_spdx
 from .helper_methods import (
     _create_file_path_from_graph_path,
     _get_source_for_graph_traversal,
@@ -34,6 +41,30 @@ from .helper_methods import (
     _replace_node_ids_with_labels_and_add_resource_type,
     _weakly_connected_component_sub_graphs,
 )
+from .tree_generation import generate_tree_from_graph
+
+
+def convert_spdx_to_opossum_information(filename: str) -> OpossumInformation:
+    try:
+        document: SpdxDocument = parse_file(filename)
+
+    except SPDXParsingError as err:
+        log_string = "\n".join(
+            ["There have been issues while parsing the provided document:"]
+            + [message for message in err.get_messages()]
+        )
+        logging.error(log_string)
+        sys.exit(1)
+    validation_messages = validate_full_spdx_document(document)
+    if validation_messages:
+        logging.warning(
+            "The given SPDX document is not valid, this might cause "
+            "issues with the conversion."
+        )
+    graph = generate_graph_from_spdx(document)
+    tree = generate_tree_from_graph(graph)
+    opossum_information = convert_tree_to_opossum_information(tree)
+    return opossum_information
 
 
 def convert_tree_to_opossum_information(tree: DiGraph) -> OpossumInformation:
