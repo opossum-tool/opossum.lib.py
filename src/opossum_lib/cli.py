@@ -27,7 +27,7 @@ def opossum_file() -> None:
 
 @opossum_file.command()
 @click.option(
-    "-spdx",
+    "--spdx",
     help="SPDX files used as input.",
     multiple=True,
     type=click.Path(exists=True),
@@ -37,15 +37,15 @@ def opossum_file() -> None:
     "-o",
     default="output.opossum",
     show_default=True,
-    help="The file path to write the generated opossum document to. The generated file "
-    "will be an opossum file. If the specified file path doesn't match this file, "
-    'extension ".opossum" will be appended.',
+    help="The file path to write the generated opossum document to. "
+    'If appropriate, the extension ".opossum" will be appended.',
 )
 def generate(spdx: list[str], outfile: str) -> None:
     """
-    CLI-tool for converting and merging various documents to Opossum documents.
-    Currently supported input formats:
+    Generate an Opossum file from various other file formats.
 
+    \b
+    Currently supported input formats:
       - SPDX
     """
     if len(spdx) == 0:

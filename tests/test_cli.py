@@ -21,7 +21,7 @@ def test_cli_with_system_exit_code_0(tmp_path: Path, options: str) -> None:
     result = runner.invoke(
         generate,
         [
-            "-spdx",
+            "--spdx",
             str(Path(__file__).resolve().parent / "data" / "SPDX.spdx"),
             options,
             str(tmp_path / "output"),
@@ -55,7 +55,7 @@ def test_cli_no_output_file_provided() -> None:
         create_valid_spdx_document(file_path)
         result = runner.invoke(
             generate,
-            "-spdx " + file_path,
+            "--spdx " + file_path,
         )
 
         assert result.exit_code == 0
@@ -73,7 +73,7 @@ def test_cli_warning_if_outfile_already_exists(caplog: LogCaptureFixture) -> Non
             f.write("")
         result = runner.invoke(
             generate,
-            "-spdx " + file_path + " -o output.opossum",
+            "--spdx " + file_path + " -o output.opossum",
         )
 
     assert result.exit_code == 0
@@ -86,7 +86,7 @@ def test_cli_with_system_exit_code_1() -> None:
     with runner.isolated_filesystem():
         with open("invalid_spdx.spdx", "w") as f:
             f.write("SPDXID: SPDXRef-DOCUMENT")
-        result = runner.invoke(generate, "-spdx invalid_spdx.spdx -o invalid")
+        result = runner.invoke(generate, "--spdx invalid_spdx.spdx -o invalid")
 
     assert result.exit_code == 1
 
@@ -95,7 +95,7 @@ def test_cli_with_invalid_document(caplog: LogCaptureFixture) -> None:
     runner = CliRunner()
     with runner.isolated_filesystem():
         create_invalid_spdx_document("invalid_spdx.spdx")
-        result = runner.invoke(generate, "-spdx invalid_spdx.spdx -o invalid")
+        result = runner.invoke(generate, "--spdx invalid_spdx.spdx -o invalid")
 
     assert result.output == ""
     assert caplog.messages == [
@@ -110,7 +110,7 @@ def test_cli_with_multiple_documents(caplog: LogCaptureFixture) -> None:
 
     result = runner.invoke(
         generate,
-        ["-spdx", path_to_spdx, "-spdx", path_to_spdx],
+        ["--spdx", path_to_spdx, "--spdx", path_to_spdx],
     )
     assert result.exit_code == 1
 

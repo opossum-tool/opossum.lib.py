@@ -39,7 +39,7 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  generate  CLI-tool for converting and merging various documents to...
+  generate  Generate an Opossum file from various other file formats.
 ```
 
 ### `generate`
@@ -47,17 +47,16 @@ Commands:
 ```bash
 Usage: uv run opossum-file generate [OPTIONS]
 
-  CLI-tool for converting and merging various documents to Opossum documents.
-  Currently supported input formats:
+  Generate an Opossum file from various other file formats.
 
+  Currently supported input formats:
     - SPDX
 
 Options:
-  -spdx PATH          SPDX files used as input.
+  --spdx PATH         SPDX files used as input.
   -o, --outfile TEXT  The file path to write the generated opossum document
-                      to. The generated file will be an opossum file. If the
-                      specified file path doesn't match this file, extension
-                      ".opossum" will be appended.  [default: output.opossum]
+                      to. If appropriate, the extension ".opossum" will be
+                      appended.  [default: output.opossum]
   --help              Show this message and exit.
 
 ```
