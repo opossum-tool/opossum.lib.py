@@ -10,20 +10,20 @@ from _pytest.logging import LogCaptureFixture
 from click.testing import CliRunner
 from spdx_tools.spdx.writer.write_anything import write_file
 
-from opossum_lib.cli import spdx2opossum
+from opossum_lib.cli import generate
 from tests.helper_methods import _create_minimal_document
 
 
-@pytest.mark.parametrize("options", [("--infile", "--outfile"), ("-i", "-o")])
-def test_cli_with_system_exit_code_0(tmp_path: Path, options: tuple[str, str]) -> None:
+@pytest.mark.parametrize("options", ["--outfile", "-o"])
+def test_cli_with_system_exit_code_0(tmp_path: Path, options: str) -> None:
     runner = CliRunner()
 
     result = runner.invoke(
-        spdx2opossum,
+        generate,
         [
-            options[0],
+            "--spdx",
             str(Path(__file__).resolve().parent / "data" / "SPDX.spdx"),
-            options[1],
+            options,
             str(tmp_path / "output"),
         ],
     )
@@ -54,8 +54,8 @@ def test_cli_no_output_file_provided() -> None:
         file_path = "input.spdx.json"
         create_valid_spdx_document(file_path)
         result = runner.invoke(
-            spdx2opossum,
-            "-i" + file_path,
+            generate,
+            "--spdx " + file_path,
         )
 
         assert result.exit_code == 0
@@ -72,8 +72,8 @@ def test_cli_warning_if_outfile_already_exists(caplog: LogCaptureFixture) -> Non
         with open("output.opossum", "w") as f:
             f.write("")
         result = runner.invoke(
-            spdx2opossum,
-            "-i" + file_path + " -o output.opossum",
+            generate,
+            "--spdx " + file_path + " -o output.opossum",
         )
 
     assert result.exit_code == 0
@@ -86,7 +86,7 @@ def test_cli_with_system_exit_code_1() -> None:
     with runner.isolated_filesystem():
         with open("invalid_spdx.spdx", "w") as f:
             f.write("SPDXID: SPDXRef-DOCUMENT")
-        result = runner.invoke(spdx2opossum, "-i invalid_spdx.spdx -o invalid")
+        result = runner.invoke(generate, "--spdx invalid_spdx.spdx -o invalid")
 
     assert result.exit_code == 1
 
@@ -95,13 +95,41 @@ def test_cli_with_invalid_document(caplog: LogCaptureFixture) -> None:
     runner = CliRunner()
     with runner.isolated_filesystem():
         create_invalid_spdx_document("invalid_spdx.spdx")
-        result = runner.invoke(spdx2opossum, "-i invalid_spdx.spdx -o invalid")
+        result = runner.invoke(generate, "--spdx invalid_spdx.spdx -o invalid")
 
     assert result.output == ""
     assert caplog.messages == [
         "The given SPDX document is not valid, this might cause issues with "
         "the conversion."
     ]
+
+
+def test_cli_with_multiple_documents(caplog: LogCaptureFixture) -> None:
+    runner = CliRunner()
+    path_to_spdx = str(Path(__file__).resolve().parent / "data" / "SPDX.spdx")
+
+    result = runner.invoke(
+        generate,
+        ["--spdx", path_to_spdx, "--spdx", path_to_spdx],
+    )
+    assert result.exit_code == 1
+
+    assert caplog.messages == ["Merging of multiple SPDX files not yet supported!"]
+
+
+def test_cli_without_inputs(caplog: LogCaptureFixture) -> None:
+    runner = CliRunner()
+
+    result = runner.invoke(
+        generate,
+        [
+            "-o",
+            "output.opossum",
+        ],
+    )
+    assert result.exit_code == 1
+
+    assert caplog.messages == ["No input provided. Exiting."]
 
 
 def create_invalid_spdx_document(file_path: str) -> None:

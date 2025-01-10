@@ -31,19 +31,32 @@ uv sync
 # How to use
 
 ## Command-line usage
-
+The CLI uses subcommands. The main command just displays all available subcommands
 ```bash
-Usage: uv run spdx2opossum [OPTIONS]
-
-  CLI-tool for converting SPDX documents to Opossum documents.
+Usage: uv run opossum-file [OPTIONS] COMMAND [ARGS]...
 
 Options:
-  -i, --infile PATH   The file containing the document to be converted.
-                      [required]
+  --help  Show this message and exit.
+
+Commands:
+  generate  Generate an Opossum file from various other file formats.
+```
+
+### `generate`
+
+```bash
+Usage: uv run opossum-file generate [OPTIONS]
+
+  Generate an Opossum file from various other file formats.
+
+  Currently supported input formats:
+    - SPDX
+
+Options:
+  --spdx PATH         SPDX files used as input.
   -o, --outfile TEXT  The file path to write the generated opossum document
-                      to. The generated file will be an opossum file, if the
-                      specified file path doesn't match this file extension
-                      ".opossum" will be appended.
+                      to. If appropriate, the extension ".opossum" will be
+                      appended.  [default: output.opossum]
   --help              Show this message and exit.
 
 ```
