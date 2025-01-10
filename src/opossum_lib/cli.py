@@ -6,6 +6,7 @@
 
 
 import logging
+import sys
 from pathlib import Path
 
 import click
@@ -14,12 +15,16 @@ from opossum_lib.opossum.file_generation import write_opossum_information_to_fil
 from opossum_lib.spdx.convert_to_opossum import convert_spdx_to_opossum_information
 
 
-@click.command()
+@click.group()
+def opossum_file() -> None:
+    pass
+
+
+@opossum_file.command()
 @click.option(
-    "--infile",
-    "-i",
-    help="The file containing the document to be converted.",
-    required=True,
+    "--spdx",
+    help="SPDX files used as input.",
+    multiple=True,
     type=click.Path(exists=True),
 )
 @click.option(
@@ -27,15 +32,26 @@ from opossum_lib.spdx.convert_to_opossum import convert_spdx_to_opossum_informat
     "-o",
     default="output.opossum",
     show_default=True,
-    help="The file path to write the generated opossum document to. The generated file "
-    "will be an opossum file, if the specified file path doesn't match this file "
-    'extension ".opossum" will be appended.',
+    help="The file path to write the generated opossum document to. "
+    'If appropriate, the extension ".opossum" will be appended.',
 )
-def spdx2opossum(infile: str, outfile: str) -> None:
+def generate(spdx: list[str], outfile: str) -> None:
     """
-    CLI-tool for converting SPDX documents to Opossum documents.
+    Generate an Opossum file from various other file formats.
+
+    \b
+    Currently supported input formats:
+      - SPDX
     """
-    opossum_information = convert_spdx_to_opossum_information(infile)
+    if len(spdx) == 0:
+        logging.warning("No input provided. Exiting.")
+        sys.exit(1)
+    if len(spdx) > 1:
+        logging.error("Merging of multiple SPDX files not yet supported!")
+        sys.exit(1)
+
+    the_spdx_file = spdx[0]
+    opossum_information = convert_spdx_to_opossum_information(the_spdx_file)
 
     if not outfile.endswith(".opossum"):
         outfile += ".opossum"
@@ -47,4 +63,4 @@ def spdx2opossum(infile: str, outfile: str) -> None:
 
 
 if __name__ == "__main__":
-    spdx2opossum()
+    opossum_file()
