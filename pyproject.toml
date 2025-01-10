@@ -2,9 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 [project]
-name = "opossum.lib.py"
+name = "opossum-file"
 version = "0.1"
-description = "A library for handling Opossum files with Python"
+description = "A cli tool for handling Opossum files"
 requires-python = ">=3.13,<4"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/opossum-tool/opossum.lib.py"
+Repository = "https://github.com/opossum-tool/opossum-file"
 
 [project.scripts]
 opossum-file = "opossum_lib.cli:opossum_file"
