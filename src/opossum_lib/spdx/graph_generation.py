@@ -7,7 +7,7 @@ from spdx_tools.spdx.graph_generation import generate_relationship_graph_from_sp
 from spdx_tools.spdx.model import File, Package, Snippet
 from spdx_tools.spdx.model.document import CreationInfo, Document
 
-from opossum_lib.helper_methods import _node_represents_a_spdx_element
+from opossum_lib.spdx.helper_methods import _node_represents_a_spdx_element
 
 
 def generate_graph_from_spdx(document: Document) -> DiGraph:

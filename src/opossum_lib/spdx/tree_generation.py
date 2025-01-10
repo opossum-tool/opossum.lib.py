@@ -8,7 +8,7 @@ from spdx_tools.spdx.model.document import CreationInfo
 from spdx_tools.spdx.model.file import File
 from spdx_tools.spdx.model.package import Package
 
-from opossum_lib.helper_methods import (
+from opossum_lib.spdx.helper_methods import (
     _get_source_for_graph_traversal,
     _weakly_connected_component_sub_graphs,
 )

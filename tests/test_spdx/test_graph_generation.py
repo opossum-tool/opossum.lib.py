@@ -9,8 +9,8 @@ from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.parser.parse_anything import parse_file
 from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
 
-from opossum_lib.graph_generation import generate_graph_from_spdx
-from tests.helper_methods import _create_minimal_document
+from opossum_lib.spdx.graph_generation import generate_graph_from_spdx
+from tests.test_spdx.helper_methods import _create_minimal_document
 
 
 @pytest.mark.parametrize(
@@ -31,7 +31,9 @@ def test_generate_graph_from_spdx(
     edges_count: int,
     relationship_node_keys: list[str],
 ) -> None:
-    document = parse_file(str(Path(__file__).resolve().parent / "data" / file_name))
+    document = parse_file(
+        str(Path(__file__).resolve().parent.parent / "data" / file_name)
+    )
     validation_messages = validate_full_spdx_document(document)
     graph = generate_graph_from_spdx(document)
 

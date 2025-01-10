@@ -19,18 +19,18 @@ from spdx_tools.spdx.writer.tagvalue.file_writer import write_file
 from spdx_tools.spdx.writer.tagvalue.package_writer import write_package
 from spdx_tools.spdx.writer.tagvalue.snippet_writer import write_snippet
 
-from opossum_lib.attribution_generation import (
+from opossum_lib.opossum.opossum_file import OpossumPackage, SourceInfo
+from opossum_lib.spdx.attribution_generation import (
     create_document_attribution,
     create_file_attribution,
     create_package_attribution,
     create_snippet_attribution,
 )
-from opossum_lib.constants import (
+from opossum_lib.spdx.constants import (
     SPDX_FILE_IDENTIFIER,
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,
 )
-from opossum_lib.opossum_file import OpossumPackage, SourceInfo
 
 
 def test_create_package_attribution() -> None:

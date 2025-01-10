@@ -10,14 +10,9 @@ import sys
 from pathlib import Path
 
 import click
-from spdx_tools.spdx.model.document import Document as SpdxDocument
-from spdx_tools.spdx.parser.error import SPDXParsingError
-from spdx_tools.spdx.parser.parse_anything import parse_file
-from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
 
-from opossum_lib.file_generation import generate_json_file_from_tree, write_dict_to_file
-from opossum_lib.graph_generation import generate_graph_from_spdx
-from opossum_lib.tree_generation import generate_tree_from_graph
+from opossum_lib.opossum.file_generation import write_opossum_information_to_file
+from opossum_lib.spdx.convert_to_opossum import convert_spdx_to_opossum_information
 
 
 @click.group()
@@ -56,27 +51,7 @@ def generate(spdx: list[str], outfile: str) -> None:
         sys.exit(1)
 
     the_spdx_file = spdx[0]
-    try:
-        document: SpdxDocument = parse_file(the_spdx_file)
-
-    except SPDXParsingError as err:
-        log_string = "\n".join(
-            ["There have been issues while parsing the provided document:"]
-            + [message for message in err.get_messages()]
-        )
-        logging.error(log_string)
-        sys.exit(1)
-    validation_messages = validate_full_spdx_document(document)
-    if validation_messages:
-        logging.warning(
-            "The given SPDX document is not valid, this might cause "
-            "issues with the conversion."
-        )
-
-    graph = generate_graph_from_spdx(document)
-    tree = generate_tree_from_graph(graph)
-
-    opossum_information = generate_json_file_from_tree(tree)
+    opossum_information = convert_spdx_to_opossum_information(the_spdx_file)
 
     if not outfile.endswith(".opossum"):
         outfile += ".opossum"
@@ -84,7 +59,7 @@ def generate(spdx: list[str], outfile: str) -> None:
     if Path.is_file(Path(outfile)):
         logging.warning(f"{outfile} already exists and will be overwritten.")
 
-    write_dict_to_file(opossum_information, Path(outfile))
+    write_opossum_information_to_file(opossum_information, Path(outfile))
 
 
 if __name__ == "__main__":

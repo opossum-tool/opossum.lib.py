@@ -1,38 +1,22 @@
 # SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-import json
+
+import logging
+import sys
 import uuid
-from dataclasses import fields
-from pathlib import Path
-from zipfile import ZIP_DEFLATED, ZipFile
 
 from networkx import DiGraph, shortest_path
 from spdx_tools.spdx.model.document import CreationInfo
+from spdx_tools.spdx.model.document import Document as SpdxDocument
 from spdx_tools.spdx.model.file import File
 from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.model.snippet import Snippet
+from spdx_tools.spdx.parser.error import SPDXParsingError
+from spdx_tools.spdx.parser.parse_anything import parse_file
+from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
 
-from opossum_lib.attribution_generation import (
-    create_document_attribution,
-    create_file_attribution,
-    create_package_attribution,
-    create_snippet_attribution,
-)
-from opossum_lib.constants import (
-    COMPRESSION_LEVEL,
-    SPDX_FILE_IDENTIFIER,
-    SPDX_PACKAGE_IDENTIFIER,
-    SPDX_SNIPPET_IDENTIFIER,
-)
-from opossum_lib.helper_methods import (
-    _create_file_path_from_graph_path,
-    _get_source_for_graph_traversal,
-    _node_represents_a_spdx_element,
-    _replace_node_ids_with_labels_and_add_resource_type,
-    _weakly_connected_component_sub_graphs,
-)
-from opossum_lib.opossum_file import (
+from opossum_lib.opossum.opossum_file import (
     ExternalAttributionSource,
     Metadata,
     OpossumInformation,
@@ -42,54 +26,52 @@ from opossum_lib.opossum_file import (
     ResourceType,
     SourceInfo,
 )
+from opossum_lib.spdx.attribution_generation import (
+    create_document_attribution,
+    create_file_attribution,
+    create_package_attribution,
+    create_snippet_attribution,
+)
+from opossum_lib.spdx.constants import (
+    SPDX_FILE_IDENTIFIER,
+    SPDX_PACKAGE_IDENTIFIER,
+    SPDX_SNIPPET_IDENTIFIER,
+)
+from opossum_lib.spdx.graph_generation import generate_graph_from_spdx
+from opossum_lib.spdx.helper_methods import (
+    _create_file_path_from_graph_path,
+    _get_source_for_graph_traversal,
+    _node_represents_a_spdx_element,
+    _replace_node_ids_with_labels_and_add_resource_type,
+    _weakly_connected_component_sub_graphs,
+)
+from opossum_lib.spdx.tree_generation import generate_tree_from_graph
 
 
-def write_dict_to_file(
-    opossum_information: OpossumInformation, file_path: Path
-) -> None:
-    with ZipFile(
-        file_path, "w", compression=ZIP_DEFLATED, compresslevel=COMPRESSION_LEVEL
-    ) as z:
-        z.writestr("input.json", json.dumps(to_dict(opossum_information), indent=4))
+def convert_spdx_to_opossum_information(filename: str) -> OpossumInformation:
+    try:
+        document: SpdxDocument = parse_file(filename)
+
+    except SPDXParsingError as err:
+        log_string = "\n".join(
+            ["There have been issues while parsing the provided document:"]
+            + [message for message in err.get_messages()]
+        )
+        logging.error(log_string)
+        sys.exit(1)
+    validation_messages = validate_full_spdx_document(document)
+    if validation_messages:
+        logging.warning(
+            "The given SPDX document is not valid, this might cause "
+            "issues with the conversion."
+        )
+    graph = generate_graph_from_spdx(document)
+    tree = generate_tree_from_graph(graph)
+    opossum_information = convert_tree_to_opossum_information(tree)
+    return opossum_information
 
 
-def to_dict(
-    element: Resource
-    | Metadata
-    | OpossumPackage
-    | OpossumInformation
-    | SourceInfo
-    | ExternalAttributionSource
-    | str
-    | int
-    | bool
-    | dict[str, OpossumPackage]
-    | dict[str, list[str]]
-    | list[str]
-    | None,
-) -> dict | str | list[str] | bool | int | None:
-    if isinstance(element, Resource):
-        return element.to_dict()
-    if isinstance(
-        element,
-        Metadata
-        | OpossumPackage
-        | OpossumInformation
-        | SourceInfo
-        | ExternalAttributionSource,
-    ):
-        result = []
-        for f in fields(element):
-            value = to_dict(getattr(element, f.name))
-            result.append((f.name, value))
-        return {k: v for (k, v) in result if v is not None}
-    elif isinstance(element, dict):
-        return {k: to_dict(v) for k, v in element.items()}
-    else:
-        return element
-
-
-def generate_json_file_from_tree(tree: DiGraph) -> OpossumInformation:
+def convert_tree_to_opossum_information(tree: DiGraph) -> OpossumInformation:
     metadata = create_metadata(tree)
     resources = Resource(type=ResourceType.TOP_LEVEL)
     resources_to_attributions: dict[str, list[str]] = dict()

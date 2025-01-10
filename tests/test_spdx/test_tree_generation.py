@@ -15,9 +15,9 @@ from spdx_tools.spdx.model.package import Package
 from spdx_tools.spdx.model.relationship import Relationship, RelationshipType
 from spdx_tools.spdx.parser.parse_anything import parse_file
 
-from opossum_lib.graph_generation import generate_graph_from_spdx
-from opossum_lib.tree_generation import generate_tree_from_graph
-from tests.helper_methods import (
+from opossum_lib.spdx.graph_generation import generate_graph_from_spdx
+from opossum_lib.spdx.tree_generation import generate_tree_from_graph
+from tests.test_spdx.helper_methods import (
     _create_minimal_document,
     _generate_document_with_from_root_node_unreachable_file,
 )
@@ -256,7 +256,9 @@ def test_tree_generation_unconnected_cycle() -> None:
 def test_tree_generation_for_bigger_examples(
     file_name: str, nodes_count: int, edges_count: int
 ) -> None:
-    document = parse_file(str(Path(__file__).resolve().parent / "data" / file_name))
+    document = parse_file(
+        str(Path(__file__).resolve().parent.parent / "data" / file_name)
+    )
     graph = generate_graph_from_spdx(document)
     tree = generate_tree_from_graph(graph)
 

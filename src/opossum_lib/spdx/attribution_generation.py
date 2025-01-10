@@ -12,13 +12,13 @@ from spdx_tools.spdx.writer.tagvalue.file_writer import write_file
 from spdx_tools.spdx.writer.tagvalue.package_writer import write_package
 from spdx_tools.spdx.writer.tagvalue.snippet_writer import write_snippet
 
-from opossum_lib.constants import (
+from opossum_lib.opossum.opossum_file import OpossumPackage, SourceInfo
+from opossum_lib.spdx.constants import (
     PURL,
     SPDX_FILE_IDENTIFIER,
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,
 )
-from opossum_lib.opossum_file import OpossumPackage, SourceInfo
 
 
 def _get_purl(package: Package) -> str | None:
