@@ -20,7 +20,7 @@ from opossum_lib.spdx.constants import (
 from opossum_lib.spdx.convert_to_opossum import convert_tree_to_opossum_information
 from opossum_lib.spdx.graph_generation import generate_graph_from_spdx
 from opossum_lib.spdx.tree_generation import generate_tree_from_graph
-from tests.helper_methods import (
+from tests.test_spdx.helper_methods import (
     _create_minimal_document,
     _generate_document_with_from_root_node_unreachable_file,
 )
@@ -236,7 +236,9 @@ def test_tree_generation_for_bigger_examples_spdx() -> None:
 
 
 def _get_opossum_information_from_file(file_name: str) -> OpossumInformation:
-    document = parse_file(str(Path(__file__).resolve().parent / "data" / file_name))
+    document = parse_file(
+        str(Path(__file__).resolve().parent.parent / "data" / file_name)
+    )
     return _get_opossum_information_from_document(document)
 
 

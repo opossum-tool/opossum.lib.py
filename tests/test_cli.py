@@ -11,7 +11,7 @@ from click.testing import CliRunner
 from spdx_tools.spdx.writer.write_anything import write_file
 
 from opossum_lib.cli import spdx2opossum
-from tests.helper_methods import _create_minimal_document
+from tests.test_spdx.helper_methods import _create_minimal_document
 
 
 @pytest.mark.parametrize("options", [("--infile", "--outfile"), ("-i", "-o")])
