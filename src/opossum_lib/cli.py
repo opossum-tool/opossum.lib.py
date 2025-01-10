@@ -12,6 +12,8 @@ from pathlib import Path
 import click
 
 from opossum_lib.opossum.file_generation import write_opossum_information_to_file
+from opossum_lib.opossum.opossum_file import OpossumInformation
+from opossum_lib.scancode.convert_scancode_to_opossum import convert_scancode_to_opossum
 from opossum_lib.spdx.convert_to_opossum import convert_spdx_to_opossum_information
 
 
@@ -28,6 +30,12 @@ def opossum_file() -> None:
     type=click.Path(exists=True),
 )
 @click.option(
+    "--scan-code-json",
+    help="ScanCode json files used as input.",
+    multiple=True,
+    type=click.Path(exists=True),
+)
+@click.option(
     "--outfile",
     "-o",
     default="output.opossum",
@@ -35,7 +43,7 @@ def opossum_file() -> None:
     help="The file path to write the generated opossum document to. "
     'If appropriate, the extension ".opossum" will be appended.',
 )
-def generate(spdx: list[str], outfile: str) -> None:
+def generate(spdx: list[str], scan_code_json: list[str], outfile: str) -> None:
     """
     Generate an Opossum file from various other file formats.
 
@@ -43,15 +51,8 @@ def generate(spdx: list[str], outfile: str) -> None:
     Currently supported input formats:
       - SPDX
     """
-    if len(spdx) == 0:
-        logging.warning("No input provided. Exiting.")
-        sys.exit(1)
-    if len(spdx) > 1:
-        logging.error("Merging of multiple SPDX files not yet supported!")
-        sys.exit(1)
-
-    the_spdx_file = spdx[0]
-    opossum_information = convert_spdx_to_opossum_information(the_spdx_file)
+    validate_input_exit_on_error(spdx, scan_code_json)
+    opossum_information = convert_after_valid_input(spdx, scan_code_json)
 
     if not outfile.endswith(".opossum"):
         outfile += ".opossum"
@@ -60,6 +61,27 @@ def generate(spdx: list[str], outfile: str) -> None:
         logging.warning(f"{outfile} already exists and will be overwritten.")
 
     write_opossum_information_to_file(opossum_information, Path(outfile))
+
+
+def validate_input_exit_on_error(spdx: list[str], scan_code_json: list[str]) -> None:
+    total_number_of_files = len(spdx) + len(scan_code_json)
+    if total_number_of_files == 0:
+        logging.warning("No input provided. Exiting.")
+        sys.exit(1)
+    if total_number_of_files > 1:
+        logging.error("Merging of multiple files not yet supported!")
+        sys.exit(1)
+
+
+def convert_after_valid_input(
+    spdx: list[str], scan_code_json: list[str]
+) -> OpossumInformation:
+    if len(spdx) == 1:
+        the_spdx_file = spdx[0]
+        return convert_spdx_to_opossum_information(the_spdx_file)
+    else:
+        the_scan_code_json = scan_code_json[0]
+        return convert_scancode_to_opossum(the_scan_code_json)
 
 
 if __name__ == "__main__":
