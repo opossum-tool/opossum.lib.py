@@ -1,0 +1,44 @@
+{
+    "headers": [
+      {
+        "tool_name": "scancode-toolkit",
+        "tool_version": "v32.3.0-20-g93ca65c34e",
+        "options": {
+          "input": [
+            "OpossumUI/src/"
+          ],
+          "--copyright": true,
+          "--email": true,
+          "--info": true,
+          "--json-pp": "opossum_src_pp.json",
+          "--license": true,
+          "--package": true,
+          "--processes": "4",
+          "--url": true
+        },
+        "notice": "Generated with ScanCode and provided on an \"AS IS\" BASIS, WITHOUT WARRANTIES\nOR CONDITIONS OF ANY KIND, either express or implied. No content created from\nScanCode should be considered or used as legal advice. Consult an Attorney\nfor any legal advice.\nScanCode is a free software code scanning tool from nexB Inc. and others.\nVisit https://github.com/nexB/scancode-toolkit/ for support and download.",
+        "start_timestamp": "2025-01-10T102629.623493",
+        "end_timestamp": "2025-01-10T102700.397143",
+        "output_format_version": "4.0.0",
+        "duration": 30.773670196533203,
+        "message": null,
+        "errors": [],
+        "warnings": [],
+        "extra_data": {
+          "system_environment": {
+            "operating_system": "linux",
+            "cpu_architecture": "64",
+            "platform": "Linux-5.4.0-204-generic-x86_64-with-glibc2.31",
+            "platform_version": "#224-Ubuntu SMP Thu Dec 5 13:38:28 UTC 2024",
+            "python_version": "3.12.8 (main, Dec  4 2024, 08:54:13) [GCC 9.4.0]"
+          },
+          "spdx_license_list_version": "3.25",
+          "files_count": 387
+        }
+      }
+    ],
+  "packages": [],
+  "dependencies": [],
+  "license_detections": [],
+  "files": []
+}
