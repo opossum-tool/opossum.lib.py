@@ -14,5 +14,14 @@
   "prConcurrentLimit": 5,
   "prCreation": "not-pending",
   "rangeStrategy": "bump",
-  "minimumReleaseAge": "1 day"
+  "minimumReleaseAge": "1 day",
+  "packageRules": [
+    {
+      "updateTypes": [
+        "minor",
+        "patch"
+      ],
+      "automerge": true
+    }
+  ]
 }
