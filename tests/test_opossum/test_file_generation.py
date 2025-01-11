@@ -218,7 +218,7 @@ def test_tree_generation_for_bigger_examples_spdx() -> None:
     file_tree = opossum_information.resources.to_dict()
     expected_breakpoints = [
         "/SPDX Lite Document/DESCRIBES/Package A/CONTAINS/",
-        "/SPDX Lite Document/DESCRIBES/Package A/COPY_OF/" "Package C/CONTAINS/",
+        "/SPDX Lite Document/DESCRIBES/Package A/COPY_OF/Package C/CONTAINS/",
     ]
 
     assert isinstance(file_tree, dict)
