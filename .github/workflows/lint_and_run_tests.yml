@@ -15,6 +15,8 @@ on:
 jobs:
   linter:
     runs-on: ${{ matrix.os }}
+    if: |
+      !(github.event_name == 'pull_request' && startsWith(github.head_ref, 'renovate/'))
     defaults:
       run:
         shell: bash
@@ -48,6 +50,8 @@ jobs:
 
   test:
     runs-on: ${{ matrix.os }}
+    if: |
+      !(github.event_name == 'pull_request' && startsWith(github.head_ref, 'renovate/'))
     defaults:
       run:
         shell: bash
