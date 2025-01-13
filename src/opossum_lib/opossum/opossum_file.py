@@ -4,9 +4,11 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import dataclass, field
+from dataclasses import field
 from enum import Enum, auto
 from typing import Literal
+
+from pydantic.dataclasses import dataclass
 
 OpossumPackageIdentifier = str
 ResourcePath = str
