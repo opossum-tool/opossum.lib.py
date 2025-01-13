@@ -16,12 +16,12 @@ from tests.test_spdx.helper_methods import _create_minimal_document
 test_data_path = Path(__file__).resolve().parent / "data"
 
 
-def generate_valid_spdx_argument(filename: str = "SPDX.spdx") -> str:
-    return "--spdx " + str(test_data_path / filename)
+def generate_valid_spdx_argument(filename: str = "SPDX.spdx") -> list[str]:
+    return ["--spdx", str(test_data_path / filename)]
 
 
-def generate_valid_scan_code_argument(filename: str = "scancode.json") -> str:
-    return "--scan-code-json " + str(test_data_path / filename)
+def generate_valid_scan_code_argument(filename: str = "scancode.json") -> list[str]:
+    return ["--scan-code-json", str(test_data_path / filename)]
 
 
 @pytest.mark.parametrize("options", ["--outfile", "-o"])
@@ -117,12 +117,12 @@ def test_cli_with_invalid_document(caplog: LogCaptureFixture) -> None:
 @pytest.mark.parametrize(
     "options",
     [
-        generate_valid_spdx_argument() + " " + generate_valid_spdx_argument(),
-        generate_valid_spdx_argument() + " " + generate_valid_scan_code_argument(),
-        generate_valid_scan_code_argument() + " " + generate_valid_scan_code_argument(),
+        generate_valid_spdx_argument() + generate_valid_spdx_argument(),
+        generate_valid_spdx_argument() + generate_valid_scan_code_argument(),
+        generate_valid_scan_code_argument() + generate_valid_scan_code_argument(),
     ],
 )
-def test_cli_with_multiple_files(caplog: LogCaptureFixture, options: str) -> None:
+def test_cli_with_multiple_files(caplog: LogCaptureFixture, options: list[str]) -> None:
     runner = CliRunner()
 
     result = runner.invoke(generate, options)
