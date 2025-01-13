@@ -13,9 +13,19 @@ from spdx_tools.spdx.writer.write_anything import write_file
 from opossum_lib.cli import generate
 from tests.test_spdx.helper_methods import _create_minimal_document
 
+test_data_path = Path(__file__).resolve().parent / "data"
+
+
+def generate_valid_spdx_argument(filename: str = "SPDX.spdx") -> str:
+    return "--spdx " + str(test_data_path / filename)
+
+
+def generate_valid_opossum_argument(filename: str = "opossum_input.opossum") -> str:
+    return "--opossum " + str(test_data_path / filename)
+
 
 @pytest.mark.parametrize("options", ["--outfile", "-o"])
-def test_cli_with_system_exit_code_0(tmp_path: Path, options: str) -> None:
+def test_successful_conversion_of_spdx_file(tmp_path: Path, options: str) -> None:
     runner = CliRunner()
 
     result = runner.invoke(
@@ -45,6 +55,22 @@ def test_cli_with_system_exit_code_0(tmp_path: Path, options: str) -> None:
     opossum_dict.pop("metadata")
     expected_opossum_dict.pop("metadata")
     assert opossum_dict == expected_opossum_dict
+
+
+def test_successful_conversion_of_opossum_file(tmp_path: Path) -> None:
+    runner = CliRunner()
+
+    result = runner.invoke(
+        generate,
+        [
+            "--opossum",
+            str(Path(__file__).resolve().parent / "data" / "opossum_input.opossum"),
+            "-o",
+            str(tmp_path / "output_opossum"),
+        ],
+    )
+
+    assert result.exit_code == 0
 
 
 def test_cli_no_output_file_provided() -> None:
@@ -104,17 +130,24 @@ def test_cli_with_invalid_document(caplog: LogCaptureFixture) -> None:
     ]
 
 
-def test_cli_with_multiple_documents(caplog: LogCaptureFixture) -> None:
+@pytest.mark.parametrize(
+    "options",
+    [
+        generate_valid_spdx_argument() + " " + generate_valid_spdx_argument(),
+        generate_valid_spdx_argument() + " " + generate_valid_opossum_argument(),
+        generate_valid_opossum_argument() + " " + generate_valid_opossum_argument(),
+    ],
+)
+def test_cli_with_multiple_files(caplog: LogCaptureFixture, options: list[str]) -> None:
     runner = CliRunner()
-    path_to_spdx = str(Path(__file__).resolve().parent / "data" / "SPDX.spdx")
 
     result = runner.invoke(
         generate,
-        ["--spdx", path_to_spdx, "--spdx", path_to_spdx],
+        options,
     )
     assert result.exit_code == 1
 
-    assert caplog.messages == ["Merging of multiple SPDX files not yet supported!"]
+    assert caplog.messages == ["Merging of multiple files not yet supported!"]
 
 
 def test_cli_without_inputs(caplog: LogCaptureFixture) -> None:
