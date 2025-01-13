@@ -203,15 +203,12 @@ def test_merge_dicts_without_duplicates_type_error(
         _merge_dicts_without_duplicates(dicts)
 
 
-@mock.patch("opossum_lib.opossum.opossum_file.Resource")
-@mock.patch("opossum_lib.opossum.opossum_file.OpossumPackage")
-def test_expand_opossum_package_identifier(
-    opossum_package: OpossumPackage, resource: Resource
-) -> None:
+def test_expand_opossum_package_identifier() -> None:
+    opossum_package = OpossumPackage(SourceInfo("source-info"))
     opossum_information_expanded = expand_opossum_package_identifier(
         OpossumInformation(
             Metadata("project-id", "2022-03-02", "project title"),
-            resources=resource,
+            resources=Resource(ResourceType.FILE, {}),
             externalAttributions={"SPDXRef-Package": opossum_package},
             resourcesToAttributions={"/path/to/resource": ["SPDXRef-Package"]},
             attributionBreakpoints=[],
