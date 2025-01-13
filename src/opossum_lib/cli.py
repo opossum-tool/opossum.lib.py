@@ -80,8 +80,8 @@ def convert_after_valid_input(
         the_spdx_file = spdx[0]
         return convert_spdx_to_opossum_information(the_spdx_file)
     else:
-        opossum_file = opossum_files[0]
-        return read_opossum_file(opossum_file)
+        opossum_input_file = opossum_files[0]
+        return read_opossum_file(opossum_input_file)
 
 
 if __name__ == "__main__":

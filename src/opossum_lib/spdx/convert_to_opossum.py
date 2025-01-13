@@ -49,6 +49,7 @@ from opossum_lib.spdx.tree_generation import generate_tree_from_graph
 
 
 def convert_spdx_to_opossum_information(filename: str) -> OpossumInformation:
+    logging.info(f"Converting {filename} to opossum information.")
     try:
         document: SpdxDocument = parse_file(filename)
 
