@@ -5,10 +5,23 @@
 name: Build Executable
 on:
   workflow_call:
+    inputs:
+      os:
+        required: true
+        type: string
+      python-version:
+        required: true
+        type: string
+      artifact-name:
+        required: true
+        type: string
+      executable-name:
+        required: true
+        type: string
 
 jobs:
   build-executable:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ inputs.os }}
     if: |
       !(github.event_name == 'pull_request' && startsWith(github.head_ref, 'renovate/'))
     defaults:
@@ -16,19 +29,6 @@ jobs:
         shell: bash
     strategy:
       fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.13']
-        include:
-          - os: ubuntu-latest
-            art-name: ubuntu-executable
-            art-path: dist/cli
-          - os: windows-latest
-            art-name: windows-executable
-            art-path: dist/cli.exe
-          - os: macos-latest
-            art-name: macos-executable
-            art-path: dist/cli
 
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
       - name: Install uv and set the python version
         uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ inputs.python-version }}
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
@@ -51,13 +51,13 @@ jobs:
         # On ubuntu/macos, getsitepackages returns a list with only one element, on windows a list with two elements is returned where the second is correct.
 
       - name: Build executable
-        run: uv run pyinstaller --onefile --add-data "$sitepackage_dir/license_expression/data/scancode-licensedb-index.json:./license_expression/data" --add-data "$sitepackage_dir/spdx_tools/spdx/parser/tagvalue/*:./spdx_tools/spdx/parser/tagvalue" src/opossum_lib/cli.py
+        run: uv run pyinstaller --name ${{ inputs.executable-name }} --onefile --add-data "$sitepackage_dir/license_expression/data/scancode-licensedb-index.json:./license_expression/data" --add-data "$sitepackage_dir/spdx_tools/spdx/parser/tagvalue/*:./spdx_tools/spdx/parser/tagvalue" -o  src/opossum_lib/cli.py
       
       - name: Test executable
-        run: dist/cli generate --spdx tests/data/SPDX.spdx && test -s "output.opossum" || exit 1
+        run: dist/${{ inputs.executable-name }} generate --spdx tests/data/SPDX.spdx && test -s "output.opossum" || exit 1
 
       - name: Upload executable artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.art-name }}
-          path: ${{ matrix.art-path }}
+          name: ${{ inputs.artifact-name }}
+          path: dist/${{ inputs.executable-name }}
