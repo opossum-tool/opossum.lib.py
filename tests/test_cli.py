@@ -18,12 +18,14 @@ from tests.test_spdx.helper_methods import _create_minimal_document
 test_data_path = Path(__file__).resolve().parent / "data"
 
 
-def generate_valid_spdx_argument(filename: str = "SPDX.spdx") -> str:
-    return "--spdx " + str(test_data_path / filename)
+def generate_valid_spdx_argument(filename: str = "SPDX.spdx") -> list[str]:
+    return ["--spdx", str(test_data_path / filename)]
 
 
-def generate_valid_opossum_argument(filename: str = "opossum_input.opossum") -> str:
-    return "--opossum " + str(test_data_path / filename)
+def generate_valid_opossum_argument(
+    filename: str = "opossum_input.opossum",
+) -> list[str]:
+    return ["--opossum", str(test_data_path / filename)]
 
 
 def run_with_command_line_arguments(cmd_line_arguments: list[str]) -> Result:
@@ -89,7 +91,7 @@ def read_input_json_from_opossum(output_file_path: str) -> Any:
 
 
 def read_json_from_file(filename: str) -> Any:
-    with open(test_data_path / filename) as file:
+    with open(test_data_path / filename, encoding="utf-8") as file:
         expected_opossum_dict = json.load(file)
     return expected_opossum_dict
 
@@ -184,12 +186,13 @@ def test_cli_with_invalid_document(caplog: LogCaptureFixture) -> None:
 @pytest.mark.parametrize(
     "options",
     [
-        generate_valid_spdx_argument() + " " + generate_valid_spdx_argument(),
-        generate_valid_spdx_argument() + " " + generate_valid_opossum_argument(),
-        generate_valid_opossum_argument() + " " + generate_valid_opossum_argument(),
+        generate_valid_spdx_argument() + generate_valid_spdx_argument(),
+        generate_valid_spdx_argument() + generate_valid_opossum_argument(),
+        generate_valid_opossum_argument() + generate_valid_opossum_argument(),
     ],
 )
 def test_cli_with_multiple_files(caplog: LogCaptureFixture, options: list[str]) -> None:
+    print(options)
     result = run_with_command_line_arguments(options)
     assert result.exit_code == 1
 
