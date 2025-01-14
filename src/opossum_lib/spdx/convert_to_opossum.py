@@ -49,6 +49,7 @@ from opossum_lib.spdx.tree_generation import generate_tree_from_graph
 
 
 def convert_spdx_to_opossum_information(filename: str) -> OpossumInformation:
+    logging.info(f"Converting {filename} to opossum information.")
     try:
         document: SpdxDocument = parse_file(filename)
 
@@ -116,7 +117,7 @@ def convert_tree_to_opossum_information(tree: DiGraph) -> OpossumInformation:
 
     opossum_information = OpossumInformation(
         metadata=metadata,
-        resources=resources,
+        resources=resources.convert_to_file_resource(),
         externalAttributions=external_attributions,
         resourcesToAttributions=resources_to_attributions,
         attributionBreakpoints=attribution_breakpoints,
@@ -170,5 +171,9 @@ def create_attribution_and_link_with_resource(
 def create_metadata(tree: DiGraph) -> Metadata:
     doc_name = tree.nodes["SPDXRef-DOCUMENT"]["element"].name
     created = tree.nodes["SPDXRef-DOCUMENT"]["element"].created
-    metadata = Metadata(str(uuid.uuid4()), created.isoformat(), doc_name)
+    metadata = Metadata(
+        projectId=str(uuid.uuid4()),
+        fileCreationDate=created.isoformat(),
+        projectTitle=doc_name,
+    )
     return metadata

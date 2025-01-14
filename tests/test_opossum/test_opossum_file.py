@@ -3,7 +3,12 @@
 # SPDX-License-Identifier: Apache-2.0
 import pytest
 
-from opossum_lib.opossum.opossum_file import Resource, ResourceType
+from opossum_lib.opossum.opossum_file import (
+    Resource,
+    ResourceInFile,
+    ResourceType,
+    convert_resource_in_file_to_resource,
+)
 
 
 def test_resource_to_dict_with_file_as_leaf() -> None:
@@ -190,3 +195,46 @@ def test_resource_drop_element() -> None:
     assert resource_without_element.get_paths_of_all_leaf_nodes_with_types() == [
         [("A", ResourceType.FOLDER), ("B", ResourceType.FILE)]
     ]
+
+
+def test_convert_resource_in_file_to_resource() -> None:
+    resource_in_file: ResourceInFile = {
+        "baseFolder": {
+            "subFolder": {},
+            "anotherSubFolder": {
+                "file1": 1,
+                "file2": 1,
+                "subSubFolder": {
+                    "file3": 1,
+                },
+            },
+            "file4": 1,
+        }
+    }
+
+    resource = convert_resource_in_file_to_resource(resource_in_file)
+
+    expected_resource = Resource(
+        type=ResourceType.TOP_LEVEL,
+        children={
+            "baseFolder": Resource(
+                type=ResourceType.FOLDER,
+                children={
+                    "subFolder": Resource(type=ResourceType.FOLDER),
+                    "anotherSubFolder": Resource(
+                        type=ResourceType.FOLDER,
+                        children={
+                            "file1": Resource(type=ResourceType.FILE),
+                            "file2": Resource(type=ResourceType.FILE),
+                            "subSubFolder": Resource(
+                                type=ResourceType.FOLDER,
+                                children={"file3": Resource(type=ResourceType.FILE)},
+                            ),
+                        },
+                    ),
+                    "file4": Resource(type=ResourceType.FILE),
+                },
+            )
+        },
+    )
+    assert resource == expected_resource

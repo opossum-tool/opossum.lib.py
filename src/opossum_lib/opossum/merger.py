@@ -9,6 +9,7 @@ from opossum_lib.opossum.opossum_file import (
     Resource,
     ResourcePath,
     ResourceType,
+    convert_resource_in_file_to_resource,
 )
 
 
@@ -23,10 +24,10 @@ def merge_opossum_information(
         metadata=expanded_opossum_information[0].metadata,
         resources=_merge_resources(
             [
-                opossum_information.resources
+                convert_resource_in_file_to_resource(opossum_information.resources)
                 for opossum_information in expanded_opossum_information
             ]
-        ),
+        ).convert_to_file_resource(),
         externalAttributions=_merge_dicts_without_duplicates(
             [
                 opossum_information.externalAttributions
