@@ -95,7 +95,8 @@ def create_attribution_mapping(
     resourcesToAttributions = {}  # path -> [attributionUUID]
 
     def process_node(node: Node) -> None:
-        path = node.file.path
+        # the / is required by OpossumUI
+        path = "/" + node.file.path
         attributions = get_attribution_info(node.file)
         attributionIDs = []
         for attribution in attributions:
