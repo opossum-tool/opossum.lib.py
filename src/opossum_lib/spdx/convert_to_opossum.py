@@ -117,7 +117,7 @@ def convert_tree_to_opossum_information(tree: DiGraph) -> OpossumInformation:
 
     opossum_information = OpossumInformation(
         metadata=metadata,
-        resources=resources,
+        resources=resources.convert_to_file_resource(),
         externalAttributions=external_attributions,
         resourcesToAttributions=resources_to_attributions,
         attributionBreakpoints=attribution_breakpoints,

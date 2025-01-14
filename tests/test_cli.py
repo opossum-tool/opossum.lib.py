@@ -60,17 +60,47 @@ def test_successful_conversion_of_spdx_file(tmp_path: Path, options: str) -> Non
 def test_successful_conversion_of_opossum_file(tmp_path: Path) -> None:
     runner = CliRunner()
 
+    output_file = str(tmp_path / "output_opossum.opossum")
     result = runner.invoke(
         generate,
         [
             "--opossum",
             str(Path(__file__).resolve().parent / "data" / "opossum_input.opossum"),
             "-o",
-            str(tmp_path / "output_opossum"),
+            output_file,
         ],
     )
 
+    with open(Path(__file__).resolve().parent / "data" / "opossum_input.json") as file:
+        expected_opossum_dict = json.load(file)
+
     assert result.exit_code == 0
+
+    with (
+        ZipFile(output_file, "r") as z,
+        z.open("input.json") as file,
+    ):
+        opossum_dict = json.load(file)
+
+    ## goal
+    # metadata
+    # resources
+    # externalAttributions
+    # resourcesToAttributions
+    # frequentLicenses
+    # attributionBreakpoints
+    # filesWithChildren
+    # baseUrlsForSources
+    # externalAttributionSources
+
+    print(expected_opossum_dict["externalAttributions"].keys())
+
+    assert result.exit_code == 0
+    assert expected_opossum_dict["resources"] == opossum_dict["resources"]
+    assert (
+        expected_opossum_dict["externalAttributions"]
+        == opossum_dict["externalAttributions"]
+    )
 
 
 def test_cli_no_output_file_provided() -> None:

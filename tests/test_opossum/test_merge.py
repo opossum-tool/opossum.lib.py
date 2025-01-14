@@ -24,38 +24,18 @@ from opossum_lib.opossum.opossum_file import (
 )
 
 
-@mock.patch("opossum_lib.opossum.opossum_file.OpossumPackage", autospec=True)
-def test_merge_opossum_information(opossum_package: OpossumPackage) -> None:
+def test_merge_opossum_information() -> None:
+    opossum_package = OpossumPackage(source=SourceInfo("source"))
     opossum_information = OpossumInformation(
         Metadata("project-id", "30-05-2023", "test data"),
-        Resource(
-            ResourceType.TOP_LEVEL,
-            {
-                "A": Resource(
-                    ResourceType.FOLDER, {"B": Resource(ResourceType.FOLDER, {})}
-                )
-            },
-        ),
+        {"A": {"B": {}}},
         {"SPDXRef-Package": opossum_package},
         {"/A/B/": ["SPDXRef-Package"]},
     )
 
     opossum_information_2 = OpossumInformation(
         Metadata("test-data-id", "29-05-2023", "second test data"),
-        Resource(
-            ResourceType.TOP_LEVEL,
-            {
-                "A": Resource(
-                    ResourceType.FOLDER,
-                    {
-                        "D": Resource(
-                            ResourceType.FOLDER,
-                            {"C": Resource(ResourceType.FILE, {})},
-                        )
-                    },
-                )
-            },
-        ),
+        {"A": {"D": {"C": 1}}},
         {"SPDXRef-File": opossum_package},
         {"/A/D/C": ["SPDXRef-File"]},
     )
@@ -65,20 +45,12 @@ def test_merge_opossum_information(opossum_package: OpossumPackage) -> None:
     )
 
     assert merged_information.metadata == opossum_information.metadata
-    assert merged_information.resources == Resource(
-        ResourceType.TOP_LEVEL,
-        {
-            "A": Resource(
-                ResourceType.FOLDER,
-                {
-                    "B": Resource(ResourceType.FOLDER, {}),
-                    "D": Resource(
-                        ResourceType.FOLDER, {"C": Resource(ResourceType.FILE, {})}
-                    ),
-                },
-            )
-        },
-    )
+    assert merged_information.resources == {
+        "A": {
+            "B": {},
+            "D": {"C": 1},
+        }
+    }
     assert merged_information.externalAttributions == {
         "project-id-SPDXRef-Package": opossum_package,
         "test-data-id-SPDXRef-File": opossum_package,
@@ -208,7 +180,7 @@ def test_expand_opossum_package_identifier() -> None:
     opossum_information_expanded = expand_opossum_package_identifier(
         OpossumInformation(
             Metadata("project-id", "2022-03-02", "project title"),
-            resources=Resource(ResourceType.FILE, {}),
+            resources={},
             externalAttributions={"SPDXRef-Package": opossum_package},
             resourcesToAttributions={"/path/to/resource": ["SPDXRef-Package"]},
             attributionBreakpoints=[],
