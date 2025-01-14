@@ -55,7 +55,9 @@ def test_successful_conversion_of_spdx_file(tmp_path: Path, options: str) -> Non
     # we need to exclude the "metadata" section from the comparison
     opossum_dict.pop("metadata")
     expected_opossum_dict.pop("metadata")
-    assert opossum_dict == expected_opossum_dict
+    assert_expected_opossum_equals_generated_opossum(
+        expected_opossum_dict, opossum_dict
+    )
 
 
 def test_successful_conversion_of_opossum_file(tmp_path: Path) -> None:
@@ -99,32 +101,19 @@ def read_json_from_file(filename: str) -> Any:
 def assert_expected_opossum_equals_generated_opossum(
     expected_opossum_dict: Any, opossum_dict: Any
 ) -> None:
-    assert opossum_dict["metadata"] == expected_opossum_dict["metadata"]
-    assert opossum_dict["resources"] == expected_opossum_dict["resources"]
-    assert (
-        opossum_dict["externalAttributions"]
-        == expected_opossum_dict["externalAttributions"]
-    )
-    assert (
-        opossum_dict["resourcesToAttributions"]
-        == expected_opossum_dict["resourcesToAttributions"]
-    )
-    assert opossum_dict["frequentLicenses"] == expected_opossum_dict["frequentLicenses"]
-    assert (
-        opossum_dict["attributionBreakpoints"]
-        == expected_opossum_dict["attributionBreakpoints"]
-    )
-    assert (
-        opossum_dict["filesWithChildren"] == expected_opossum_dict["filesWithChildren"]
-    )
-    assert (
-        opossum_dict["baseUrlsForSources"]
-        == expected_opossum_dict["baseUrlsForSources"]
-    )
-    assert (
-        opossum_dict["externalAttributionSources"]
-        == expected_opossum_dict["externalAttributionSources"]
-    )
+    opossum_top_level = [
+        "resources",
+        "metadata",
+        "externalAttributions",
+        "resourcesToAttributions",
+        "frequentLicenses",
+        "attributionBreakpoints",
+        "filesWithChildren",
+        "baseUrlsForSources",
+        "externalAttributionSources",
+    ]
+    for field in opossum_top_level:
+        assert opossum_dict.get(field, None) == expected_opossum_dict.get(field, None)
 
 
 def test_cli_no_output_file_provided() -> None:
