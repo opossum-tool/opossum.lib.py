@@ -107,6 +107,21 @@ def test_successful_conversion_of_opossum_file(tmp_path: Path) -> None:
         == expected_opossum_dict["resourcesToAttributions"]
     )
     assert opossum_dict["frequentLicenses"] == expected_opossum_dict["frequentLicenses"]
+    assert (
+        opossum_dict["attributionBreakpoints"]
+        == expected_opossum_dict["attributionBreakpoints"]
+    )
+    assert (
+        opossum_dict["filesWithChildren"] == expected_opossum_dict["filesWithChildren"]
+    )
+    assert (
+        opossum_dict["baseUrlsForSources"]
+        == expected_opossum_dict["baseUrlsForSources"]
+    )
+    assert (
+        opossum_dict["externalAttributionSources"]
+        == expected_opossum_dict["externalAttributionSources"]
+    )
 
 
 def test_cli_no_output_file_provided() -> None:

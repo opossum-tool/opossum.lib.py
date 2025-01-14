@@ -8,7 +8,7 @@ from dataclasses import field
 from enum import Enum, auto
 from typing import Literal, cast
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_serializer
 from pydantic.dataclasses import dataclass
 
 OpossumPackageIdentifier = str
@@ -27,6 +27,18 @@ class OpossumInformation:
         default_factory=dict
     )
     frequentLicenses: list[FrequentLicense] | None = None
+    filesWithChildren: list[str] | None = None
+    baseUrlsForSources: BaseUrlsForSources | None = None
+
+
+class BaseUrlsForSources(BaseModel):
+    @model_serializer
+    def serialize(self) -> dict:
+        # hack to override not serializing keys with corresponding value none:
+        # In this case this is valid and should be part of the serialization
+        return {k: v for k, v in self}
+
+    model_config = ConfigDict(extra="allow", frozen=True)
 
 
 class FrequentLicense(BaseModel):
@@ -174,6 +186,7 @@ class Resource:
 class ExternalAttributionSource:
     name: str
     priority: int
+    isRelevantForPreferred: bool | None = None
 
 
 def build_resource_tree(resource: ResourceInFile) -> Resource:
