@@ -93,9 +93,8 @@ def test_successful_conversion_of_opossum_file(tmp_path: Path) -> None:
     # baseUrlsForSources
     # externalAttributionSources
 
-    print(expected_opossum_dict["externalAttributions"].keys())
-
     assert result.exit_code == 0
+    # assert opossum_dict["metadata"] == expected_opossum_dict["metadata"]
     assert expected_opossum_dict["resources"] == opossum_dict["resources"]
     assert (
         expected_opossum_dict["externalAttributions"]

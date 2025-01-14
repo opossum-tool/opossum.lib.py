@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from datetime import datetime
+from datetime import UTC, datetime
 from io import StringIO
 
 from license_expression import get_spdx_licensing
@@ -118,7 +118,7 @@ def test_create_document_attribution() -> None:
         spdx_version="SPDX2.3",
         document_namespace="some.namespace",
         creators=[Actor(ActorType.PERSON, "Name")],
-        created=datetime.utcnow(),
+        created=datetime.now(UTC),
     )
     creation_info_data = StringIO()
     write_creation_info(creation_info, creation_info_data)
