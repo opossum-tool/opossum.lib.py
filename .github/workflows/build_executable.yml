@@ -4,14 +4,7 @@
 
 name: Build Executable
 on:
-  push:
-    branches:
-      - main
-      - feat-improve-distribution # For testing purposes, needs to be removed before merge
-      - 'renovate/*'
-  pull_request:
-    types: [opened, reopened, synchronize]
-  workflow_dispatch:
+  workflow_call:
 
 jobs:
   build-executable:
