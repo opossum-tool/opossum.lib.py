@@ -46,8 +46,9 @@ jobs:
       - name: Find site package directory
         run: echo "sitepackage_dir=$(python -c "import site; print(site.getsitepackages()[0])")" >> $GITHUB_ENV
       
+      - run: python -c "import site; print(site.getsitepackages())"
       - run: ls $sitepackage_dir
-      - run: ls $sitepackage_dir/Lib
+      - run: ls $sitepackage_dir/Lib/site-packages
 
       - name: Build executable
         run: uv run pyinstaller --onefile --add-data "$sitepackage_dir/license_expression/data/scancode-licensedb-index.json:./license_expression/data" --add-data "$sitepackage_dir/spdx_tools/spdx/parser/tagvalue/*:./spdx_tools/spdx/parser/tagvalue" src/opossum_lib/cli.py
