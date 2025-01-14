@@ -61,7 +61,7 @@ jobs:
         run: uv run pyinstaller --onefile --add-data "$sitepackage_dir/license_expression/data/scancode-licensedb-index.json:./license_expression/data" --add-data "$sitepackage_dir/spdx_tools/spdx/parser/tagvalue/*:./spdx_tools/spdx/parser/tagvalue" src/opossum_lib/cli.py
       
       - name: Test executable
-        run: dist/cli --help
+        run: dist/cli generate --spdx tests/data/SPDX.spdx && test -s "output.opossum" || exit 1
 
       - name: Upload executable artifact
         uses: actions/upload-artifact@v4
