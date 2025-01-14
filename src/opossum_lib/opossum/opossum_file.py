@@ -11,8 +11,8 @@ from typing import Literal, cast
 from pydantic import BaseModel, ConfigDict, model_serializer
 from pydantic.dataclasses import dataclass
 
-OpossumPackageIdentifier = str
-ResourcePath = str
+type OpossumPackageIdentifier = str
+type ResourcePath = str
 type ResourceInFile = dict[str, ResourceInFile] | int
 
 
@@ -189,13 +189,13 @@ class ExternalAttributionSource:
     isRelevantForPreferred: bool | None = None
 
 
-def build_resource_tree(resource: ResourceInFile) -> Resource:
+def _build_resource_tree(resource: ResourceInFile) -> Resource:
     if isinstance(resource, int):
         return Resource(type=ResourceType.FILE)
     else:
         result = Resource(type=ResourceType.FOLDER)
         for name, child_resource in resource.items():
-            result.children[name] = build_resource_tree(child_resource)
+            result.children[name] = _build_resource_tree(child_resource)
         return result
 
 
@@ -205,7 +205,6 @@ def convert_resource_in_file_to_resource(resource: ResourceInFile) -> Resource:
     if isinstance(resource, dict):
         dict_resource = cast(dict[str, ResourceInFile], resource)
         for name, child_resource in dict_resource.items():
-            child_resource = cast(ResourceInFile, child_resource)
-            root_node.children[name] = build_resource_tree(child_resource)
+            root_node.children[name] = _build_resource_tree(child_resource)
 
     return root_node
