@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  linter:
+  build-executable:
     runs-on: ${{ matrix.os }}
     if: |
       !(github.event_name == 'pull_request' && startsWith(github.head_ref, 'renovate/'))
@@ -42,6 +42,15 @@ jobs:
 
       - name: Install PyInstaller
         run: uv pip install pyinstaller
+
+      - name: Inspect PYTHONPATH
+        run: echo $PYTHONPATH
+
+      - name: Try getsitepackages
+        run: python -c "import site; print(site.getsitepackages())"
+
+      - name: List contents of ~/virtualenvs/python
+        run: ls ~/virtualenvs/python
 
       - name: Build executable
         run: uv run pyinstaller --onefile --add-data ".venv/lib/python3.13/site-packages/license_expression/data/scancode-licensedb-index.json:./license_expression/data" --add-data ".venv/lib/python3.13/site-packages/spdx_tools/spdx/parser/tagvalue/parser.out:./spdx_tools/spdx/parser/tagvalue" src/opossum_lib/cli.py
