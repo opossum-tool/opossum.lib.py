@@ -103,4 +103,4 @@ jobs:
         with:
           name: ubuntu-executable
       
-      - run: dist/cli generate --spdx tests/data/SPDX.spdx && test -s "output.opossum" || exit 1
+      - run: ./cli generate --spdx tests/data/SPDX.spdx && test -s "output.opossum" || exit 1
