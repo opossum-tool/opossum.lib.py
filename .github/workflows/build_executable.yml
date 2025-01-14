@@ -43,17 +43,14 @@ jobs:
       - name: Install PyInstaller
         run: uv pip install pyinstaller
 
-      - name: Inspect PYTHONPATH
-        run: echo $PYTHONPATH
+      - name: Find site package directory
+        run: echo "sitepackage_dir=$(python -c "import site; print(site.getsitepackages()[0])")" >> $GITHUB_ENV
 
-      - name: Try getsitepackages
-        run: python -c "import site; print(site.getsitepackages())"
-
-      - name: List contents of ~/virtualenvs/python
-        run: ls ~/virtualenvs/python
+      - name: List contents of site package directory
+        run: ls $sitepackage_dir
 
       - name: Build executable
-        run: uv run pyinstaller --onefile --add-data ".venv/lib/python3.13/site-packages/license_expression/data/scancode-licensedb-index.json:./license_expression/data" --add-data ".venv/lib/python3.13/site-packages/spdx_tools/spdx/parser/tagvalue/parser.out:./spdx_tools/spdx/parser/tagvalue" src/opossum_lib/cli.py
+        run: uv run pyinstaller --onefile --add-data "$sitepackage_dir/license_expression/data/scancode-licensedb-index.json:./license_expression/data" --add-data "$sitepackage_dir/spdx_tools/spdx/parser/tagvalue/parser.out:./spdx_tools/spdx/parser/tagvalue" src/opossum_lib/cli.py
       
       - name: Test executable
         run: dist/cli --help
