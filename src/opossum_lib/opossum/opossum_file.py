@@ -8,6 +8,7 @@ from dataclasses import field
 from enum import Enum, auto
 from typing import Literal, cast
 
+from pydantic import BaseModel, ConfigDict
 from pydantic.dataclasses import dataclass
 
 OpossumPackageIdentifier = str
@@ -58,8 +59,8 @@ class OpossumPackage:
     wasPreferred: bool | None = None
 
 
-@dataclass(frozen=True)
-class Metadata:
+class Metadata(BaseModel):
+    model_config = ConfigDict(extra="allow", frozen=True)
     projectId: str
     fileCreationDate: str
     projectTitle: str

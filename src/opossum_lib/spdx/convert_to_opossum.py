@@ -171,5 +171,9 @@ def create_attribution_and_link_with_resource(
 def create_metadata(tree: DiGraph) -> Metadata:
     doc_name = tree.nodes["SPDXRef-DOCUMENT"]["element"].name
     created = tree.nodes["SPDXRef-DOCUMENT"]["element"].created
-    metadata = Metadata(str(uuid.uuid4()), created.isoformat(), doc_name)
+    metadata = Metadata(
+        projectId=str(uuid.uuid4()),
+        fileCreationDate=created.isoformat(),
+        projectTitle=doc_name,
+    )
     return metadata

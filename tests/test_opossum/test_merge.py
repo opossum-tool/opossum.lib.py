@@ -27,14 +27,22 @@ from opossum_lib.opossum.opossum_file import (
 def test_merge_opossum_information() -> None:
     opossum_package = OpossumPackage(source=SourceInfo("source"))
     opossum_information = OpossumInformation(
-        Metadata("project-id", "30-05-2023", "test data"),
+        Metadata(
+            projectId="project-id",
+            fileCreationDate="30-05-2023",
+            projectTitle="test data",
+        ),
         {"A": {"B": {}}},
         {"SPDXRef-Package": opossum_package},
         {"/A/B/": ["SPDXRef-Package"]},
     )
 
     opossum_information_2 = OpossumInformation(
-        Metadata("test-data-id", "29-05-2023", "second test data"),
+        Metadata(
+            projectId="test-data-id",
+            fileCreationDate="29-05-2023",
+            projectTitle="second test data",
+        ),
         {"A": {"D": {"C": 1}}},
         {"SPDXRef-File": opossum_package},
         {"/A/D/C": ["SPDXRef-File"]},
@@ -179,7 +187,11 @@ def test_expand_opossum_package_identifier() -> None:
     opossum_package = OpossumPackage(SourceInfo("source-info"))
     opossum_information_expanded = expand_opossum_package_identifier(
         OpossumInformation(
-            Metadata("project-id", "2022-03-02", "project title"),
+            Metadata(
+                projectId="project-id",
+                fileCreationDate="2022-03-02",
+                projectTitle="project title",
+            ),
             resources={},
             externalAttributions={"SPDXRef-Package": opossum_package},
             resourcesToAttributions={"/path/to/resource": ["SPDXRef-Package"]},
