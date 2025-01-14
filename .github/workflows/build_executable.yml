@@ -26,6 +26,16 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ['3.13']
+        include:
+          - os: ubuntu-latest
+            art-name: ubuntu-executable
+            art-path: dist/cli
+          - os: windows-latest
+            art-name: windows-executable
+            art-path: dist/cli.exe
+          - os: macos-latest
+            art-name: macos-executable
+            art-path: dist/cli
 
     steps:
       - uses: actions/checkout@v4
@@ -52,3 +62,9 @@ jobs:
       
       - name: Test executable
         run: dist/cli --help
+
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.art-name }}
+          path: ${{ matrix.art-path }}
