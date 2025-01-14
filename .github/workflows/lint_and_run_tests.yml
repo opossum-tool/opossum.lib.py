@@ -80,7 +80,28 @@ jobs:
   
   test-build:
     needs: [linter, test]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.13']
+        include:
+          - os: ubuntu-latest
+            executable-name: converter
+            artifact-name: ubuntu-converter
+          - os: windows-latest
+            executable-name: converter.exe
+            artifact-name: windows-converter
+          - os: macos-latest
+            executable-name: converter
+            artifact-name: macos-converter
     uses: ./.github/workflows/build_executable.yml
+    with:
+      os: ${{ matrix.os }}
+      python-version: ${{ matrix.python-version }}
+      executable-name: ${{ matrix.executable-name }}
+      artifact-name: ${{ matrix.artifact-name }}
+
   
   try-download:
     runs-on: ubuntu-latest
@@ -101,6 +122,6 @@ jobs:
       
       - uses: actions/download-artifact@v4
         with:
-          name: ubuntu-executable
+          name: ubuntu-converter
       
-      - run: chmod +x cli && ./cli generate --spdx tests/data/SPDX.spdx && test -s "output.opossum" || exit 1
+      - run: chmod +x converter && ./converter generate --spdx tests/data/SPDX.spdx && test -s "output.opossum" || exit 1
