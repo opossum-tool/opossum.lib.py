@@ -4,14 +4,20 @@
 
 from pathlib import Path
 from typing import Any
+from unittest import mock
 
 import pytest
 from pydantic import ValidationError
 
-from opossum_lib.scancode.model import File, ScanCodeData
+from opossum_lib.opossum.opossum_file import OpossumPackage, SourceInfo
+from opossum_lib.scancode.model import (
+    File,
+    ScanCodeData,
+)
 from opossum_lib.scancode.resource_tree import (
     Node,
     convert_to_opossum_resources,
+    create_attribution_mapping,
     scancode_to_resource_tree,
 )
 
@@ -60,12 +66,7 @@ def test_scancode_to_resource_tree() -> None:
     )
 
     tree = scancode_to_resource_tree(scancode_data)
-    folder, subfolder, file1, file2, file3 = files
-    inner = Node(file=subfolder, children={"file3": Node(file=file3)})
-    reference = Node(
-        file=folder,
-        children={"B": inner, "file1": Node(file=file1), "file2.txt": Node(file=file2)},
-    )
+    reference = _create_reference_Node_structure()
 
     assert tree == reference
 
@@ -85,6 +86,57 @@ def test_convert_to_opossum_resources() -> None:
     assert resources.to_dict() == reference
 
 
+# OpossumUI automatically prepends every path with a "/"
+# So our resourcesToAttributions needs to start every path with "/" as well
+@mock.patch(
+    "opossum_lib.scancode.resource_tree.get_attribution_info",
+    autospec=True,
+    return_value=[OpossumPackage(source=SourceInfo(name="mocked"))],
+)
+def test_create_attribution_mapping_paths_have_root_prefix(_: Any) -> None:
+    rootnode = _create_reference_Node_structure()
+    # rootnode.children["file1"].file.license_detections = [ld1]
+    # rootnode.children["B"].children["file3"].file.license_detections = [ld2]
+    _, resourcesToAttributions = create_attribution_mapping(rootnode)
+    assert "/A/file1" in resourcesToAttributions
+    assert "/A/file2.txt" in resourcesToAttributions
+    assert "/A/B/file3" in resourcesToAttributions
+
+
+def test_create_attribution_mapping() -> None:
+    _, _, file1, file2, file3 = _create_reference_scancode_files()
+    pkg1 = OpossumPackage(source=SourceInfo(name="S1"))
+    pkg2 = OpossumPackage(source=SourceInfo(name="S2"))
+    pkg3 = OpossumPackage(source=SourceInfo(name="S3"))
+
+    def get_attribution_info_mock(file: File) -> list[OpossumPackage]:
+        if file == file1:
+            return [pkg1, pkg2]
+        elif file == file2:
+            return [pkg1, pkg2, pkg3]
+        elif file == file3:
+            return []
+        else:
+            return []
+
+    rootnode = _create_reference_Node_structure()
+
+    with mock.patch(
+        "opossum_lib.scancode.resource_tree.get_attribution_info",
+        new=get_attribution_info_mock,
+    ):
+        externalAttributions, resourcesToAttributions = create_attribution_mapping(
+            rootnode
+        )
+    assert len(externalAttributions) == 3  # deduplication worked
+
+    reverseMapping = {v: k for (k, v) in externalAttributions.items()}
+    id1, id2, id3 = reverseMapping[pkg1], reverseMapping[pkg2], reverseMapping[pkg3]
+    assert len(resourcesToAttributions) == 2  # only files with attributions
+    assert set(resourcesToAttributions["/" + file1.path]) == {id1, id2}
+    assert set(resourcesToAttributions["/" + file2.path]) == {id1, id2, id3}
+
+
 def _create_reference_scancode_files() -> list[File]:
     return [
         _create_file("A", "folder"),
@@ -95,8 +147,18 @@ def _create_reference_scancode_files() -> list[File]:
     ]
 
 
+def _create_reference_Node_structure() -> Node:
+    folder, subfolder, file1, file2, file3 = _create_reference_scancode_files()
+    inner = Node(file=subfolder, children={"file3": Node(file=file3)})
+    reference = Node(
+        file=folder,
+        children={"B": inner, "file1": Node(file=file1), "file2.txt": Node(file=file2)},
+    )
+    return reference
+
+
 def _create_file(path: str, type: str, **kwargs: dict[str, Any]) -> File:
-    dprops = {
+    defaultproperties = {
         "path": path,
         "type": type,
         "name": Path(path).name,
@@ -134,4 +196,4 @@ def _create_file(path: str, type: str, **kwargs: dict[str, Any]) -> File:
         "scan_errors": [],
         **kwargs,
     }
-    return File.model_validate(dprops)
+    return File.model_validate(defaultproperties)
