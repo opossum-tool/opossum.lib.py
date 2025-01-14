@@ -93,13 +93,20 @@ def test_successful_conversion_of_opossum_file(tmp_path: Path) -> None:
     # baseUrlsForSources
     # externalAttributionSources
 
+    # Doing individual asserts as otherwise the diff viewer does no longer work
+    # in case of errors
     assert result.exit_code == 0
     assert opossum_dict["metadata"] == expected_opossum_dict["metadata"]
-    assert expected_opossum_dict["resources"] == opossum_dict["resources"]
+    assert opossum_dict["resources"] == expected_opossum_dict["resources"]
     assert (
-        expected_opossum_dict["externalAttributions"]
-        == opossum_dict["externalAttributions"]
+        opossum_dict["externalAttributions"]
+        == expected_opossum_dict["externalAttributions"]
     )
+    assert (
+        opossum_dict["resourcesToAttributions"]
+        == expected_opossum_dict["resourcesToAttributions"]
+    )
+    assert opossum_dict["frequentLicenses"] == expected_opossum_dict["frequentLicenses"]
 
 
 def test_cli_no_output_file_provided() -> None:

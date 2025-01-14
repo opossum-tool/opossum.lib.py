@@ -26,6 +26,13 @@ class OpossumInformation:
     externalAttributionSources: dict[str, ExternalAttributionSource] = field(
         default_factory=dict
     )
+    frequentLicenses: list[FrequentLicense] | None = None
+
+
+class FrequentLicense(BaseModel):
+    fullName: str
+    shortName: str
+    defaultText: str
 
 
 @dataclass(frozen=True)
