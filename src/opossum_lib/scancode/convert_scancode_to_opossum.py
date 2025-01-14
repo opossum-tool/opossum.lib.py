@@ -35,7 +35,7 @@ def convert_scancode_to_opossum(filename: str) -> OpossumInformation:
 
     scanCodeData = ScanCodeData.model_validate(json_data)
     filetree = scancode_to_resource_tree(scanCodeData)
-    resources = convert_to_opossum_resources(filetree)
+    resources = convert_to_opossum_resources(filetree).to_dict()
     externalAttributions, resourcesToAttributions = create_attribution_mapping(filetree)
 
     return OpossumInformation(
@@ -58,8 +58,9 @@ def create_opossum_metadata(scancode_data: ScanCodeData) -> Metadata:
 
     the_header = scancode_data.headers[0]
 
-    projectId = str(uuid.uuid4())
-    fileCreationDate = the_header.end_timestamp
-    projectTitle = "ScanCode file"
+    metadata = {}
+    metadata["projectId"] = str(uuid.uuid4())
+    metadata["fileCreationDate"] = the_header.end_timestamp
+    metadata["projectTitle"] = "ScanCode file"
 
-    return Metadata(projectId, fileCreationDate, projectTitle)
+    return Metadata.model_validate(metadata)

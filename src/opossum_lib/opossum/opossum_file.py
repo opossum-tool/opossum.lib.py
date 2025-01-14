@@ -6,30 +6,52 @@ from __future__ import annotations
 from copy import deepcopy
 from dataclasses import field
 from enum import Enum, auto
-from typing import Literal
+from typing import Literal, cast
 
+from pydantic import BaseModel, ConfigDict, model_serializer
 from pydantic.dataclasses import dataclass
 
-OpossumPackageIdentifier = str
-ResourcePath = str
+type OpossumPackageIdentifier = str
+type ResourcePath = str
+type ResourceInFile = dict[str, ResourceInFile] | int
 
 
 @dataclass(frozen=True)
 class OpossumInformation:
     metadata: Metadata
-    resources: Resource
+    resources: ResourceInFile
     externalAttributions: dict[OpossumPackageIdentifier, OpossumPackage]
     resourcesToAttributions: dict[ResourcePath, list[OpossumPackageIdentifier]]
     attributionBreakpoints: list[str] = field(default_factory=list)
     externalAttributionSources: dict[str, ExternalAttributionSource] = field(
         default_factory=dict
     )
+    frequentLicenses: list[FrequentLicense] | None = None
+    filesWithChildren: list[str] | None = None
+    baseUrlsForSources: BaseUrlsForSources | None = None
+
+
+class BaseUrlsForSources(BaseModel):
+    @model_serializer
+    def serialize(self) -> dict:
+        # hack to override not serializing keys with corresponding value none:
+        # In this case this is valid and should be part of the serialization
+        return {k: v for k, v in self}
+
+    model_config = ConfigDict(extra="allow", frozen=True)
+
+
+class FrequentLicense(BaseModel):
+    fullName: str
+    shortName: str
+    defaultText: str
 
 
 @dataclass(frozen=True)
 class SourceInfo:
     name: str
-    documentConfidence: int | None = 0
+    documentConfidence: int | float | None = 0
+    additionalName: str | None = None
 
 
 @dataclass(frozen=True)
@@ -51,11 +73,13 @@ class OpossumPackage:
     preSelected: bool | None = None
     followUp: Literal["FOLLOW_UP"] | None = None
     originId: str | None = None
+    originIds: list[str] | None = None
     criticality: Literal["high"] | Literal["medium"] | None = None
+    wasPreferred: bool | None = None
 
 
-@dataclass(frozen=True)
-class Metadata:
+class Metadata(BaseModel):
+    model_config = ConfigDict(extra="allow", frozen=True)
     projectId: str
     fileCreationDate: str
     projectTitle: str
@@ -123,7 +147,7 @@ class Resource:
 
             return resource
 
-    def to_dict(self) -> int | dict:
+    def to_dict(self) -> ResourceInFile:
         if not self.has_children():
             if self.type == ResourceType.FOLDER:
                 return {}
@@ -154,8 +178,33 @@ class Resource:
     def has_children(self) -> bool:
         return len(self.children) > 0
 
+    def convert_to_file_resource(self) -> ResourceInFile:
+        return self.to_dict()
+
 
 @dataclass(frozen=True)
 class ExternalAttributionSource:
     name: str
     priority: int
+    isRelevantForPreferred: bool | None = None
+
+
+def _build_resource_tree(resource: ResourceInFile) -> Resource:
+    if isinstance(resource, int):
+        return Resource(type=ResourceType.FILE)
+    else:
+        result = Resource(type=ResourceType.FOLDER)
+        for name, child_resource in resource.items():
+            result.children[name] = _build_resource_tree(child_resource)
+        return result
+
+
+def convert_resource_in_file_to_resource(resource: ResourceInFile) -> Resource:
+    root_node = Resource(ResourceType.TOP_LEVEL)
+
+    if isinstance(resource, dict):
+        dict_resource = cast(dict[str, ResourceInFile], resource)
+        for name, child_resource in dict_resource.items():
+            root_node.children[name] = _build_resource_tree(child_resource)
+
+    return root_node

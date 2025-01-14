@@ -25,7 +25,9 @@ def test_create_opossum_metadata(_: Any) -> None:
     result = convert_scancode_to_opossum(TEST_SCANCODE_FILE)
 
     expected_metadata = Metadata(
-        "1234-12345-12345", "2025-01-10T102700.397143", "ScanCode file"
+        projectId="1234-12345-12345",
+        fileCreationDate="2025-01-10T102700.397143",
+        projectTitle="ScanCode file",
     )
 
     assert result.metadata == expected_metadata

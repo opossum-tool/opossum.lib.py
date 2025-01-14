@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 from pathlib import Path
+from typing import cast
 from unittest import TestCase
 
 from spdx_tools.spdx.model import Document
@@ -11,6 +12,7 @@ from spdx_tools.spdx.parser.parse_anything import parse_file
 from opossum_lib.opossum.opossum_file import (
     ExternalAttributionSource,
     OpossumInformation,
+    ResourceInFile,
 )
 from opossum_lib.spdx.constants import (
     SPDX_FILE_IDENTIFIER,
@@ -39,7 +41,7 @@ def test_different_paths_graph() -> None:
     document = _create_minimal_document()
     opossum_information = _get_opossum_information_from_document(document)
 
-    file_tree = opossum_information.resources.to_dict()
+    file_tree = opossum_information.resources
     assert file_tree == expected_file_tree
     TestCase().assertCountEqual(
         opossum_information.attributionBreakpoints,
@@ -103,7 +105,7 @@ def test_unconnected_paths_graph() -> None:
     ]
     opossum_information = _get_opossum_information_from_document(document)
 
-    file_tree = opossum_information.resources.to_dict()
+    file_tree = opossum_information.resources
     assert file_tree == expected_file_tree
     TestCase().assertCountEqual(
         opossum_information.attributionBreakpoints,
@@ -139,6 +141,18 @@ def test_unconnected_paths_graph() -> None:
     )
 
 
+def get_value_at_file_tree_path(
+    file_tree: ResourceInFile, path_elements: list[str]
+) -> ResourceInFile:
+    if len(path_elements) != 0:
+        assert isinstance(file_tree, dict)
+        file_tree = cast(dict[str, ResourceInFile], file_tree)
+        return get_value_at_file_tree_path(
+            file_tree[path_elements[0]], path_elements[1:]
+        )
+    return file_tree
+
+
 def test_different_roots_graph() -> None:
     """Creating a tree from a connected graph where some edges are not reachable
     from the SPDX Lite Document node. This means that the connected graph has multiple
@@ -152,7 +166,7 @@ def test_different_roots_graph() -> None:
     document = _generate_document_with_from_root_node_unreachable_file()
     opossum_information = _get_opossum_information_from_document(document)
 
-    file_tree = opossum_information.resources.to_dict()
+    file_tree = opossum_information.resources
     assert file_tree == expected_file_tree
     TestCase().assertCountEqual(
         opossum_information.attributionBreakpoints,
@@ -188,7 +202,7 @@ def test_tree_generation_for_bigger_examples_json() -> None:
     opossum_information = _get_opossum_information_from_file(
         "SPDXJSONExample-v2.3.spdx.json"
     )
-    file_tree = opossum_information.resources.to_dict()
+    file_tree = opossum_information.resources
 
     expected_breakpoints = [
         "/SPDX-Tools-v2.0/CONTAINS/glibc/CONTAINS/"
@@ -202,20 +216,27 @@ def test_tree_generation_for_bigger_examples_json() -> None:
     for attribution_breakpoint in expected_breakpoints:
         assert attribution_breakpoint in opossum_information.attributionBreakpoints
     assert (
-        file_tree["SPDX-Tools-v2.0"]["COPY_OF"][
-            "DocumentRef-spdx-tool-1.2:SPDXRef-ToolsElement"
-        ]
+        get_value_at_file_tree_path(
+            file_tree,
+            [
+                "SPDX-Tools-v2.0",
+                "COPY_OF",
+                "DocumentRef-spdx-tool-1.2:SPDXRef-ToolsElement",
+            ],
+        )
         == 1
     )
-
     assert (
-        file_tree["SPDX-Tools-v2.0"]["CONTAINS"]["glibc"]["DYNAMIC_LINK"]["Saxon"] == {}
+        get_value_at_file_tree_path(
+            file_tree, ["SPDX-Tools-v2.0", "CONTAINS", "glibc", "DYNAMIC_LINK", "Saxon"]
+        )
+        == {}
     )
 
 
 def test_tree_generation_for_bigger_examples_spdx() -> None:
     opossum_information = _get_opossum_information_from_file("SPDX.spdx")
-    file_tree = opossum_information.resources.to_dict()
+    file_tree = opossum_information.resources
     expected_breakpoints = [
         "/SPDX Lite Document/DESCRIBES/Package A/CONTAINS/",
         "/SPDX Lite Document/DESCRIBES/Package A/COPY_OF/Package C/CONTAINS/",
@@ -227,10 +248,18 @@ def test_tree_generation_for_bigger_examples_spdx() -> None:
     for attribution_breakpoint in expected_breakpoints:
         assert attribution_breakpoint in opossum_information.attributionBreakpoints
 
-    assert file_tree["SPDX Lite Document"]["DESCRIBES"]["Package B"] == {}
+    assert (
+        get_value_at_file_tree_path(
+            file_tree, ["SPDX Lite Document", "DESCRIBES", "Package B"]
+        )
+        == {}
+    )
 
     assert (
-        file_tree["SPDX Lite Document"]["DESCRIBES"]["Package A"]["CONTAINS"]["File-C"]
+        get_value_at_file_tree_path(
+            file_tree,
+            ["SPDX Lite Document", "DESCRIBES", "Package A", "CONTAINS", "File-C"],
+        )
         == 1
     )
 
