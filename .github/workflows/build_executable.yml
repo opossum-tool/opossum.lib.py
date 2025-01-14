@@ -51,7 +51,7 @@ jobs:
         # On ubuntu/macos, getsitepackages returns a list with only one element, on windows a list with two elements is returned where the second is correct.
 
       - name: Build executable
-        run: uv run pyinstaller --name ${{ inputs.executable-name }} --onefile --add-data "$sitepackage_dir/license_expression/data/scancode-licensedb-index.json:./license_expression/data" --add-data "$sitepackage_dir/spdx_tools/spdx/parser/tagvalue/*:./spdx_tools/spdx/parser/tagvalue" -o  src/opossum_lib/cli.py
+        run: uv run pyinstaller --name ${{ inputs.executable-name }} --onefile --add-data "$sitepackage_dir/license_expression/data/scancode-licensedb-index.json:./license_expression/data" --add-data "$sitepackage_dir/spdx_tools/spdx/parser/tagvalue/*:./spdx_tools/spdx/parser/tagvalue" src/opossum_lib/cli.py
       
       - name: Test executable
         run: dist/${{ inputs.executable-name }} generate --spdx tests/data/SPDX.spdx && test -s "output.opossum" || exit 1
