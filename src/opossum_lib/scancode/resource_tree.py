@@ -32,9 +32,14 @@ class Node(BaseModel):
             self.children[next_segment] = Node.model_construct(None)
         return self.children[next_segment].get_path(rest)
 
+    def revalidate(self) -> None:
+        check_schema(self)
+        for child in self.children.values():
+            child.revalidate()
+
 
 def scancode_to_resource_tree(scanCodeData: ScanCodeData) -> Node:
-    root = Node.model_construct(None)
+    root = Node.model_construct(file=None)
     for file in scanCodeData.files:
         segments = path_segments(file.path)
         root.get_path(segments).file = file

@@ -5,12 +5,52 @@
 from pathlib import Path
 from typing import Any
 
+import pytest
+from pydantic import ValidationError
+
 from opossum_lib.scancode.model import File, ScanCodeData
 from opossum_lib.scancode.resource_tree import (
     Node,
     convert_to_opossum_resources,
     scancode_to_resource_tree,
 )
+
+
+def test_revalidate_valid() -> None:
+    dummy_file = _create_file("A", "file")
+    valid_structure = Node(
+        file=dummy_file,
+        children={
+            "A": Node(file=dummy_file),
+            "B": Node(file=dummy_file, children={"C": Node(file=dummy_file)}),
+        },
+    )
+    valid_structure.revalidate()
+
+
+def test_revalidate_invalid_at_toplevel() -> None:
+    dummy_file = _create_file("A", "file")
+    invalid_structure = Node.model_construct(
+        children={
+            "A": Node(file=dummy_file),
+            "B": Node(file=dummy_file, children={"C": Node(file=dummy_file)}),
+        },
+    )
+    with pytest.raises(ValidationError):
+        invalid_structure.revalidate()
+
+
+def test_revalidate_invalid_nested() -> None:
+    dummy_file = _create_file("A", "file")
+    invalid_structure = Node(
+        file=dummy_file,
+        children={
+            "A": Node(file=dummy_file),
+            "B": Node(file=dummy_file, children={"C": Node.model_construct(None)}),
+        },
+    )
+    with pytest.raises(ValidationError):
+        invalid_structure.revalidate()
 
 
 def test_scancode_to_resource_tree() -> None:
@@ -43,6 +83,16 @@ def test_convert_to_opossum_resources() -> None:
     resources = convert_to_opossum_resources(tree)
     reference = {"A": {"B": {"file3": 1}, "file1": 1, "file2.txt": 1}}
     assert resources.to_dict() == reference
+
+
+def _create_reference_scancode_files() -> list[File]:
+    return [
+        _create_file("A", "folder"),
+        _create_file("A/B", "folder"),
+        _create_file("A/file1", "file"),
+        _create_file("A/file2.txt", "file"),
+        _create_file("A/B/file3", "file"),
+    ]
 
 
 def _create_file(path: str, type: str, **kwargs: dict[str, Any]) -> File:
@@ -85,13 +135,3 @@ def _create_file(path: str, type: str, **kwargs: dict[str, Any]) -> File:
         **kwargs,
     }
     return File.model_validate(dprops)
-
-
-def _create_reference_scancode_files() -> list[File]:
-    return [
-        _create_file("A", "folder"),
-        _create_file("A/B", "folder"),
-        _create_file("A/file1", "file"),
-        _create_file("A/file2.txt", "file"),
-        _create_file("A/B/file3", "file"),
-    ]
