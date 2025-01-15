@@ -4,7 +4,6 @@
 
 import json
 from pathlib import Path
-from typing import Any
 from unittest import mock
 
 import pytest
@@ -12,17 +11,17 @@ from _pytest.logging import LogCaptureFixture
 
 from opossum_lib.opossum.opossum_file import Metadata
 from opossum_lib.scancode.convert_scancode_to_opossum import (
-    convert_scancode_to_opossum,
     create_opossum_metadata,
 )
 from opossum_lib.scancode.model import ScanCodeData
 
-TEST_SCANCODE_FILE = str(Path(__file__).parent.parent / "data/scancode.json")
+TEST_SCANCODE_FILE = str(Path(__file__).parent.parent / "data/scancode_input.json")
 
 
-@mock.patch("uuid.uuid4", autospec=True, return_value="1234-12345-12345")
-def test_create_opossum_metadata(_: Any) -> None:
-    result = convert_scancode_to_opossum(TEST_SCANCODE_FILE)
+def test_create_opossum_metadata() -> None:
+    scancode_data = _create_valid_scancode_data()
+    with mock.patch("uuid.uuid4", return_value="1234-12345-12345"):
+        metadata = create_opossum_metadata(scancode_data)
 
     expected_metadata = Metadata(
         projectId="1234-12345-12345",
@@ -30,7 +29,7 @@ def test_create_opossum_metadata(_: Any) -> None:
         projectTitle="ScanCode file",
     )
 
-    assert result.metadata == expected_metadata
+    assert metadata == expected_metadata
 
 
 def test_create_opossum_metadata_missing_header(caplog: LogCaptureFixture) -> None:
