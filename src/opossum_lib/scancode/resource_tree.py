@@ -10,25 +10,24 @@ from pydantic import BaseModel
 from opossum_lib.opossum.opossum_file import (
     OpossumPackage,
     OpossumPackageIdentifier,
-    Resource,
+    ResourceInFile,
     ResourcePath,
-    ResourceType,
     SourceInfo,
 )
 from opossum_lib.scancode.helpers import check_schema, path_segments
 from opossum_lib.scancode.model import File, ScanCodeData
 
 
-class Node(BaseModel):
+class ScanCodeFileTree(BaseModel):
     file: File
-    children: dict[str, "Node"] = {}
+    children: dict[str, "ScanCodeFileTree"] = {}
 
-    def get_path(self, path: list[str]) -> "Node":
+    def get_path(self, path: list[str]) -> "ScanCodeFileTree":
         if len(path) == 0:
             return self
         next_segment, *rest = path
         if next_segment not in self.children:
-            self.children[next_segment] = Node.model_construct(None)
+            self.children[next_segment] = ScanCodeFileTree.model_construct(None)
         return self.children[next_segment].get_path(rest)
 
     def revalidate(self) -> None:
@@ -37,8 +36,8 @@ class Node(BaseModel):
             child.revalidate()
 
 
-def scancode_to_resource_tree(scanCodeData: ScanCodeData) -> Node:
-    root = Node.model_construct(file=None)
+def scancode_to_file_tree(scanCodeData: ScanCodeData) -> ScanCodeFileTree:
+    root = ScanCodeFileTree.model_construct(file=None)
     for file in scanCodeData.files:
         segments = path_segments(file.path)
         root.get_path(segments).file = file
@@ -49,21 +48,19 @@ def scancode_to_resource_tree(scanCodeData: ScanCodeData) -> Node:
     return the_child
 
 
-def convert_to_opossum_resources(rootnode: Node) -> Resource:
-    def process_node(node: Node) -> Resource:
+def convert_to_opossum_resources(rootnode: ScanCodeFileTree) -> ResourceInFile:
+    def process_node(node: ScanCodeFileTree) -> ResourceInFile:
         if node.file.type == "file":
-            return Resource(ResourceType.FILE)
+            return 1
         else:
             rootpath = node.file.path
             children = {
                 relpath(n.file.path, rootpath): process_node(n)
                 for n in node.children.values()
             }
-            return Resource(ResourceType.FOLDER, children)
+            return children
 
-    return Resource(
-        ResourceType.TOP_LEVEL, {rootnode.file.path: process_node(rootnode)}
-    )
+    return {rootnode.file.path: process_node(rootnode)}
 
 
 def get_attribution_info(file: File) -> list[OpossumPackage]:
@@ -90,7 +87,7 @@ def get_attribution_info(file: File) -> list[OpossumPackage]:
 
 
 def create_attribution_mapping(
-    rootnode: Node,
+    rootnode: ScanCodeFileTree,
 ) -> tuple[
     dict[OpossumPackageIdentifier, OpossumPackage],
     dict[ResourcePath, list[OpossumPackageIdentifier]],
@@ -98,7 +95,7 @@ def create_attribution_mapping(
     attributionLookup = {}  # attribution -> uuid
     resourcesToAttributions = {}  # path -> [attributionUUID]
 
-    def process_node(node: Node) -> None:
+    def process_node(node: ScanCodeFileTree) -> None:
         # the / is required by OpossumUI
         path = "/" + node.file.path
         attributions = get_attribution_info(node.file)

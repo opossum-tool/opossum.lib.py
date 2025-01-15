@@ -16,7 +16,7 @@ from opossum_lib.scancode.model import ScanCodeData
 from opossum_lib.scancode.resource_tree import (
     convert_to_opossum_resources,
     create_attribution_mapping,
-    scancode_to_resource_tree,
+    scancode_to_file_tree,
 )
 
 
@@ -34,8 +34,8 @@ def convert_scancode_to_opossum(filename: str) -> OpossumInformation:
         sys.exit(1)
 
     scanCodeData = ScanCodeData.model_validate(json_data)
-    filetree = scancode_to_resource_tree(scanCodeData)
-    resources = convert_to_opossum_resources(filetree).to_dict()
+    filetree = scancode_to_file_tree(scanCodeData)
+    resources = convert_to_opossum_resources(filetree)
     externalAttributions, resourcesToAttributions = create_attribution_mapping(filetree)
 
     return OpossumInformation(

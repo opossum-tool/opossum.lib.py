@@ -19,21 +19,23 @@ from opossum_lib.scancode.model import (
     ScanCodeData,
 )
 from opossum_lib.scancode.resource_tree import (
-    Node,
+    ScanCodeFileTree,
     convert_to_opossum_resources,
     create_attribution_mapping,
     get_attribution_info,
-    scancode_to_resource_tree,
+    scancode_to_file_tree,
 )
 
 
 def test_revalidate_valid() -> None:
     dummy_file = _create_file("A", "file")
-    valid_structure = Node(
+    valid_structure = ScanCodeFileTree(
         file=dummy_file,
         children={
-            "A": Node(file=dummy_file),
-            "B": Node(file=dummy_file, children={"C": Node(file=dummy_file)}),
+            "A": ScanCodeFileTree(file=dummy_file),
+            "B": ScanCodeFileTree(
+                file=dummy_file, children={"C": ScanCodeFileTree(file=dummy_file)}
+            ),
         },
     )
     valid_structure.revalidate()
@@ -41,10 +43,12 @@ def test_revalidate_valid() -> None:
 
 def test_revalidate_invalid_at_toplevel() -> None:
     dummy_file = _create_file("A", "file")
-    invalid_structure = Node.model_construct(
+    invalid_structure = ScanCodeFileTree.model_construct(
         children={
-            "A": Node(file=dummy_file),
-            "B": Node(file=dummy_file, children={"C": Node(file=dummy_file)}),
+            "A": ScanCodeFileTree(file=dummy_file),
+            "B": ScanCodeFileTree(
+                file=dummy_file, children={"C": ScanCodeFileTree(file=dummy_file)}
+            ),
         },
     )
     with pytest.raises(ValidationError):
@@ -53,11 +57,13 @@ def test_revalidate_invalid_at_toplevel() -> None:
 
 def test_revalidate_invalid_nested() -> None:
     dummy_file = _create_file("A", "file")
-    invalid_structure = Node(
+    invalid_structure = ScanCodeFileTree(
         file=dummy_file,
         children={
-            "A": Node(file=dummy_file),
-            "B": Node(file=dummy_file, children={"C": Node.model_construct(None)}),
+            "A": ScanCodeFileTree(file=dummy_file),
+            "B": ScanCodeFileTree(
+                file=dummy_file, children={"C": ScanCodeFileTree.model_construct(None)}
+            ),
         },
     )
     with pytest.raises(ValidationError):
@@ -70,7 +76,7 @@ def test_scancode_to_resource_tree() -> None:
         headers=[], packages=[], dependencies=[], license_detections=[], files=files
     )
 
-    tree = scancode_to_resource_tree(scancode_data)
+    tree = scancode_to_file_tree(scancode_data)
     reference = _create_reference_Node_structure()
 
     assert tree == reference
@@ -85,10 +91,10 @@ def test_convert_to_opossum_resources() -> None:
         files=_create_reference_scancode_files(),
     )
 
-    tree = scancode_to_resource_tree(scancode_data)
+    tree = scancode_to_file_tree(scancode_data)
     resources = convert_to_opossum_resources(tree)
     reference = {"A": {"B": {"file3": 1}, "file1": 1, "file2.txt": 1}}
-    assert resources.to_dict() == reference
+    assert resources == reference
 
 
 # OpossumUI automatically prepends every path with a "/"
@@ -232,12 +238,18 @@ def _create_reference_scancode_files() -> list[File]:
     ]
 
 
-def _create_reference_Node_structure() -> Node:
+def _create_reference_Node_structure() -> ScanCodeFileTree:
     folder, subfolder, file1, file2, file3 = _create_reference_scancode_files()
-    inner = Node(file=subfolder, children={"file3": Node(file=file3)})
-    reference = Node(
+    inner = ScanCodeFileTree(
+        file=subfolder, children={"file3": ScanCodeFileTree(file=file3)}
+    )
+    reference = ScanCodeFileTree(
         file=folder,
-        children={"B": inner, "file1": Node(file=file1), "file2.txt": Node(file=file2)},
+        children={
+            "B": inner,
+            "file1": ScanCodeFileTree(file=file1),
+            "file2.txt": ScanCodeFileTree(file=file2),
+        },
     )
     return reference
 
