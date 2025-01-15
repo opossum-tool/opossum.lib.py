@@ -86,14 +86,14 @@ jobs:
         python-version: ['3.13']
         include:
           - os: ubuntu-latest
-            executable-name: converter
-            artifact-name: ubuntu-converter
+            executable-name: opossum-file
+            artifact-name: opossum-file-for-ubuntu
           - os: windows-latest
-            executable-name: converter.exe
-            artifact-name: windows-converter
+            executable-name: opossum-file.exe
+            artifact-name: opossum-file-for-windows
           - os: macos-latest
-            executable-name: converter
-            artifact-name: macos-converter
+            executable-name: opossum-file
+            artifact-name: opossum-file-for-mac
     uses: ./.github/workflows/build_executable.yml
     with:
       os: ${{ matrix.os }}
