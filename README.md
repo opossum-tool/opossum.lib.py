@@ -82,3 +82,13 @@ uv run python build.py opossum-file
 ```
 
 This will create a self-contained executable file `dist/opossum-file` (`dist/opossum-file.exe` on Windows).
+
+# Creating a new release
+
+Note: You will need the "maintain" role in order to create a new release.
+
+1. Go to the [GitHub releases page](https://github.com/opossum-tool/opossum.lib.py/releases/new) and use the UI to create a new release.
+2. The tag should have the format "opossum-file-$YEAR-$MONTH-$DAY" (in case of an Nth release on the same day "opossum-file-$YEAR-$MONTH-$DAY.N").
+3. The title of the release equals the tag.
+4. Click the button "Generate release notes" to get the description for the release. Then, remove all the contributions from @renovate which are just dependency upgrades.
+5. Click "Publish release". This will trigger the CI/CD pipeline which will build the release for all three OSs and upload the artifacts to the release.
