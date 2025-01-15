@@ -15,8 +15,8 @@ from opossum_lib.scancode.constants import SCANCODE_SOURCE_NAME
 from opossum_lib.scancode.model import (
     Copyright,
     File,
+    FileBasedLicenseDetection,
     FileType,
-    LicenseDetection1,
     Match,
     ScanCodeData,
 )
@@ -193,13 +193,13 @@ def test_get_attribution_info_file_multiple() -> None:
     match3.score = 50
     match3.license_expression = "mit"
     match3.license_expression_spdx = "MIT"
-    license1 = LicenseDetection1(
+    license1 = FileBasedLicenseDetection(
         license_expression="apache-2.0",
         license_expression_spdx="Apache-2.0",
         identifier="identifier1",
         matches=[match1, match2],
     )
-    license2 = LicenseDetection1(
+    license2 = FileBasedLicenseDetection(
         license_expression="mit",
         license_expression_spdx="MIT",
         identifier="identifier2",

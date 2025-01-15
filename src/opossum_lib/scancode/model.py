@@ -58,7 +58,7 @@ class ReferenceMatch(BaseModel):
     start_line: int
 
 
-class LicenseDetection(BaseModel):
+class GlobalLicenseDetection(BaseModel):
     detection_count: int
     identifier: str
     license_expression: str
@@ -81,7 +81,7 @@ class Match(BaseModel):
     start_line: int
 
 
-class LicenseDetection1(BaseModel):
+class FileBasedLicenseDetection(BaseModel):
     license_expression: str
     license_expression_spdx: str
     matches: list[Match]
@@ -132,7 +132,7 @@ class File(BaseModel):
     is_source: bool
     is_text: bool
     license_clues: list
-    license_detections: list[LicenseDetection1]
+    license_detections: list[FileBasedLicenseDetection]
     md5: str | None
     mime_type: str | None
     name: str
@@ -152,6 +152,6 @@ class File(BaseModel):
 class ScanCodeData(BaseModel):
     dependencies: list
     files: list[File]
-    license_detections: list[LicenseDetection]
+    license_detections: list[GlobalLicenseDetection]
     headers: list[Header]
     packages: list
