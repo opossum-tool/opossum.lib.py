@@ -62,10 +62,6 @@ Options:
 
 ```
 
-## Usage of prebuilt executables
-
-Executable files that were built manually or downloaded from a release do not need uv. Simply follow the instructions above and replace `uv run opossum-file` with the path to your executable, e.g. `./opossum-file`.
-
 # Development
 
 To test your changes, run
