@@ -9,7 +9,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Extra, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Metadata(BaseModel):
@@ -124,9 +124,8 @@ class ManualAttributions(BaseModel):
     )
 
 
-class OpossumOutputSchema(BaseModel):
-    class Config:
-        extra = Extra.allow
+class OpossumOutputFile(BaseModel):
+    model_config = ConfigDict(extra="allow")
 
     metadata: Metadata
     manualAttributions: dict[str, ManualAttributions]

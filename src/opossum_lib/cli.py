@@ -12,7 +12,7 @@ from pathlib import Path
 import click
 
 from opossum_lib.opossum.file_generation import write_opossum_information_to_file
-from opossum_lib.opossum.opossum_file import OpossumInformation
+from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 from opossum_lib.opossum.read_opossum_file import read_opossum_file
 from opossum_lib.spdx.convert_to_opossum import convert_spdx_to_opossum_information
 
@@ -53,7 +53,7 @@ def generate(spdx: list[str], opossum: list[str], outfile: str) -> None:
       - opossum
     """
     validate_input_exit_on_error(spdx, opossum)
-    opossum_information = convert_after_valid_input(spdx, opossum)
+    opossum_file_content = convert_after_valid_input(spdx, opossum)
 
     if not outfile.endswith(".opossum"):
         outfile += ".opossum"
@@ -61,7 +61,7 @@ def generate(spdx: list[str], opossum: list[str], outfile: str) -> None:
     if Path.is_file(Path(outfile)):
         logging.warning(f"{outfile} already exists and will be overwritten.")
 
-    write_opossum_information_to_file(opossum_information, Path(outfile))
+    write_opossum_information_to_file(opossum_file_content, Path(outfile))
 
 
 def validate_input_exit_on_error(spdx: list[str], opossum: list[str]) -> None:
@@ -76,7 +76,7 @@ def validate_input_exit_on_error(spdx: list[str], opossum: list[str]) -> None:
 
 def convert_after_valid_input(
     spdx: list[str], opossum_files: list[str]
-) -> OpossumInformation:
+) -> OpossumFileContent:
     if len(spdx) == 1:
         the_spdx_file = spdx[0]
         return convert_spdx_to_opossum_information(the_spdx_file)

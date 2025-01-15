@@ -12,9 +12,10 @@ from opossum_lib.opossum.constants import INPUT_JSON_NAME
 from opossum_lib.opossum.opossum_file import (
     OpossumInformation,
 )
+from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 
 
-def read_opossum_file(filename: str) -> OpossumInformation:
+def read_opossum_file(filename: str) -> OpossumFileContent:
     logging.info(f"Converting opossum to opossum {filename}")
 
     try:
@@ -24,7 +25,9 @@ def read_opossum_file(filename: str) -> OpossumInformation:
             validate_zip_file_contents(input_zip_file)
             with input_zip_file.open(INPUT_JSON_NAME) as input_json_file:
                 input_json = json.load(input_json_file)
-                return TypeAdapter(OpossumInformation).validate_python(input_json)
+                return OpossumFileContent(
+                    TypeAdapter(OpossumInformation).validate_python(input_json)
+                )
     except Exception as e:
         print(f"Error reading file {filename}: {e}")
         sys.exit(1)
