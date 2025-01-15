@@ -1,5 +1,5 @@
-import site
 import PyInstaller.__main__
+import site
 import sys
 
 def main() -> None:
