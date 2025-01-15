@@ -76,27 +76,3 @@ jobs:
 
       - name: Run tests
         run: uv run pytest
-  
-  test-build:
-    needs: [linter, test]
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.13']
-        include:
-          - os: ubuntu-latest
-            executable-name: opossum-file
-            artifact-name: opossum-file-for-ubuntu
-          - os: windows-latest
-            executable-name: opossum-file.exe
-            artifact-name: opossum-file-for-windows
-          - os: macos-latest
-            executable-name: opossum-file
-            artifact-name: opossum-file-for-mac
-    uses: ./.github/workflows/build_executable.yml
-    with:
-      os: ${{ matrix.os }}
-      python-version: ${{ matrix.python-version }}
-      executable-name: ${{ matrix.executable-name }}
-      artifact-name: ${{ matrix.artifact-name }}
