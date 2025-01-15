@@ -12,7 +12,7 @@ from opossum_lib.opossum.opossum_file import (
     Metadata,
     OpossumInformation,
 )
-from opossum_lib.scancode.model import ScanCodeData
+from opossum_lib.scancode.model import Header, ScanCodeData
 from opossum_lib.scancode.resource_tree import (
     convert_to_opossum_resources,
     create_attribution_mapping,
@@ -24,17 +24,25 @@ def convert_scancode_to_opossum(filename: str) -> OpossumInformation:
     logging.info(f"Converting scancode to opossum {filename}")
 
     scancode_data = load_scancode_json(filename)
-    validate_scancode_json(scancode_data, filename)
 
     filetree = scancode_to_file_tree(scancode_data)
     resources = convert_to_opossum_resources(filetree)
-    externalAttributions, resourcesToAttributions = create_attribution_mapping(filetree)
+    external_attributions, resources_to_attributions = create_attribution_mapping(
+        filetree
+    )
+
+    scancode_header = extract_scancode_header(scancode_data, filename)
+    metadata = {
+        "projectId": str(uuid.uuid4()),
+        "fileCreationDate": scancode_header.end_timestamp,
+        "projectTitle": "ScanCode file",
+    }
 
     return OpossumInformation(
-        metadata=create_opossum_metadata(scancode_data),
+        metadata=Metadata(**metadata),
         resources=resources,
-        externalAttributions=externalAttributions,
-        resourcesToAttributions=resourcesToAttributions,
+        externalAttributions=external_attributions,
+        resourcesToAttributions=resources_to_attributions,
         attributionBreakpoints=[],
         externalAttributionSources={},
     )
@@ -56,19 +64,8 @@ def load_scancode_json(filename: str) -> ScanCodeData:
     return scancode_data
 
 
-def validate_scancode_json(scancode_data: ScanCodeData, filename: str) -> None:
+def extract_scancode_header(scancode_data: ScanCodeData, filename: str) -> Header:
     if len(scancode_data.headers) != 1:
         logging.error(f"Headers of ScanCode file are invalid. File: {filename}")
         sys.exit(1)
-
-
-def create_opossum_metadata(scancode_data: ScanCodeData) -> Metadata:
-    scancode_header = scancode_data.headers[0]
-
-    metadata = {
-        "projectId": str(uuid.uuid4()),
-        "fileCreationDate": scancode_header.end_timestamp,
-        "projectTitle": "ScanCode file",
-    }
-
-    return Metadata.model_validate(metadata)
+    return scancode_data.headers[0]

@@ -51,37 +51,37 @@ def scancode_to_file_tree(scancode_data: ScanCodeData) -> ScanCodeFileTree:
     return root
 
 
-def convert_to_opossum_resources(rootnode: ScanCodeFileTree) -> ResourceInFile:
+def convert_to_opossum_resources(root_node: ScanCodeFileTree) -> ResourceInFile:
     def process_node(node: ScanCodeFileTree) -> ResourceInFile:
         if node.file.type == FileType.FILE:
             return 1
         else:
-            rootpath = node.file.path
+            root_path = node.file.path
             children = {
-                relpath(n.file.path, rootpath): process_node(n)
+                relpath(n.file.path, root_path): process_node(n)
                 for n in node.children.values()
             }
             return children
 
-    return {rootnode.file.path: process_node(rootnode)}
+    return {root_node.file.path: process_node(root_node)}
 
 
 def get_attribution_info(file: File) -> list[OpossumPackage]:
     if file.type == FileType.DIRECTORY:
         return []
-    copyright = "\n".join([c.copyright for c in file.copyrights])
+    copyright = "\n".join(c.copyright for c in file.copyrights)
     source_info = SourceInfo(SCANCODE_SOURCE_NAME)
 
     attribution_infos = []
     for license_detection in file.license_detections:
-        licenseName = license_detection.license_expression_spdx
-        maxscore = max([m.score for m in license_detection.matches])
-        attributionConfidence = int(maxscore)
+        license_name = license_detection.license_expression_spdx
+        max_score = max(m.score for m in license_detection.matches)
+        attribution_confidence = int(max_score)
 
         package = OpossumPackage(
             source_info,
-            licenseName=licenseName,
-            attributionConfidence=attributionConfidence,
+            licenseName=license_name,
+            attributionConfidence=attribution_confidence,
             copyright=copyright,
         )
         attribution_infos.append(package)
@@ -94,13 +94,13 @@ def get_attribution_key(attribution: OpossumPackage) -> OpossumPackageIdentifier
 
 
 def create_attribution_mapping(
-    rootnode: ScanCodeFileTree,
+    root_node: ScanCodeFileTree,
 ) -> tuple[
     dict[OpossumPackageIdentifier, OpossumPackage],
     dict[ResourcePath, list[OpossumPackageIdentifier]],
 ]:
-    externalAttributions: dict[OpossumPackageIdentifier, OpossumPackage] = {}
-    resourcesToAttributions: dict[ResourcePath, list[OpossumPackageIdentifier]] = {}
+    external_attributions: dict[OpossumPackageIdentifier, OpossumPackage] = {}
+    resources_to_attributions: dict[ResourcePath, list[OpossumPackageIdentifier]] = {}
 
     def process_node(node: ScanCodeFileTree) -> None:
         # the / is required by OpossumUI
@@ -108,15 +108,15 @@ def create_attribution_mapping(
         attributions = get_attribution_info(node.file)
 
         new_attributions_with_id = {get_attribution_key(a): a for a in attributions}
-        externalAttributions.update(new_attributions_with_id)
+        external_attributions.update(new_attributions_with_id)
 
         if len(new_attributions_with_id) > 0:
-            resourcesToAttributions[path] = list(new_attributions_with_id.keys())
+            resources_to_attributions[path] = list(new_attributions_with_id.keys())
 
         for child in node.children.values():
             process_node(child)
 
-    for child in rootnode.children.values():
+    for child in root_node.children.values():
         process_node(child)
 
-    return externalAttributions, resourcesToAttributions
+    return external_attributions, resources_to_attributions

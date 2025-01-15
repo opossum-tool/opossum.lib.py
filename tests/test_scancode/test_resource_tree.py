@@ -110,10 +110,10 @@ def test_create_attribution_mapping_paths_have_root_prefix(_: Any) -> None:
     rootnode = _create_reference_Node_structure()
     # rootnode.children["file1"].file.license_detections = [ld1]
     # rootnode.children["B"].children["file3"].file.license_detections = [ld2]
-    _, resourcesToAttributions = create_attribution_mapping(rootnode)
-    assert "/A/file1" in resourcesToAttributions
-    assert "/A/file2.txt" in resourcesToAttributions
-    assert "/A/B/file3" in resourcesToAttributions
+    _, resources_to_attributions = create_attribution_mapping(rootnode)
+    assert "/A/file1" in resources_to_attributions
+    assert "/A/file2.txt" in resources_to_attributions
+    assert "/A/B/file3" in resources_to_attributions
 
 
 def test_create_attribution_mapping() -> None:
@@ -132,22 +132,22 @@ def test_create_attribution_mapping() -> None:
         else:
             return []
 
-    rootnode = _create_reference_Node_structure()
+    root_node = _create_reference_Node_structure()
 
     with mock.patch(
         "opossum_lib.scancode.resource_tree.get_attribution_info",
         new=get_attribution_info_mock,
     ):
-        externalAttributions, resourcesToAttributions = create_attribution_mapping(
-            rootnode
+        external_attributions, resources_to_attributions = create_attribution_mapping(
+            root_node
         )
-    assert len(externalAttributions) == 3  # deduplication worked
+    assert len(external_attributions) == 3  # deduplication worked
 
-    reverseMapping = {v: k for (k, v) in externalAttributions.items()}
-    id1, id2, id3 = reverseMapping[pkg1], reverseMapping[pkg2], reverseMapping[pkg3]
-    assert len(resourcesToAttributions) == 2  # only files with attributions
-    assert set(resourcesToAttributions["/" + file1.path]) == {id1, id2}
-    assert set(resourcesToAttributions["/" + file2.path]) == {id1, id2, id3}
+    reverse_mapping = {v: k for (k, v) in external_attributions.items()}
+    id1, id2, id3 = reverse_mapping[pkg1], reverse_mapping[pkg2], reverse_mapping[pkg3]
+    assert len(resources_to_attributions) == 2  # only files with attributions
+    assert set(resources_to_attributions["/" + file1.path]) == {id1, id2}
+    assert set(resources_to_attributions["/" + file2.path]) == {id1, id2, id3}
 
 
 def test_get_attribution_info_directory() -> None:
@@ -257,7 +257,7 @@ def _create_reference_Node_structure() -> ScanCodeFileTree:
 
 
 def _create_file(path: str, type: FileType, **kwargs: Any) -> File:
-    defaultproperties = {
+    default_properties = {
         "path": path,
         "type": type,
         "name": Path(path).name,
@@ -295,4 +295,4 @@ def _create_file(path: str, type: FileType, **kwargs: Any) -> File:
         "scan_errors": [],
         **kwargs,
     }
-    return File.model_validate(defaultproperties)
+    return File.model_validate(default_properties)
