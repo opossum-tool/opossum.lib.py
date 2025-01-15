@@ -42,10 +42,10 @@ Commands:
   generate  Generate an Opossum file from various other file formats.
 ```
 
-### `generate`
+### generate
 
 ```bash
-Usage: uv run opossum-file generate [OPTIONS]
+sage: opossum-file generate [OPTIONS]
 
   Generate an Opossum file from various other file formats.
 
@@ -53,12 +53,14 @@ Usage: uv run opossum-file generate [OPTIONS]
     - SPDX
 
 Options:
-  --spdx PATH         SPDX files used as input.
+  --spdx PATH         Specify a SPDX file that you would like to include in
+                      the final output.
+  --opossum PATH      Specify a .opossum file that you would like to include
+                      in the final output.
   -o, --outfile TEXT  The file path to write the generated opossum document
                       to. If appropriate, the extension ".opossum" will be
                       appended.  [default: output.opossum]
   --help              Show this message and exit.
-
 ```
 
 # Development

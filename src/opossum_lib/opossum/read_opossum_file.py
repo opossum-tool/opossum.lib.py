@@ -26,7 +26,6 @@ def read_opossum_file(filename: str) -> OpossumInformation:
                 input_json = json.load(input_json_file)
                 return TypeAdapter(OpossumInformation).validate_python(input_json)
     except Exception as e:
-        # handle the exception
         print(f"Error reading file {filename}: {e}")
         sys.exit(1)
 

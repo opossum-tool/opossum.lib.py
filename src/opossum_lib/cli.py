@@ -25,13 +25,13 @@ def opossum_file() -> None:
 @opossum_file.command()
 @click.option(
     "--spdx",
-    help="SPDX files used as input.",
+    help="Specify a SPDX file that you would like to include in the final output.",
     multiple=True,
     type=click.Path(exists=True),
 )
 @click.option(
     "--opossum",
-    help="opossum files used as input.",
+    help="Specify a .opossum file that you would like to include in the final output.",
     multiple=True,
     type=click.Path(exists=True),
 )
