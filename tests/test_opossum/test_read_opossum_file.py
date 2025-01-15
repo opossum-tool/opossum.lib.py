@@ -8,17 +8,23 @@ from _pytest.logging import LogCaptureFixture
 
 from opossum_lib.opossum.read_opossum_file import read_opossum_file
 
-TEST_DATA_PATH = Path(__file__).resolve().parent.parent / "data"
+TEST_DATA_DIRECTORY = Path(__file__).resolve().parent.parent / "data"
 
 
 def test_read_opossum_file_corrupted_file_exits_1(caplog: LogCaptureFixture) -> None:
-    input_path = (
-        Path(__file__).resolve().parent.parent
-        / "data"
-        / "opossum_input_corrupt.opossum"
-    )
+    input_path = TEST_DATA_DIRECTORY / "opossum_input_corrupt.opossum"
 
     with pytest.raises(SystemExit) as system_exit:
         read_opossum_file(str(input_path))
     assert system_exit.value.code == 1
     assert "is corrupt and does not contain 'input.json'" in caplog.messages[0]
+
+
+def test_read_opossum_file_containing_output_json() -> None:
+    input_path = TEST_DATA_DIRECTORY / "opossum_input_with_result.opossum"
+
+    result = read_opossum_file(str(input_path))
+
+    assert result is not None
+    assert result.input_file is not None
+    assert result.output_file is not None
