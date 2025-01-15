@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 from unittest import mock
@@ -111,9 +112,9 @@ def test_create_attribution_mapping() -> None:
 
     def get_attribution_info_mock(file: File) -> list[OpossumPackage]:
         if file == file1:
-            return [pkg1, pkg2]
+            return [deepcopy(pkg1), deepcopy(pkg2)]
         elif file == file2:
-            return [pkg1, pkg2, pkg3]
+            return [deepcopy(pkg1), deepcopy(pkg2), deepcopy(pkg3)]
         elif file == file3:
             return []
         else:
