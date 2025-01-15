@@ -50,6 +50,7 @@ def generate(spdx: list[str], opossum: list[str], outfile: str) -> None:
     \b
     Currently supported input formats:
       - SPDX
+      - opossum
     """
     validate_input_exit_on_error(spdx, opossum)
     opossum_information = convert_after_valid_input(spdx, opossum)

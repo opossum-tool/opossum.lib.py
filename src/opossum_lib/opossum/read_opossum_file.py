@@ -8,7 +8,7 @@ from zipfile import ZipFile
 
 from pydantic import TypeAdapter
 
-from opossum_lib.opossum.constants import INPUT_JSON_NAME, OUTPUT_JSON_NAME
+from opossum_lib.opossum.constants import INPUT_JSON_NAME
 from opossum_lib.opossum.opossum_file import (
     OpossumInformation,
 )
@@ -35,11 +35,5 @@ def validate_zip_file_contents(input_zip_file: ZipFile) -> None:
         logging.error(
             f"Opossum file {input_zip_file.filename} is corrupt"
             f" and does not contain '{INPUT_JSON_NAME}'"
-        )
-        sys.exit(1)
-    if OUTPUT_JSON_NAME in input_zip_file.namelist():
-        logging.error(
-            f"Opossum file {input_zip_file.filename} also contains"
-            f" '{OUTPUT_JSON_NAME}' which cannot be processed"
         )
         sys.exit(1)
