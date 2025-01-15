@@ -62,6 +62,10 @@ Options:
 
 ```
 
+## Usage of prebuilt executables
+
+Executable files that were built manually or downloaded from a release do not need uv. Simply follow the instructions above and replace `uv run opossum-file` with the path to your executable, e.g. `./opossum-file`.
+
 # Development
 
 To test your changes, run
@@ -72,3 +76,13 @@ uv run ruff format --check
 uv run python -m mypy src/ tests/
 uv run pytest
 ```
+
+# Build
+
+To build, run
+
+```bash
+uv run python build.py opossum-file
+```
+
+This will create a self-contained executable file `dist/opossum-file` (`dist/opossum-file.exe` on Windows).
