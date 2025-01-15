@@ -55,9 +55,7 @@ def test_successful_conversion_of_spdx_file(tmp_path: Path, options: str) -> Non
     # we need to exclude the "metadata" section from the comparison
     opossum_dict.pop("metadata")
     expected_opossum_dict.pop("metadata")
-    assert_expected_file_equals_generated_file(
-        expected_opossum_dict, opossum_dict
-    )
+    assert_expected_file_equals_generated_file(expected_opossum_dict, opossum_dict)
 
 
 def test_successful_conversion_of_input_only_opossum_file(tmp_path: Path) -> None:
@@ -78,9 +76,8 @@ def test_successful_conversion_of_input_only_opossum_file(tmp_path: Path) -> Non
     # Doing individual asserts as otherwise the diff viewer does no longer work
     # in case of errors
     assert result.exit_code == 0
-    assert_expected_file_equals_generated_file(
-        expected_opossum_dict, opossum_dict
-    )
+    assert_expected_file_equals_generated_file(expected_opossum_dict, opossum_dict)
+
 
 def test_successful_conversion_of_input_and_output_opossum_file(tmp_path: Path) -> None:
     output_file = str(tmp_path / "output_opossum.opossum")
@@ -95,26 +92,22 @@ def test_successful_conversion_of_input_and_output_opossum_file(tmp_path: Path) 
 
     assert result.exit_code == 0
 
-
     # Doing individual asserts as otherwise the diff viewer does no longer work
     # in case of errors
     assert_input_json_matches_expectations(output_file)
     assert_output_json_matches_expectations(output_file)
 
 
-def assert_input_json_matches_expectations(output_file):
+def assert_input_json_matches_expectations(output_file: str) -> None:
     expected_opossum_dict = read_json_from_file("opossum_input.json")
     opossum_dict = read_input_json_from_opossum(output_file)
-    assert_expected_file_equals_generated_file(
-        expected_opossum_dict, opossum_dict
-    )
+    assert_expected_file_equals_generated_file(expected_opossum_dict, opossum_dict)
 
-def assert_output_json_matches_expectations(output_file):
+
+def assert_output_json_matches_expectations(output_file: str) -> None:
     expected_opossum_dict = read_json_from_file("opossum_output.json")
     opossum_dict = read_output_json_from_opossum(output_file)
-    assert_expected_file_equals_generated_file(
-        expected_opossum_dict, opossum_dict
-    )
+    assert_expected_file_equals_generated_file(expected_opossum_dict, opossum_dict)
 
 
 def read_input_json_from_opossum(output_file_path: str) -> Any:

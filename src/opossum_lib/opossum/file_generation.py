@@ -15,7 +15,6 @@ from opossum_lib.opossum.opossum_file import (
     OpossumInformation,
 )
 from opossum_lib.opossum.opossum_file_content import OpossumFileContent
-from opossum_lib.opossum.output_model import OpossumOutputFile
 
 
 def write_opossum_information_to_file(
@@ -34,8 +33,8 @@ def write_output_json_if_existing(
     if opossum_file_content.output_file:
         zip_file.writestr(
             OUTPUT_JSON_NAME,
-            TypeAdapter(OpossumOutputFile).dump_json(
-                opossum_file_content.output_file, indent=4, exclude_none=True
+            opossum_file_content.output_file.model_dump_json(
+                exclude_none=True, indent=4, by_alias=True
             ),
         )
 

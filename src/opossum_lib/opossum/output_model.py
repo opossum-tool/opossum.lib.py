@@ -10,18 +10,30 @@ from enum import Enum
 from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic.alias_generators import to_camel
+
+
+class CamelBaseModel(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel)
+
+
+def to_camel_spy(string: str) -> str:
+    print("input", string)
+    result = to_camel(string)
+    print("result", result)
+    return result
 
 
 class Metadata(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", alias_generator=to_camel_spy)
 
-    projectId: str = Field(
+    project_id: str = Field(
         ..., description="An ID for the compliance scan, copied from the input file."
     )
-    fileCreationDate: str = Field(
+    file_creation_date: str = Field(
         ..., description="Only for documentation, arbitrary format."
     )
-    inputFileMD5Checksum: str | None = Field(
+    input_file_md5_checksum: str | None = Field(
         None, description="Checksum to check if the input file has changed."
     )
 

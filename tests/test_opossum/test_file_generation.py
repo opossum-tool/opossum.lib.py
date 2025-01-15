@@ -27,7 +27,7 @@ OPOSSUM_OUTFILE = OpossumOutputFile(
     metadata=opossum_lib.opossum.output_model.Metadata(
         projectId="project-id",
         fileCreationDate="30-05-2023",
-        inputFileMD5Checksum="checksum",
+        inputFileMd5Checksum="checksum",
     ),
     manualAttributions={},
     resourcesToAttributions={},
