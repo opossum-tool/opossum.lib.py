@@ -38,9 +38,6 @@ def run_with_command_line_arguments(cmd_line_arguments: list[str]) -> Result:
     return result
 
 
-test_data_path = Path(__file__).resolve().parent / "data"
-
-
 @pytest.mark.parametrize("options", ["--outfile", "-o"])
 def test_successful_conversion_of_spdx_file(tmp_path: Path, options: str) -> None:
     result = run_with_command_line_arguments(
@@ -156,16 +153,6 @@ def test_cli_warning_if_outfile_already_exists(caplog: LogCaptureFixture) -> Non
     assert caplog.messages == ["output.opossum already exists and will be overwritten."]
 
 
-def test_cli_with_system_exit_code_1() -> None:
-    runner = CliRunner()
-    with runner.isolated_filesystem():
-        with open("invalid_spdx.spdx", "w") as f:
-            f.write("SPDXID: SPDXRef-DOCUMENT")
-        result = runner.invoke(generate, "--spdx invalid_spdx.spdx -o invalid")
-
-    assert result.exit_code == 1
-
-
 def test_cli_with_invalid_document(caplog: LogCaptureFixture) -> None:
     runner = CliRunner()
     with runner.isolated_filesystem():
@@ -173,6 +160,7 @@ def test_cli_with_invalid_document(caplog: LogCaptureFixture) -> None:
         result = runner.invoke(generate, "--spdx invalid_spdx.spdx -o invalid")
 
     assert result.output == ""
+    assert result.exit_code == 1
     assert caplog.messages == [
         "The given SPDX document is not valid, this might cause issues with "
         "the conversion."
