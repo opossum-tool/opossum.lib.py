@@ -12,13 +12,17 @@ from pydantic import ValidationError
 
 from opossum_lib.opossum.opossum_file import OpossumPackage, SourceInfo
 from opossum_lib.scancode.model import (
+    Copyright,
     File,
+    LicenseDetection1,
+    Match,
     ScanCodeData,
 )
 from opossum_lib.scancode.resource_tree import (
     Node,
     convert_to_opossum_resources,
     create_attribution_mapping,
+    get_attribution_info,
     scancode_to_resource_tree,
 )
 
@@ -138,6 +142,86 @@ def test_create_attribution_mapping() -> None:
     assert set(resourcesToAttributions["/" + file2.path]) == {id1, id2, id3}
 
 
+def test_get_attribution_info_directory() -> None:
+    folder = _create_file("A", "directory")
+    assert get_attribution_info(folder) == []
+
+
+def test_get_attribution_info_file_missing() -> None:
+    file = _create_file("A", "file")
+    assert get_attribution_info(file) == []
+
+
+def test_get_attribution_info_file_multiple() -> None:
+    match1 = Match(
+        license_expression="apache-2.0",
+        license_expression_spdx="Apache-2.0",
+        from_file="A",
+        start_line=1,
+        end_line=2,
+        matcher="matcher",
+        score=75,
+        matched_length=1,
+        match_coverage=0.5,
+        rule_relevance=50,
+        rule_identifier="myrule",
+        rule_url="",
+    )
+    match2 = Match(
+        license_expression="apache-2.0",
+        license_expression_spdx="Apache-2.0",
+        from_file="A",
+        start_line=2,
+        end_line=3,
+        matcher="matcher",
+        score=95,
+        matched_length=1,
+        match_coverage=0.5,
+        rule_relevance=50,
+        rule_identifier="hyrule",
+        rule_url="",
+    )
+    match3 = deepcopy(match1)
+    match3.score = 50
+    match3.license_expression = "mit"
+    match3.license_expression_spdx = "MIT"
+    license1 = LicenseDetection1(
+        license_expression="apache-2.0",
+        license_expression_spdx="Apache-2.0",
+        identifier="identifier1",
+        matches=[match1, match2],
+    )
+    license2 = LicenseDetection1(
+        license_expression="mit",
+        license_expression_spdx="MIT",
+        identifier="identifier2",
+        matches=[match3],
+    )
+    copyright1 = Copyright(copyright="Me", start_line=1, end_line=2)
+    copyright2 = Copyright(copyright="Myself", start_line=1, end_line=2)
+    copyright3 = Copyright(copyright="I", start_line=1, end_line=2)
+    file = _create_file(
+        "A",
+        "file",
+        license_detections=[license1, license2],
+        copyrights=[copyright1, copyright2, copyright3],
+    )
+    attributions = get_attribution_info(file)
+    expected1 = OpossumPackage(
+        source=SourceInfo("SC"),
+        licenseName="Apache-2.0",
+        copyright="Me\nMyself\nI",
+        attributionConfidence=95,
+    )
+    expected2 = OpossumPackage(
+        source=SourceInfo("SC"),
+        licenseName="MIT",
+        copyright="Me\nMyself\nI",
+        attributionConfidence=50,
+    )
+    assert set(attributions) == {expected1, expected2}
+
+
 def _create_reference_scancode_files() -> list[File]:
     return [
         _create_file("A", "folder"),
@@ -158,7 +242,7 @@ def _create_reference_Node_structure() -> Node:
     return reference
 
 
-def _create_file(path: str, type: str, **kwargs: dict[str, Any]) -> File:
+def _create_file(path: str, type: str, **kwargs: Any) -> File:
     defaultproperties = {
         "path": path,
         "type": type,
