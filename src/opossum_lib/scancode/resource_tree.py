@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-import uuid
 from os.path import relpath
 
 from pydantic import BaseModel
@@ -106,7 +105,9 @@ def create_attribution_mapping(
         attributionIDs = []
         for attribution in attributions:
             if attribution not in attributionLookup:
-                attributionLookup[attribution] = str(uuid.uuid4())
+                attributionLookup[attribution] = (
+                    f"{attribution.licenseName}-{hash(attribution)}"
+                )
             attributionIDs.append(attributionLookup[attribution])
         if len(attributionIDs) > 0:
             resourcesToAttributions[path] = attributionIDs
