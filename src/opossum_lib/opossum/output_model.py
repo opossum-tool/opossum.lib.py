@@ -17,15 +17,8 @@ class CamelBaseModel(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
-def to_camel_spy(string: str) -> str:
-    print("input", string)
-    result = to_camel(string)
-    print("result", result)
-    return result
-
-
-class Metadata(BaseModel):
-    model_config = ConfigDict(extra="forbid", alias_generator=to_camel_spy)
+class Metadata(CamelBaseModel):
+    model_config = ConfigDict(extra="forbid")
 
     project_id: str = Field(
         ..., description="An ID for the compliance scan, copied from the input file."
@@ -42,40 +35,40 @@ class FollowUp(Enum):
     FOLLOW_UP = "FOLLOW_UP"
 
 
-class ManualAttributions(BaseModel):
+class ManualAttributions(CamelBaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    packageName: str | None = Field(
+    package_name: str | None = Field(
         None, description="Name of the package (part of a package URL)"
     )
-    packageVersion: str | None = Field(
+    package_version: str | None = Field(
         None, description="Version of the package (part of a package URL)"
     )
-    packageNamespace: str | None = Field(
+    package_namespace: str | None = Field(
         None,
         description="Namespace of the package, e.g. Github user "
         "(part of a package URL)",
     )
-    packageType: str | None = Field(
+    package_type: str | None = Field(
         None,
         description="Protocol of the package, e.g. npm, maven (part of a package URL)",
     )
-    packagePURLAppendix: str | None = Field(
+    package_p_u_r_l_appendix: str | None = Field(
         None, description="Qualifiers and subpaths of a package URL"
     )
     url: str | None = Field(
         None, description="URL for the source website of the package"
     )
-    licenseName: str | None = Field(
+    license_name: str | None = Field(
         None,
         description="Name of the license, ideally SPDX identifier but"
         " can also contain arbitrary names",
     )
-    licenseText: str | None = Field(None, description="Text of the license")
-    attributionConfidence: Annotated[float, Field(strict=True, ge=0, le=100)] | None = (
-        Field(
-            None, description="How much the information is trusted (0: bad, 100: good)"
-        )
+    license_text: str | None = Field(None, description="Text of the license")
+    attribution_confidence: (
+        Annotated[float, Field(strict=True, ge=0, le=100)] | None
+    ) = Field(
+        None, description="How much the information is trusted (0: bad, 100: good)"
     )
     comment: str | None = Field(
         None,
@@ -88,35 +81,35 @@ class ManualAttributions(BaseModel):
         ' Possible values are "high" and "medium".',
     )
     copyright: str | None = Field(None, description="Copyright of the package")
-    firstParty: bool | None = Field(
+    first_party: bool | None = Field(
         None, description="Indicates that something is first-party code."
     )
-    preSelected: bool | None = Field(
+    pre_selected: bool | None = Field(
         None,
         description="Indicates that an attribution was"
         " pre-selected from the input file.",
     )
-    excludeFromNotice: bool | None = Field(
+    exclude_from_notice: bool | None = Field(
         None,
         description="Indicates that an attribution should"
         " not be included in a notice file.",
     )
-    followUp: FollowUp | None = Field(
+    follow_up: FollowUp | None = Field(
         None,
         description="Indicates that an attribution is"
         " problematic and needs to be followed up.",
     )
-    originId: str | None = Field(
+    origin_id: str | None = Field(
         None,
         description="Can be set to track a signal from the tooling"
         " that generated the input file. Copied from the input file",
     )
-    originIds: list[str] | None = Field(
+    origin_ids: list[str] | None = Field(
         None,
         description="Like originId but considers that a"
         " signal can have more than a single origin.",
     )
-    needsReview: bool | None = Field(
+    needs_review: bool | None = Field(
         None,
         description="Indicates that the information in an"
         " attribution needs further review.",
@@ -126,28 +119,28 @@ class ManualAttributions(BaseModel):
         description="Indicates that the attribution has been "
         "marked as preferred by a user.",
     )
-    preferredOverOriginIds: list[str] | None = Field(
+    preferred_over_origin_ids: list[str] | None = Field(
         None, description="OriginIds of all attributions this one is preferred over."
     )
-    wasPreferred: bool | None = Field(
+    was_preferred: bool | None = Field(
         None,
         description="Indicates that the attribution had previously"
         " been marked as preferred.",
     )
 
 
-class OpossumOutputFile(BaseModel):
+class OpossumOutputFile(CamelBaseModel):
     model_config = ConfigDict(extra="allow")
 
     metadata: Metadata
-    manualAttributions: dict[str, ManualAttributions]
-    resourcesToAttributions: dict[str, list[str]] = Field(
+    manual_attributions: dict[str, ManualAttributions]
+    resources_to_attributions: dict[str, list[str]] = Field(
         ...,
         description="Map from a path in the resource tree "
         "(e.g. `/folder/subfolder/`, `/folder/file`, "
         "note the mandatory slashes at the beginning and end) "
         "to a list of attribution IDs.",
     )
-    resolvedExternalAttributions: list[str] | None = Field(
+    resolved_external_attributions: list[str] | None = Field(
         None, description="List of attribution IDs for input signals that are resolved."
     )
