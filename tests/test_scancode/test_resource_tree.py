@@ -11,9 +11,11 @@ import pytest
 from pydantic import ValidationError
 
 from opossum_lib.opossum.opossum_file import OpossumPackage, SourceInfo
+from opossum_lib.scancode.constants import SCANCODE_SOURCE_NAME
 from opossum_lib.scancode.model import (
     Copyright,
     File,
+    FileType,
     LicenseDetection1,
     Match,
     ScanCodeData,
@@ -28,7 +30,7 @@ from opossum_lib.scancode.resource_tree import (
 
 
 def test_revalidate_valid() -> None:
-    dummy_file = _create_file("A", "file")
+    dummy_file = _create_file("A", FileType.FILE)
     valid_structure = ScanCodeFileTree(
         file=dummy_file,
         children={
@@ -42,7 +44,7 @@ def test_revalidate_valid() -> None:
 
 
 def test_revalidate_invalid_at_toplevel() -> None:
-    dummy_file = _create_file("A", "file")
+    dummy_file = _create_file("A", FileType.FILE)
     invalid_structure = ScanCodeFileTree.model_construct(
         children={
             "A": ScanCodeFileTree(file=dummy_file),
@@ -56,7 +58,7 @@ def test_revalidate_invalid_at_toplevel() -> None:
 
 
 def test_revalidate_invalid_nested() -> None:
-    dummy_file = _create_file("A", "file")
+    dummy_file = _create_file("A", FileType.FILE)
     invalid_structure = ScanCodeFileTree(
         file=dummy_file,
         children={
@@ -149,12 +151,12 @@ def test_create_attribution_mapping() -> None:
 
 
 def test_get_attribution_info_directory() -> None:
-    folder = _create_file("A", "directory")
+    folder = _create_file("A", FileType.DIRECTORY)
     assert get_attribution_info(folder) == []
 
 
 def test_get_attribution_info_file_missing() -> None:
-    file = _create_file("A", "file")
+    file = _create_file("A", FileType.FILE)
     assert get_attribution_info(file) == []
 
 
@@ -208,19 +210,19 @@ def test_get_attribution_info_file_multiple() -> None:
     copyright3 = Copyright(copyright="I", start_line=1, end_line=2)
     file = _create_file(
         "A",
-        "file",
+        FileType.FILE,
         license_detections=[license1, license2],
         copyrights=[copyright1, copyright2, copyright3],
     )
     attributions = get_attribution_info(file)
     expected1 = OpossumPackage(
-        source=SourceInfo("SC"),
+        source=SourceInfo(SCANCODE_SOURCE_NAME),
         licenseName="Apache-2.0",
         copyright="Me\nMyself\nI",
         attributionConfidence=95,
     )
     expected2 = OpossumPackage(
-        source=SourceInfo("SC"),
+        source=SourceInfo(SCANCODE_SOURCE_NAME),
         licenseName="MIT",
         copyright="Me\nMyself\nI",
         attributionConfidence=50,
@@ -230,11 +232,11 @@ def test_get_attribution_info_file_multiple() -> None:
 
 def _create_reference_scancode_files() -> list[File]:
     return [
-        _create_file("A", "folder"),
-        _create_file("A/B", "folder"),
-        _create_file("A/file1", "file"),
-        _create_file("A/file2.txt", "file"),
-        _create_file("A/B/file3", "file"),
+        _create_file("A", FileType.DIRECTORY),
+        _create_file("A/B", FileType.DIRECTORY),
+        _create_file("A/file1", FileType.FILE),
+        _create_file("A/file2.txt", FileType.FILE),
+        _create_file("A/B/file3", FileType.FILE),
     ]
 
 
@@ -254,7 +256,7 @@ def _create_reference_Node_structure() -> ScanCodeFileTree:
     return reference
 
 
-def _create_file(path: str, type: str, **kwargs: Any) -> File:
+def _create_file(path: str, type: FileType, **kwargs: Any) -> File:
     defaultproperties = {
         "path": path,
         "type": type,

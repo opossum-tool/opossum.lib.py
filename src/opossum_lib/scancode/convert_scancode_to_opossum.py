@@ -23,23 +23,15 @@ from opossum_lib.scancode.resource_tree import (
 def convert_scancode_to_opossum(filename: str) -> OpossumInformation:
     logging.info(f"Converting scancode to opossum {filename}")
 
-    try:
-        with open(filename) as inp:
-            json_data = json.load(inp)
-    except json.JSONDecodeError as jsde:
-        logging.error(f"Error decoding json for file {filename}. Message: {jsde.msg}")
-        sys.exit(1)
-    except UnicodeDecodeError:
-        logging.error(f"Error decoding json for file {filename}.")
-        sys.exit(1)
+    scancode_data = load_scancode_json(filename)
+    validate_scancode_json(scancode_data, filename)
 
-    scanCodeData = ScanCodeData.model_validate(json_data)
-    filetree = scancode_to_file_tree(scanCodeData)
+    filetree = scancode_to_file_tree(scancode_data)
     resources = convert_to_opossum_resources(filetree)
     externalAttributions, resourcesToAttributions = create_attribution_mapping(filetree)
 
     return OpossumInformation(
-        metadata=create_opossum_metadata(scanCodeData),
+        metadata=create_opossum_metadata(scancode_data),
         resources=resources,
         externalAttributions=externalAttributions,
         resourcesToAttributions=resourcesToAttributions,
@@ -48,19 +40,35 @@ def convert_scancode_to_opossum(filename: str) -> OpossumInformation:
     )
 
 
+def load_scancode_json(filename: str) -> ScanCodeData:
+    try:
+        with open(filename) as inp:
+            json_data = json.load(inp)
+    except json.JSONDecodeError as e:
+        logging.error(f"Error decoding json for file {filename}. Message: {e.msg}")
+        sys.exit(1)
+    except UnicodeDecodeError:
+        logging.error(f"Error decoding json for file {filename}.")
+        sys.exit(1)
+
+    scancode_data = ScanCodeData.model_validate(json_data)
+
+    return scancode_data
+
+
+def validate_scancode_json(scancode_data: ScanCodeData, filename: str) -> None:
+    if len(scancode_data.headers) != 1:
+        logging.error(f"Headers of ScanCode file are invalid. File: {filename}")
+        sys.exit(1)
+
+
 def create_opossum_metadata(scancode_data: ScanCodeData) -> Metadata:
-    if len(scancode_data.headers) == 0:
-        logging.error("ScanCode data is missing the header!")
-        sys.exit(1)
-    elif len(scancode_data.headers) > 1:
-        logging.error(f"ScanCode data has {len(scancode_data.headers)} headers!")
-        sys.exit(1)
+    scancode_header = scancode_data.headers[0]
 
-    the_header = scancode_data.headers[0]
-
-    metadata = {}
-    metadata["projectId"] = str(uuid.uuid4())
-    metadata["fileCreationDate"] = the_header.end_timestamp
-    metadata["projectTitle"] = "ScanCode file"
+    metadata = {
+        "projectId": str(uuid.uuid4()),
+        "fileCreationDate": scancode_header.end_timestamp,
+        "projectTitle": "ScanCode file",
+    }
 
     return Metadata.model_validate(metadata)

@@ -12,6 +12,7 @@ from _pytest.logging import LogCaptureFixture
 from opossum_lib.opossum.opossum_file import Metadata
 from opossum_lib.scancode.convert_scancode_to_opossum import (
     create_opossum_metadata,
+    validate_scancode_json,
 )
 from opossum_lib.scancode.model import ScanCodeData
 
@@ -32,24 +33,24 @@ def test_create_opossum_metadata() -> None:
     assert metadata == expected_metadata
 
 
-def test_create_opossum_metadata_missing_header(caplog: LogCaptureFixture) -> None:
+def test_load_scancode_json_missing_header(caplog: LogCaptureFixture) -> None:
     scancode_data = _create_valid_scancode_data()
     scancode_data.headers = []
 
     with pytest.raises(SystemExit):
-        create_opossum_metadata(scancode_data)
+        validate_scancode_json(scancode_data, "test/path/scancode.json")
 
-    assert "missing the header" in caplog.messages[0]
+    assert "header" in caplog.messages[0].lower()
 
 
-def test_create_opossum_metadata_multiple_headers(caplog: LogCaptureFixture) -> None:
+def test_validate_scancode_json_multiple_headers(caplog: LogCaptureFixture) -> None:
     scancode_data = _create_valid_scancode_data()
     scancode_data.headers.append(scancode_data.headers[0])
 
     with pytest.raises(SystemExit):
-        create_opossum_metadata(scancode_data)
+        validate_scancode_json(scancode_data, "test/path/scancode.json")
 
-    assert "has 2 headers" in caplog.messages[0]
+    assert "header" in caplog.messages[0].lower()
 
 
 def _create_valid_scancode_data() -> ScanCodeData:

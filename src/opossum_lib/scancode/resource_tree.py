@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+from __future__ import annotations
+
 from os.path import relpath
 
 from pydantic import BaseModel
@@ -14,15 +16,16 @@ from opossum_lib.opossum.opossum_file import (
     ResourcePath,
     SourceInfo,
 )
+from opossum_lib.scancode.constants import SCANCODE_SOURCE_NAME
 from opossum_lib.scancode.helpers import check_schema, path_segments
-from opossum_lib.scancode.model import File, ScanCodeData
+from opossum_lib.scancode.model import File, FileType, ScanCodeData
 
 
 class ScanCodeFileTree(BaseModel):
     file: File
-    children: dict[str, "ScanCodeFileTree"] = {}
+    children: dict[str, ScanCodeFileTree] = {}
 
-    def get_path(self, path: list[str]) -> "ScanCodeFileTree":
+    def get_path(self, path: list[str]) -> ScanCodeFileTree:
         if len(path) == 0:
             return self
         next_segment, *rest = path
@@ -36,21 +39,21 @@ class ScanCodeFileTree(BaseModel):
             child.revalidate()
 
 
-def scancode_to_file_tree(scanCodeData: ScanCodeData) -> ScanCodeFileTree:
-    root = ScanCodeFileTree.model_construct(file=None)
-    for file in scanCodeData.files:
+def scancode_to_file_tree(scancode_data: ScanCodeData) -> ScanCodeFileTree:
+    temp_root = ScanCodeFileTree.model_construct(file=None)
+    for file in scancode_data.files:
         segments = path_segments(file.path)
-        root.get_path(segments).file = file
+        temp_root.get_path(segments).file = file
 
-    assert len(root.children) == 1
-    the_child = list(root.children.values())[0]
-    check_schema(the_child)
-    return the_child
+    assert len(temp_root.children) == 1
+    root = list(temp_root.children.values())[0]
+    check_schema(root)
+    return root
 
 
 def convert_to_opossum_resources(rootnode: ScanCodeFileTree) -> ResourceInFile:
     def process_node(node: ScanCodeFileTree) -> ResourceInFile:
-        if node.file.type == "file":
+        if node.file.type == FileType.FILE:
             return 1
         else:
             rootpath = node.file.path
@@ -64,15 +67,15 @@ def convert_to_opossum_resources(rootnode: ScanCodeFileTree) -> ResourceInFile:
 
 
 def get_attribution_info(file: File) -> list[OpossumPackage]:
-    if file.type == "directory":
+    if file.type == FileType.DIRECTORY:
         return []
-    copyright = "\n".join(map(lambda c: c.copyright, file.copyrights))
-    source_info = SourceInfo("SC")  # ScanCode, no confidence given
+    copyright = "\n".join([c.copyright for c in file.copyrights])
+    source_info = SourceInfo(SCANCODE_SOURCE_NAME)
 
     attribution_infos = []
     for license_detection in file.license_detections:
         licenseName = license_detection.license_expression_spdx
-        maxscore = max(map(lambda m: m.score, license_detection.matches))
+        maxscore = max([m.score for m in license_detection.matches])
         attributionConfidence = int(maxscore)
 
         package = OpossumPackage(
@@ -86,28 +89,29 @@ def get_attribution_info(file: File) -> list[OpossumPackage]:
     return attribution_infos
 
 
+def get_attribution_key(attribution: OpossumPackage) -> OpossumPackageIdentifier:
+    return f"{attribution.licenseName}-{hash(attribution)}"
+
+
 def create_attribution_mapping(
     rootnode: ScanCodeFileTree,
 ) -> tuple[
     dict[OpossumPackageIdentifier, OpossumPackage],
     dict[ResourcePath, list[OpossumPackageIdentifier]],
 ]:
-    attributionLookup = {}  # attribution -> uuid
-    resourcesToAttributions = {}  # path -> [attributionUUID]
+    externalAttributions: dict[OpossumPackageIdentifier, OpossumPackage] = {}
+    resourcesToAttributions: dict[ResourcePath, list[OpossumPackageIdentifier]] = {}
 
     def process_node(node: ScanCodeFileTree) -> None:
         # the / is required by OpossumUI
         path = "/" + node.file.path
         attributions = get_attribution_info(node.file)
-        attributionIDs = []
-        for attribution in attributions:
-            if attribution not in attributionLookup:
-                attributionLookup[attribution] = (
-                    f"{attribution.licenseName}-{hash(attribution)}"
-                )
-            attributionIDs.append(attributionLookup[attribution])
-        if len(attributionIDs) > 0:
-            resourcesToAttributions[path] = attributionIDs
+
+        new_attributions_with_id = {get_attribution_key(a): a for a in attributions}
+        externalAttributions.update(new_attributions_with_id)
+
+        if len(new_attributions_with_id) > 0:
+            resourcesToAttributions[path] = list(new_attributions_with_id.keys())
 
         for child in node.children.values():
             process_node(child)
@@ -115,6 +119,4 @@ def create_attribution_mapping(
     for child in rootnode.children.values():
         process_node(child)
 
-    # uuid -> attribution
-    externalAttributions = {id: attr for (attr, id) in attributionLookup.items()}
     return externalAttributions, resourcesToAttributions
