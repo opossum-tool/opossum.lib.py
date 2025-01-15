@@ -7,6 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 # opossum.lib.py
 
 [![REUSE status](https://api.reuse.software/badge/git.fsfe.org/reuse/api)](https://api.reuse.software/info/git.fsfe.org/reuse/api)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/opossum-tool/opossum.lib.py)](https://github.com/opossum-tool/opossum.lib.py/releases/latest)
 ![Lint and test](https://github.com/opossum-tool/opossum.lib.py/actions/workflows/lint_and_run_tests.yml/badge.svg)
 ![build workflow](https://github.com/opossum-tool/opossum.lib.py/actions/workflows/build-and-e2e-test.yml/badge.svg)
 
