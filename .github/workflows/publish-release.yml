@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: Meta Platforms, Inc. and its affiliates
+# SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Publish release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.13']
+        include:
+          - os: ubuntu-latest
+            asset-name: opossum-file-for-ubuntu
+          - os: macos-latest
+            asset-name: opossum-file-for-mac
+          - os: windows-latest
+            asset-name: opossum-file-for-windows.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Install the project
+        run: uv sync --locked
+
+      - name: Run build script
+        run: uv run python build.py ${{ matrix.asset-name }}
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/${{ matrix.asset-name }}
+      
+      - name: Upload readme
+        uses: softprops/action-gh-release@v2
+        with:
+          files: README.md
