@@ -90,7 +90,7 @@ def get_attribution_info(file: File) -> list[OpossumPackage]:
 
 
 def get_attribution_key(attribution: OpossumPackage) -> OpossumPackageIdentifier:
-    return f"{attribution.licenseName}-{hash(attribution)}"
+    return f"{attribution.license_name}-{hash(attribution)}"
 
 
 def create_attribution_mapping(

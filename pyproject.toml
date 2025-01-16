@@ -73,6 +73,8 @@ select = [
     "SIM",
     # isort
     "I",
+    # naming
+    "N"
 ]
 extend-select = ["E501"]
 

@@ -9,28 +9,33 @@ from enum import Enum, auto
 from typing import Literal, cast
 
 from pydantic import BaseModel, ConfigDict, model_serializer
+from pydantic.alias_generators import to_camel
 
 type OpossumPackageIdentifier = str
 type ResourcePath = str
 type ResourceInFile = dict[str, ResourceInFile] | int
 
 
-class OpossumInformation(BaseModel):
+class CamelBaseModel(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+
+class OpossumInformation(CamelBaseModel):
     model_config = ConfigDict(frozen=True)
     metadata: Metadata
     resources: ResourceInFile
-    externalAttributions: dict[OpossumPackageIdentifier, OpossumPackage]
-    resourcesToAttributions: dict[ResourcePath, list[OpossumPackageIdentifier]]
-    attributionBreakpoints: list[str] = field(default_factory=list)
-    externalAttributionSources: dict[str, ExternalAttributionSource] = field(
+    external_attributions: dict[OpossumPackageIdentifier, OpossumPackage]
+    resources_to_attributions: dict[ResourcePath, list[OpossumPackageIdentifier]]
+    attribution_breakpoints: list[str] = field(default_factory=list)
+    external_attribution_sources: dict[str, ExternalAttributionSource] = field(
         default_factory=dict
     )
-    frequentLicenses: list[FrequentLicense] | None = None
-    filesWithChildren: list[str] | None = None
-    baseUrlsForSources: BaseUrlsForSources | None = None
+    frequent_licenses: list[FrequentLicense] | None = None
+    files_with_children: list[str] | None = None
+    base_urls_for_sources: BaseUrlsForSources | None = None
 
 
-class BaseUrlsForSources(BaseModel):
+class BaseUrlsForSources(CamelBaseModel):
     @model_serializer
     def serialize(self) -> dict:
         # hack to override not serializing keys with corresponding value none:
@@ -40,51 +45,51 @@ class BaseUrlsForSources(BaseModel):
     model_config = ConfigDict(extra="allow", frozen=True)
 
 
-class FrequentLicense(BaseModel):
-    fullName: str
-    shortName: str
-    defaultText: str
+class FrequentLicense(CamelBaseModel):
+    full_name: str
+    short_name: str
+    default_text: str
 
 
-class SourceInfo(BaseModel):
+class SourceInfo(CamelBaseModel):
     model_config = ConfigDict(frozen=True)
     name: str
-    documentConfidence: int | float | None = 0
-    additionalName: str | None = None
+    document_confidence: int | float | None = 0
+    additional_name: str | None = None
 
 
-class OpossumPackage(BaseModel):
+class OpossumPackage(CamelBaseModel):
     model_config = ConfigDict(frozen=True)
     source: SourceInfo
-    attributionConfidence: int | None = None
+    attribution_confidence: int | None = None
     comment: str | None = None
-    packageName: str | None = None
-    packageVersion: str | None = None
-    packageNamespace: str | None = None
-    packageType: str | None = None
-    packagePURLAppendix: str | None = None
+    package_name: str | None = None
+    package_version: str | None = None
+    package_namespace: str | None = None
+    package_type: str | None = None
+    package_p_u_r_l_appendix: str | None = None
     copyright: str | None = None
-    licenseName: str | None = None
-    licenseText: str | None = None
+    license_name: str | None = None
+    license_text: str | None = None
     url: str | None = None
-    firstParty: bool | None = None
-    excludeFromNotice: bool | None = None
-    preSelected: bool | None = None
-    followUp: Literal["FOLLOW_UP"] | None = None
-    originId: str | None = None
-    originIds: list[str] | None = None
+    first_party: bool | None = None
+    exclude_from_notice: bool | None = None
+    pre_selected: bool | None = None
+    follow_up: Literal["FOLLOW_UP"] | None = None
+    origin_id: str | None = None
+    origin_ids: list[str] | None = None
     criticality: Literal["high"] | Literal["medium"] | None = None
-    wasPreferred: bool | None = None
+    was_preferred: bool | None = None
 
 
-class Metadata(BaseModel):
+class Metadata(CamelBaseModel):
     model_config = ConfigDict(extra="allow", frozen=True)
-    projectId: str
-    fileCreationDate: str
-    projectTitle: str
-    projectVersion: str | None = None
-    expectedReleaseDate: str | None = None
-    buildDate: str | None = None
+    project_id: str
+    file_creation_date: str
+    project_title: str
+    project_version: str | None = None
+    expected_release_date: str | None = None
+    build_date: str | None = None
 
 
 class ResourceType(Enum):
@@ -94,7 +99,7 @@ class ResourceType(Enum):
     OTHER = auto()
 
 
-class Resource(BaseModel):
+class Resource(CamelBaseModel):
     model_config = ConfigDict(frozen=True)
     type: ResourceType
     children: dict[str, Resource] = field(default_factory=dict)
@@ -181,11 +186,11 @@ class Resource(BaseModel):
         return self.to_dict()
 
 
-class ExternalAttributionSource(BaseModel):
+class ExternalAttributionSource(CamelBaseModel):
     model_config = ConfigDict(frozen=True)
     name: str
     priority: int
-    isRelevantForPreferred: bool | None = None
+    is_relevant_for_preferred: bool | None = None
 
 
 def _build_resource_tree(resource: ResourceInFile) -> Resource:

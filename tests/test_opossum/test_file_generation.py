@@ -14,24 +14,24 @@ from opossum_lib.opossum.output_model import OpossumOutputFile
 
 OPOSSUM_INFILE = OpossumInformation(
     metadata=Metadata(
-        projectId="project-id",
-        fileCreationDate="30-05-2023",
-        projectTitle="project-title",
+        project_id="project-id",
+        file_creation_date="30-05-2023",
+        project_title="project-title",
     ),
     resources={},
-    externalAttributions={},
-    resourcesToAttributions={},
+    external_attributions={},
+    resources_to_attributions={},
 )
 
 OPOSSUM_OUTFILE = OpossumOutputFile(
     metadata=opossum_lib.opossum.output_model.Metadata(
-        projectId="project-id",
-        fileCreationDate="30-05-2023",
-        inputFileMd5Checksum="checksum",
+        project_id="project-id",
+        file_creation_date="30-05-2023",
+        input_file_md5_checksum="checksum",
     ),
-    manualAttributions={},
-    resourcesToAttributions={},
-    resolvedExternalAttributions=None,
+    manual_attributions={},
+    resources_to_attributions={},
+    resolved_external_attributions=None,
 )
 
 
