@@ -8,6 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 
 [![REUSE status](https://api.reuse.software/badge/git.fsfe.org/reuse/api)](https://api.reuse.software/info/git.fsfe.org/reuse/api)
 ![Lint and test](https://github.com/opossum-tool/opossum.lib.py/actions/workflows/lint_and_run_tests.yml/badge.svg)
+![build workflow](https://github.com/opossum-tool/opossum.lib.py/actions/workflows/build-and-e2e-test.yml/badge.svg)
 
 This is a library to convert an SPDX document to a file readable by [OpossumUI](https://github.com/opossum-tool/OpossumUI/).
 
@@ -51,16 +52,16 @@ sage: opossum-file generate [OPTIONS]
 
   Currently supported input formats:
     - SPDX
+    - ScanCode
+    - Opossum
 
 Options:
-  --spdx PATH         Specify a SPDX file that you would like to include in
-                      the final output.
-  --opossum PATH      Specify a .opossum file that you would like to include
-                      in the final output.
+  --spdx PATH         SPDX files used as input.
   -o, --outfile TEXT  The file path to write the generated opossum document
                       to. If appropriate, the extension ".opossum" will be
                       appended.  [default: output.opossum]
   --help              Show this message and exit.
+
 ```
 
 # Development
@@ -73,3 +74,13 @@ uv run ruff format --check
 uv run python -m mypy src/ tests/
 uv run pytest
 ```
+
+# Build
+
+To build, run
+
+```bash
+uv run python build.py opossum-file
+```
+
+This will create a self-contained executable file `dist/opossum-file` (`dist/opossum-file.exe` on Windows).
