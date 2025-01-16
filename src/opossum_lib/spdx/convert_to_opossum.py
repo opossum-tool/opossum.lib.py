@@ -80,12 +80,14 @@ def convert_tree_to_opossum_information(tree: DiGraph) -> OpossumInformation:
     external_attributions: dict[str, OpossumPackage] = dict()
     attribution_breakpoints = []
     external_attribution_sources = {
-        SPDX_FILE_IDENTIFIER: ExternalAttributionSource(SPDX_FILE_IDENTIFIER, 500),
+        SPDX_FILE_IDENTIFIER: ExternalAttributionSource(
+            name=SPDX_FILE_IDENTIFIER, priority=500
+        ),
         SPDX_PACKAGE_IDENTIFIER: ExternalAttributionSource(
-            SPDX_PACKAGE_IDENTIFIER, 500
+            name=SPDX_PACKAGE_IDENTIFIER, priority=500
         ),
         SPDX_SNIPPET_IDENTIFIER: ExternalAttributionSource(
-            SPDX_SNIPPET_IDENTIFIER, 500
+            name=SPDX_SNIPPET_IDENTIFIER, priority=500
         ),
     }
 
@@ -164,7 +166,7 @@ def create_attribution_and_link_with_resource(
 
     else:
         external_attributions[node] = OpossumPackage(
-            source=SourceInfo(tree.nodes[node]["label"])
+            source=SourceInfo(name=tree.nodes[node]["label"])
         )
         resources_to_attributions[file_path] = [node]
 

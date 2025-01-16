@@ -70,7 +70,7 @@ def get_attribution_info(file: File) -> list[OpossumPackage]:
     if file.type == FileType.DIRECTORY:
         return []
     copyright = "\n".join(c.copyright for c in file.copyrights)
-    source_info = SourceInfo(SCANCODE_SOURCE_NAME)
+    source_info = SourceInfo(name=SCANCODE_SOURCE_NAME)
 
     attribution_infos = []
     for license_detection in file.license_detections:
@@ -79,7 +79,7 @@ def get_attribution_info(file: File) -> list[OpossumPackage]:
         attribution_confidence = int(max_score)
 
         package = OpossumPackage(
-            source_info,
+            source=source_info,
             licenseName=license_name,
             attributionConfidence=attribution_confidence,
             copyright=copyright,

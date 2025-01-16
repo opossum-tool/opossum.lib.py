@@ -9,15 +9,14 @@ from enum import Enum, auto
 from typing import Literal, cast
 
 from pydantic import BaseModel, ConfigDict, model_serializer
-from pydantic.dataclasses import dataclass
 
 type OpossumPackageIdentifier = str
 type ResourcePath = str
 type ResourceInFile = dict[str, ResourceInFile] | int
 
 
-@dataclass(frozen=True)
-class OpossumInformation:
+class OpossumInformation(BaseModel):
+    model_config = ConfigDict(frozen=True)
     metadata: Metadata
     resources: ResourceInFile
     externalAttributions: dict[OpossumPackageIdentifier, OpossumPackage]
@@ -47,15 +46,15 @@ class FrequentLicense(BaseModel):
     defaultText: str
 
 
-@dataclass(frozen=True)
-class SourceInfo:
+class SourceInfo(BaseModel):
+    model_config = ConfigDict(frozen=True)
     name: str
     documentConfidence: int | float | None = 0
     additionalName: str | None = None
 
 
-@dataclass(frozen=True)
-class OpossumPackage:
+class OpossumPackage(BaseModel):
+    model_config = ConfigDict(frozen=True)
     source: SourceInfo
     attributionConfidence: int | None = None
     comment: str | None = None
@@ -95,8 +94,8 @@ class ResourceType(Enum):
     OTHER = auto()
 
 
-@dataclass(frozen=True)
-class Resource:
+class Resource(BaseModel):
+    model_config = ConfigDict(frozen=True)
     type: ResourceType
     children: dict[str, Resource] = field(default_factory=dict)
 
@@ -138,7 +137,7 @@ class Resource:
             )
 
         else:
-            resource = Resource(ResourceType.TOP_LEVEL)
+            resource = Resource(type=ResourceType.TOP_LEVEL)
             paths_in_resource.remove(path_to_element_to_drop)
             paths_in_resource.append(path_to_element_to_drop[:-1])
 
@@ -182,8 +181,8 @@ class Resource:
         return self.to_dict()
 
 
-@dataclass(frozen=True)
-class ExternalAttributionSource:
+class ExternalAttributionSource(BaseModel):
+    model_config = ConfigDict(frozen=True)
     name: str
     priority: int
     isRelevantForPreferred: bool | None = None
@@ -200,7 +199,7 @@ def _build_resource_tree(resource: ResourceInFile) -> Resource:
 
 
 def convert_resource_in_file_to_resource(resource: ResourceInFile) -> Resource:
-    root_node = Resource(ResourceType.TOP_LEVEL)
+    root_node = Resource(type=ResourceType.TOP_LEVEL)
 
     if isinstance(resource, dict):
         dict_resource = cast(dict[str, ResourceInFile], resource)

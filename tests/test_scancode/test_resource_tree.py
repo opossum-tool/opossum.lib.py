@@ -216,13 +216,13 @@ def test_get_attribution_info_file_multiple() -> None:
     )
     attributions = get_attribution_info(file)
     expected1 = OpossumPackage(
-        source=SourceInfo(SCANCODE_SOURCE_NAME),
+        source=SourceInfo(name=SCANCODE_SOURCE_NAME),
         licenseName="Apache-2.0",
         copyright="Me\nMyself\nI",
         attributionConfidence=95,
     )
     expected2 = OpossumPackage(
-        source=SourceInfo(SCANCODE_SOURCE_NAME),
+        source=SourceInfo(name=SCANCODE_SOURCE_NAME),
         licenseName="MIT",
         copyright="Me\nMyself\nI",
         attributionConfidence=50,

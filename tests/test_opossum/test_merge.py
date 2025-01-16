@@ -25,27 +25,27 @@ from opossum_lib.opossum.opossum_file import (
 
 
 def test_merge_opossum_information() -> None:
-    opossum_package = OpossumPackage(source=SourceInfo("source"))
+    opossum_package = OpossumPackage(source=SourceInfo(name="source"))
     opossum_information = OpossumInformation(
-        Metadata(
+        metadata=Metadata(
             projectId="project-id",
             fileCreationDate="30-05-2023",
             projectTitle="test data",
         ),
-        {"A": {"B": {}}},
-        {"SPDXRef-Package": opossum_package},
-        {"/A/B/": ["SPDXRef-Package"]},
+        resources={"A": {"B": {}}},
+        externalAttributions={"SPDXRef-Package": opossum_package},
+        resourcesToAttributions={"/A/B/": ["SPDXRef-Package"]},
     )
 
     opossum_information_2 = OpossumInformation(
-        Metadata(
+        metadata=Metadata(
             projectId="test-data-id",
             fileCreationDate="29-05-2023",
             projectTitle="second test data",
         ),
-        {"A": {"D": {"C": 1}}},
-        {"SPDXRef-File": opossum_package},
-        {"/A/D/C": ["SPDXRef-File"]},
+        resources={"A": {"D": {"C": 1}}},
+        externalAttributions={"SPDXRef-File": opossum_package},
+        resourcesToAttributions={"/A/D/C": ["SPDXRef-File"]},
     )
 
     merged_information = merge_opossum_information(
@@ -80,7 +80,7 @@ def test_merge_resources() -> None:
         [("A", ResourceType.FOLDER), ("D", ResourceType.FILE)],
     ]
 
-    resource = Resource(ResourceType.TOP_LEVEL)
+    resource = Resource(type=ResourceType.TOP_LEVEL)
     for path in list_of_paths_with_resource_types:
         resource = resource.add_path(path)
 
@@ -98,7 +98,7 @@ def test_merge_resources() -> None:
             ("E", ResourceType.FOLDER),
         ],
     ]
-    resource2 = Resource(ResourceType.TOP_LEVEL)
+    resource2 = Resource(type=ResourceType.TOP_LEVEL)
     for path in list_of_paths_with_resource_type:
         resource2 = resource2.add_path(path)
 
@@ -106,22 +106,24 @@ def test_merge_resources() -> None:
     merged_resource = _merge_resources(resources)
 
     assert merged_resource == Resource(
-        ResourceType.TOP_LEVEL,
-        {
+        type=ResourceType.TOP_LEVEL,
+        children={
             "A": Resource(
-                ResourceType.FOLDER,
-                {
+                type=ResourceType.FOLDER,
+                children={
                     "B": Resource(
-                        ResourceType.FOLDER, {"C": Resource(ResourceType.FILE, {})}
+                        type=ResourceType.FOLDER,
+                        children={"C": Resource(type=ResourceType.FILE)},
                     ),
-                    "D": Resource(ResourceType.FILE, {}),
+                    "D": Resource(type=ResourceType.FILE),
                 },
             ),
             "C": Resource(
-                ResourceType.FOLDER,
-                {
+                type=ResourceType.FOLDER,
+                children={
                     "D": Resource(
-                        ResourceType.FOLDER, {"E": Resource(ResourceType.FOLDER, {})}
+                        type=ResourceType.FOLDER,
+                        children={"E": Resource(type=ResourceType.FOLDER)},
                     )
                 },
             ),
@@ -176,18 +178,18 @@ def test_merge_dicts_without_duplicates_type_error(
     source_info: SourceInfo,
 ) -> None:
     dicts = [
-        {"A": OpossumPackage(source_info, comment="test package 1")},
-        {"A": OpossumPackage(source_info, comment="test package 2")},
+        {"A": OpossumPackage(source=source_info, comment="test package 1")},
+        {"A": OpossumPackage(source=source_info, comment="test package 2")},
     ]
     with pytest.raises(TypeError):
         _merge_dicts_without_duplicates(dicts)
 
 
 def test_expand_opossum_package_identifier() -> None:
-    opossum_package = OpossumPackage(SourceInfo("source-info"))
+    opossum_package = OpossumPackage(source=SourceInfo(name="source-info"))
     opossum_information_expanded = expand_opossum_package_identifier(
         OpossumInformation(
-            Metadata(
+            metadata=Metadata(
                 projectId="project-id",
                 fileCreationDate="2022-03-02",
                 projectTitle="project title",
