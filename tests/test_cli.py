@@ -13,6 +13,7 @@ from spdx_tools.spdx.writer.write_anything import write_file
 
 from opossum_lib.cli import generate
 from opossum_lib.opossum.constants import INPUT_JSON_NAME
+from opossum_lib.opossum.opossum_file import OpossumPackage
 from tests.test_spdx.helper_methods import _create_minimal_document
 
 test_data_path = Path(__file__).resolve().parent / "data"
@@ -20,6 +21,12 @@ test_data_path = Path(__file__).resolve().parent / "data"
 
 def generate_valid_spdx_argument(filename: str = "SPDX.spdx") -> list[str]:
     return ["--spdx", str(test_data_path / filename)]
+
+
+def generate_valid_scan_code_argument(
+    filename: str = "scancode_input.json",
+) -> list[str]:
+    return ["--scan-code-json", str(test_data_path / filename)]
 
 
 def generate_valid_opossum_argument(
@@ -77,10 +84,60 @@ def test_successful_conversion_of_opossum_file(tmp_path: Path) -> None:
 
     # Doing individual asserts as otherwise the diff viewer does no longer work
     # in case of errors
-    assert result.exit_code == 0
     assert_expected_opossum_equals_generated_opossum(
         expected_opossum_dict, opossum_dict
     )
+
+
+def test_successful_conversion_of_scancode_file(tmp_path: Path) -> None:
+    output_file = str(tmp_path / "output_scancode.opossum")
+    result = run_with_command_line_arguments(
+        [
+            "--scan-code-json",
+            str(test_data_path / "scancode_input.json"),
+            "-o",
+            output_file,
+        ],
+    )
+
+    assert result.exit_code == 0
+    expected_opossum_dict = read_json_from_file("expected_scancode.json")
+    opossum_dict = read_input_json_from_opossum(output_file)
+
+    md = opossum_dict.pop("metadata")
+    expected_md = expected_opossum_dict.pop("metadata")
+    md["projectId"] = expected_md["projectId"]
+    assert md == expected_md
+
+    # Python has hash salting, which means the hashes changes between sessions.
+    # This means that the IDs of the attributions change as they are based on hashes
+    # Thus we need to compare externalAttributions and resourcesToAttributions
+    # structurally
+    resources_inlined = inline_attributions_into_resources(
+        resources_with_ids=opossum_dict.pop("resourcesToAttributions"),
+        all_attributions=opossum_dict.pop("externalAttributions"),
+    )
+    expected_resources_inlined = inline_attributions_into_resources(
+        resources_with_ids=expected_opossum_dict.pop("resourcesToAttributions"),
+        all_attributions=expected_opossum_dict.pop("externalAttributions"),
+    )
+    assert resources_inlined == expected_resources_inlined
+    assert_expected_opossum_equals_generated_opossum(
+        expected_opossum_dict, opossum_dict
+    )
+
+
+def inline_attributions_into_resources(
+    *, resources_with_ids: dict[str, list[str]], all_attributions: dict[str, Any]
+) -> dict[str, set[OpossumPackage]]:
+    resource_with_inlined_attributions = {}
+    for path, ids in resources_with_ids.items():
+        attributions = []
+        for id in ids:
+            attribution = OpossumPackage(**all_attributions[id])
+            attributions.append(attribution)
+        resource_with_inlined_attributions[path] = set(attributions)
+    return resource_with_inlined_attributions
 
 
 def read_input_json_from_opossum(output_file_path: str) -> Any:
@@ -149,16 +206,6 @@ def test_cli_warning_if_outfile_already_exists(caplog: LogCaptureFixture) -> Non
     assert caplog.messages == ["output.opossum already exists and will be overwritten."]
 
 
-def test_cli_with_system_exit_code_1() -> None:
-    runner = CliRunner()
-    with runner.isolated_filesystem():
-        with open("invalid_spdx.spdx", "w") as f:
-            f.write("SPDXID: SPDXRef-DOCUMENT")
-        result = runner.invoke(generate, "--spdx invalid_spdx.spdx -o invalid")
-
-    assert result.exit_code == 1
-
-
 def test_cli_with_invalid_document(caplog: LogCaptureFixture) -> None:
     runner = CliRunner()
     with runner.isolated_filesystem():
@@ -166,6 +213,7 @@ def test_cli_with_invalid_document(caplog: LogCaptureFixture) -> None:
         result = runner.invoke(generate, "--spdx invalid_spdx.spdx -o invalid")
 
     assert result.output == ""
+    assert result.exit_code == 1
     assert caplog.messages == [
         "The given SPDX document is not valid, this might cause issues with "
         "the conversion."
@@ -178,10 +226,11 @@ def test_cli_with_invalid_document(caplog: LogCaptureFixture) -> None:
         generate_valid_spdx_argument() + generate_valid_spdx_argument(),
         generate_valid_spdx_argument() + generate_valid_opossum_argument(),
         generate_valid_opossum_argument() + generate_valid_opossum_argument(),
+        generate_valid_spdx_argument() + generate_valid_scan_code_argument(),
+        generate_valid_scan_code_argument() + generate_valid_scan_code_argument(),
     ],
 )
 def test_cli_with_multiple_files(caplog: LogCaptureFixture, options: list[str]) -> None:
-    print(options)
     result = run_with_command_line_arguments(options)
     assert result.exit_code == 1
 
