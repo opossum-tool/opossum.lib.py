@@ -8,6 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 
 [![REUSE status](https://api.reuse.software/badge/git.fsfe.org/reuse/api)](https://api.reuse.software/info/git.fsfe.org/reuse/api)
 ![Lint and test](https://github.com/opossum-tool/opossum.lib.py/actions/workflows/lint_and_run_tests.yml/badge.svg)
+![build workflow](https://github.com/opossum-tool/opossum.lib.py/actions/workflows/build-and-e2e-test.yml/badge.svg)
 
 This is a library to convert an SPDX document to a file readable by [OpossumUI](https://github.com/opossum-tool/OpossumUI/).
 
@@ -79,3 +80,13 @@ uv run ruff format --check
 uv run python -m mypy src/ tests/
 uv run pytest
 ```
+
+# Build
+
+To build, run
+
+```bash
+uv run python build.py opossum-file
+```
+
+This will create a self-contained executable file `dist/opossum-file` (`dist/opossum-file.exe` on Windows).
