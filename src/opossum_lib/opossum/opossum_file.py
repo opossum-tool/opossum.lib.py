@@ -9,7 +9,6 @@ from enum import Enum, auto
 from typing import Literal, cast
 
 from pydantic import BaseModel, ConfigDict, model_serializer
-from pydantic.dataclasses import dataclass
 
 type OpossumPackageIdentifier = str
 type ResourcePath = str
@@ -182,8 +181,8 @@ class Resource(BaseModel):
         return self.to_dict()
 
 
-@dataclass(frozen=True)
-class ExternalAttributionSource:
+class ExternalAttributionSource(BaseModel):
+    model_config = ConfigDict(frozen=True)
     name: str
     priority: int
     isRelevantForPreferred: bool | None = None

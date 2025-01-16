@@ -74,12 +74,14 @@ def test_different_paths_graph() -> None:
     )
 
     assert opossum_information.externalAttributionSources == {
-        SPDX_FILE_IDENTIFIER: ExternalAttributionSource(SPDX_FILE_IDENTIFIER, 500),
+        SPDX_FILE_IDENTIFIER: ExternalAttributionSource(
+            name=SPDX_FILE_IDENTIFIER, priority=500
+        ),
         SPDX_PACKAGE_IDENTIFIER: ExternalAttributionSource(
-            SPDX_PACKAGE_IDENTIFIER, 500
+            name=SPDX_PACKAGE_IDENTIFIER, priority=500
         ),
         SPDX_SNIPPET_IDENTIFIER: ExternalAttributionSource(
-            SPDX_SNIPPET_IDENTIFIER, 500
+            name=SPDX_SNIPPET_IDENTIFIER, priority=500
         ),
     }
 
