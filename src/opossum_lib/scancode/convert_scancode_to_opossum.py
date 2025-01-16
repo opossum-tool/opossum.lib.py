@@ -34,19 +34,19 @@ def convert_scancode_to_opossum(filename: str) -> OpossumFileContent:
 
     scancode_header = extract_scancode_header(scancode_data, filename)
     metadata = Metadata(
-        projectId=str(uuid.uuid4()),
-        fileCreationDate=scancode_header.end_timestamp,
-        projectTitle="ScanCode file",
+        project_id=str(uuid.uuid4()),
+        file_creation_date=scancode_header.end_timestamp,
+        project_title="ScanCode file",
     )
 
     return OpossumFileContent(
         OpossumInformation(
             metadata=metadata,
             resources=resources,
-            externalAttributions=external_attributions,
-            resourcesToAttributions=resources_to_attributions,
-            attributionBreakpoints=[],
-            externalAttributionSources={},
+            external_attributions=external_attributions,
+            resources_to_attributions=resources_to_attributions,
+            attribution_breakpoints=[],
+            external_attribution_sources={},
         )
     )
 

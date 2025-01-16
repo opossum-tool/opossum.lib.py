@@ -44,14 +44,14 @@ def test_different_paths_graph() -> None:
     file_tree = opossum_information.resources
     assert file_tree == expected_file_tree
     TestCase().assertCountEqual(
-        opossum_information.attributionBreakpoints,
+        opossum_information.attribution_breakpoints,
         [
             "/SPDX Lite Document/DESCRIBES/",
             "/SPDX Lite Document/DESCRIBES/Example package A/CONTAINS/",
             "/SPDX Lite Document/DESCRIBES/Example package B/CONTAINS/",
         ],
     )
-    assert opossum_information.resourcesToAttributions == {
+    assert opossum_information.resources_to_attributions == {
         "/SPDX Lite Document/": ["SPDXRef-DOCUMENT"],
         "/SPDX Lite Document/DESCRIBES/Example package A/": ["SPDXRef-Package-A"],
         "/SPDX Lite Document/DESCRIBES/Example package A/CONTAINS/Example file": [
@@ -64,7 +64,7 @@ def test_different_paths_graph() -> None:
     }
 
     TestCase().assertCountEqual(
-        opossum_information.externalAttributions.keys(),
+        opossum_information.external_attributions.keys(),
         [
             "SPDXRef-DOCUMENT",
             "SPDXRef-Package-A",
@@ -73,7 +73,7 @@ def test_different_paths_graph() -> None:
         ],
     )
 
-    assert opossum_information.externalAttributionSources == {
+    assert opossum_information.external_attribution_sources == {
         SPDX_FILE_IDENTIFIER: ExternalAttributionSource(
             name=SPDX_FILE_IDENTIFIER, priority=500
         ),
@@ -110,7 +110,7 @@ def test_unconnected_paths_graph() -> None:
     file_tree = opossum_information.resources
     assert file_tree == expected_file_tree
     TestCase().assertCountEqual(
-        opossum_information.attributionBreakpoints,
+        opossum_information.attribution_breakpoints,
         [
             "/SPDX Lite Document/DESCRIBES/",
             "/SPDX Lite Document/DESCRIBES/Example package A/CONTAINS/",
@@ -118,7 +118,7 @@ def test_unconnected_paths_graph() -> None:
         ],
     )
 
-    assert opossum_information.resourcesToAttributions == {
+    assert opossum_information.resources_to_attributions == {
         "/SPDX Lite Document/": ["SPDXRef-DOCUMENT"],
         "/SPDX Lite Document/DESCRIBES/Example package A/": ["SPDXRef-Package-A"],
         "/SPDX Lite Document/DESCRIBES/Example package A/CONTAINS/Example file": [
@@ -132,7 +132,7 @@ def test_unconnected_paths_graph() -> None:
     }
 
     TestCase().assertCountEqual(
-        opossum_information.externalAttributions.keys(),
+        opossum_information.external_attributions.keys(),
         [
             "SPDXRef-DOCUMENT",
             "SPDXRef-Package-A",
@@ -171,7 +171,7 @@ def test_different_roots_graph() -> None:
     file_tree = opossum_information.resources
     assert file_tree == expected_file_tree
     TestCase().assertCountEqual(
-        opossum_information.attributionBreakpoints,
+        opossum_information.attribution_breakpoints,
         [
             "/Document/DESCRIBES/",
             "/Document/DESCRIBES/Package-A/CONTAINS/",
@@ -179,7 +179,7 @@ def test_different_roots_graph() -> None:
         ],
     )
 
-    assert opossum_information.resourcesToAttributions == {
+    assert opossum_information.resources_to_attributions == {
         "/File-B/": ["SPDXRef-File-B"],
         "/File-B/DESCRIBES/Package-B": ["SPDXRef-Package-B"],
         "/Document/": ["SPDXRef-DOCUMENT"],
@@ -189,7 +189,7 @@ def test_different_roots_graph() -> None:
     }
 
     TestCase().assertCountEqual(
-        opossum_information.externalAttributions.keys(),
+        opossum_information.external_attributions.keys(),
         [
             "SPDXRef-DOCUMENT",
             "SPDXRef-Package-A",
@@ -216,7 +216,7 @@ def test_tree_generation_for_bigger_examples_json() -> None:
     assert len(file_tree.keys()) == 3
 
     for attribution_breakpoint in expected_breakpoints:
-        assert attribution_breakpoint in opossum_information.attributionBreakpoints
+        assert attribution_breakpoint in opossum_information.attribution_breakpoints
     assert (
         get_value_at_file_tree_path(
             file_tree,
@@ -248,7 +248,7 @@ def test_tree_generation_for_bigger_examples_spdx() -> None:
     assert len(file_tree.keys()) == 2
 
     for attribution_breakpoint in expected_breakpoints:
-        assert attribution_breakpoint in opossum_information.attributionBreakpoints
+        assert attribution_breakpoint in opossum_information.attribution_breakpoints
 
     assert (
         get_value_at_file_tree_path(

@@ -28,24 +28,24 @@ def test_merge_opossum_information() -> None:
     opossum_package = OpossumPackage(source=SourceInfo(name="source"))
     opossum_information = OpossumInformation(
         metadata=Metadata(
-            projectId="project-id",
-            fileCreationDate="30-05-2023",
-            projectTitle="test data",
+            project_id="project-id",
+            file_creation_date="30-05-2023",
+            project_title="test data",
         ),
         resources={"A": {"B": {}}},
-        externalAttributions={"SPDXRef-Package": opossum_package},
-        resourcesToAttributions={"/A/B/": ["SPDXRef-Package"]},
+        external_attributions={"SPDXRef-Package": opossum_package},
+        resources_to_attributions={"/A/B/": ["SPDXRef-Package"]},
     )
 
     opossum_information_2 = OpossumInformation(
         metadata=Metadata(
-            projectId="test-data-id",
-            fileCreationDate="29-05-2023",
-            projectTitle="second test data",
+            project_id="test-data-id",
+            file_creation_date="29-05-2023",
+            project_title="second test data",
         ),
         resources={"A": {"D": {"C": 1}}},
-        externalAttributions={"SPDXRef-File": opossum_package},
-        resourcesToAttributions={"/A/D/C": ["SPDXRef-File"]},
+        external_attributions={"SPDXRef-File": opossum_package},
+        resources_to_attributions={"/A/D/C": ["SPDXRef-File"]},
     )
 
     merged_information = merge_opossum_information(
@@ -59,11 +59,11 @@ def test_merge_opossum_information() -> None:
             "D": {"C": 1},
         }
     }
-    assert merged_information.externalAttributions == {
+    assert merged_information.external_attributions == {
         "project-id-SPDXRef-Package": opossum_package,
         "test-data-id-SPDXRef-File": opossum_package,
     }
-    assert merged_information.resourcesToAttributions == {
+    assert merged_information.resources_to_attributions == {
         "/A/B/": ["project-id-SPDXRef-Package"],
         "/A/D/C": ["test-data-id-SPDXRef-File"],
     }
@@ -190,21 +190,21 @@ def test_expand_opossum_package_identifier() -> None:
     opossum_information_expanded = expand_opossum_package_identifier(
         OpossumInformation(
             metadata=Metadata(
-                projectId="project-id",
-                fileCreationDate="2022-03-02",
-                projectTitle="project title",
+                project_id="project-id",
+                file_creation_date="2022-03-02",
+                project_title="project title",
             ),
             resources={},
-            externalAttributions={"SPDXRef-Package": opossum_package},
-            resourcesToAttributions={"/path/to/resource": ["SPDXRef-Package"]},
+            external_attributions={"SPDXRef-Package": opossum_package},
+            resources_to_attributions={"/path/to/resource": ["SPDXRef-Package"]},
             attributionBreakpoints=[],
             externalAttributionSources={},
         )
     )
 
-    assert opossum_information_expanded.resourcesToAttributions == {
+    assert opossum_information_expanded.resources_to_attributions == {
         "/path/to/resource": ["project-id-SPDXRef-Package"]
     }
-    assert opossum_information_expanded.externalAttributions == {
+    assert opossum_information_expanded.external_attributions == {
         "project-id-SPDXRef-Package": opossum_package
     }

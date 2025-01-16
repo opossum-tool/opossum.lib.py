@@ -28,27 +28,27 @@ def merge_opossum_information(
                 for opossum_information in expanded_opossum_information
             ]
         ).convert_to_file_resource(),
-        externalAttributions=_merge_dicts_without_duplicates(
+        external_attributions=_merge_dicts_without_duplicates(
             [
-                opossum_information.externalAttributions
+                opossum_information.external_attributions
                 for opossum_information in expanded_opossum_information
             ]
         ),
-        resourcesToAttributions=_merge_resources_to_attributions(
+        resources_to_attributions=_merge_resources_to_attributions(
             [
-                opossum_information.resourcesToAttributions
+                opossum_information.resources_to_attributions
                 for opossum_information in expanded_opossum_information
             ]
         ),
         attributionBreakpoints=_merge_attribution_breakpoints(
             [
-                opossum_information.attributionBreakpoints
+                opossum_information.attribution_breakpoints
                 for opossum_information in expanded_opossum_information
             ]
         ),
         externalAttributionSources=_merge_dicts_without_duplicates(
             [
-                opossum_information.externalAttributionSources
+                opossum_information.external_attribution_sources
                 for opossum_information in expanded_opossum_information
             ]
         ),
@@ -61,12 +61,12 @@ def expand_opossum_package_identifier(
     """IDs for the attributions should be unique per OpossumInformation.
     To prevent possible duplicates we add the projectId of the
     OpossumInformation to the IDs as a prefix."""
-    prefix = opossum_information.metadata.projectId
+    prefix = opossum_information.metadata.project_id
     extended_resources_to_attributions = dict()
     for (
         resource_path,
         identifiers,
-    ) in opossum_information.resourcesToAttributions.items():
+    ) in opossum_information.resources_to_attributions.items():
         extended_resources_to_attributions[resource_path] = [
             prefix + "-" + identifier for identifier in identifiers
         ]
@@ -74,16 +74,16 @@ def expand_opossum_package_identifier(
     for (
         identifier,
         external_attribution,
-    ) in opossum_information.externalAttributions.items():
+    ) in opossum_information.external_attributions.items():
         extended_external_attributions[prefix + "-" + identifier] = external_attribution
 
     return OpossumInformation(
         metadata=opossum_information.metadata,
         resources=opossum_information.resources,
-        externalAttributions=extended_external_attributions,
-        resourcesToAttributions=extended_resources_to_attributions,
-        attributionBreakpoints=opossum_information.attributionBreakpoints,
-        externalAttributionSources=opossum_information.externalAttributionSources,
+        external_attributions=extended_external_attributions,
+        resources_to_attributions=extended_resources_to_attributions,
+        attributionBreakpoints=opossum_information.attribution_breakpoints,
+        externalAttributionSources=opossum_information.external_attribution_sources,
     )
 
 

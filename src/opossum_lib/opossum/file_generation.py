@@ -45,6 +45,6 @@ def write_input_json(
     zip_file.writestr(
         INPUT_JSON_NAME,
         TypeAdapter(OpossumInformation).dump_json(
-            opossum_file_content.input_file, indent=4, exclude_none=True
+            opossum_file_content.input_file, indent=4, exclude_none=True, by_alias=True
         ),
     )

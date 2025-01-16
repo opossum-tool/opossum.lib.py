@@ -121,8 +121,8 @@ def convert_tree_to_opossum_information(tree: DiGraph) -> OpossumInformation:
     opossum_information = OpossumInformation(
         metadata=metadata,
         resources=resources.convert_to_file_resource(),
-        externalAttributions=external_attributions,
-        resourcesToAttributions=resources_to_attributions,
+        external_attributions=external_attributions,
+        resources_to_attributions=resources_to_attributions,
         attributionBreakpoints=attribution_breakpoints,
         externalAttributionSources=external_attribution_sources,
     )
@@ -175,8 +175,8 @@ def create_metadata(tree: DiGraph) -> Metadata:
     doc_name = tree.nodes["SPDXRef-DOCUMENT"]["element"].name
     created = tree.nodes["SPDXRef-DOCUMENT"]["element"].created
     metadata = Metadata(
-        projectId=str(uuid.uuid4()),
-        fileCreationDate=created.isoformat(),
-        projectTitle=doc_name,
+        project_id=str(uuid.uuid4()),
+        file_creation_date=created.isoformat(),
+        project_title=doc_name,
     )
     return metadata
