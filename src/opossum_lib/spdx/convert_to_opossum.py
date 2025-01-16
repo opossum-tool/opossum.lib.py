@@ -164,7 +164,7 @@ def create_attribution_and_link_with_resource(
 
     else:
         external_attributions[node] = OpossumPackage(
-            source=SourceInfo(tree.nodes[node]["label"])
+            source=SourceInfo(name=tree.nodes[node]["label"])
         )
         resources_to_attributions[file_path] = [node]
 

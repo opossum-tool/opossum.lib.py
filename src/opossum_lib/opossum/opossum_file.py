@@ -47,8 +47,8 @@ class FrequentLicense(BaseModel):
     defaultText: str
 
 
-@dataclass(frozen=True)
-class SourceInfo:
+class SourceInfo(BaseModel):
+    model_config = ConfigDict(frozen=True)
     name: str
     documentConfidence: int | float | None = 0
     additionalName: str | None = None

@@ -25,7 +25,7 @@ from opossum_lib.opossum.opossum_file import (
 
 
 def test_merge_opossum_information() -> None:
-    opossum_package = OpossumPackage(source=SourceInfo("source"))
+    opossum_package = OpossumPackage(source=SourceInfo(name="source"))
     opossum_information = OpossumInformation(
         Metadata(
             projectId="project-id",
@@ -184,7 +184,7 @@ def test_merge_dicts_without_duplicates_type_error(
 
 
 def test_expand_opossum_package_identifier() -> None:
-    opossum_package = OpossumPackage(SourceInfo("source-info"))
+    opossum_package = OpossumPackage(SourceInfo(name="source-info"))
     opossum_information_expanded = expand_opossum_package_identifier(
         OpossumInformation(
             Metadata(

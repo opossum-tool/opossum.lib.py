@@ -31,7 +31,7 @@ def _get_purl(package: Package) -> str | None:
 def create_package_attribution(package: Package) -> OpossumPackage:
     package_data = StringIO()
     write_package(package, package_data)
-    source = SourceInfo(SPDX_PACKAGE_IDENTIFIER)
+    source = SourceInfo(name=SPDX_PACKAGE_IDENTIFIER)
     package_attribution = OpossumPackage(
         source=source,
         packageName=package.name,
@@ -49,7 +49,7 @@ def create_package_attribution(package: Package) -> OpossumPackage:
 def create_file_attribution(file: File) -> OpossumPackage:
     file_data = StringIO()
     write_file(file, file_data)
-    source = SourceInfo(SPDX_FILE_IDENTIFIER)
+    source = SourceInfo(name=SPDX_FILE_IDENTIFIER)
     file_attribution = OpossumPackage(
         source=source,
         packageName=file.name.split("/")[-1],
@@ -63,7 +63,7 @@ def create_file_attribution(file: File) -> OpossumPackage:
 def create_snippet_attribution(snippet: Snippet) -> OpossumPackage:
     snippet_data = StringIO()
     write_snippet(snippet, snippet_data)
-    source = SourceInfo(SPDX_SNIPPET_IDENTIFIER)
+    source = SourceInfo(name=SPDX_SNIPPET_IDENTIFIER)
     snippet_attribution = OpossumPackage(
         source=source,
         packageName=snippet.name,
@@ -80,7 +80,7 @@ def create_document_attribution(
 ) -> OpossumPackage:
     creation_info_data = StringIO()
     write_creation_info(creation_info, creation_info_data)
-    source = SourceInfo(creation_info.spdx_id)
+    source = SourceInfo(name=creation_info.spdx_id)
     document_attribution = OpossumPackage(
         source=source,
         packageName=creation_info.name,

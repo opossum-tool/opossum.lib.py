@@ -70,7 +70,7 @@ def get_attribution_info(file: File) -> list[OpossumPackage]:
     if file.type == FileType.DIRECTORY:
         return []
     copyright = "\n".join(c.copyright for c in file.copyrights)
-    source_info = SourceInfo(SCANCODE_SOURCE_NAME)
+    source_info = SourceInfo(name=SCANCODE_SOURCE_NAME)
 
     attribution_infos = []
     for license_detection in file.license_detections:
