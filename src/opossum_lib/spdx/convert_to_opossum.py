@@ -26,6 +26,7 @@ from opossum_lib.opossum.opossum_file import (
     ResourceType,
     SourceInfo,
 )
+from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 from opossum_lib.spdx.attribution_generation import (
     create_document_attribution,
     create_file_attribution,
@@ -48,7 +49,7 @@ from opossum_lib.spdx.helper_methods import (
 from opossum_lib.spdx.tree_generation import generate_tree_from_graph
 
 
-def convert_spdx_to_opossum_information(filename: str) -> OpossumInformation:
+def convert_spdx_to_opossum_information(filename: str) -> OpossumFileContent:
     logging.info(f"Converting {filename} to opossum information.")
     try:
         document: SpdxDocument = parse_file(filename)
@@ -69,7 +70,7 @@ def convert_spdx_to_opossum_information(filename: str) -> OpossumInformation:
     graph = generate_graph_from_spdx(document)
     tree = generate_tree_from_graph(graph)
     opossum_information = convert_tree_to_opossum_information(tree)
-    return opossum_information
+    return OpossumFileContent(opossum_information)
 
 
 def convert_tree_to_opossum_information(tree: DiGraph) -> OpossumInformation:

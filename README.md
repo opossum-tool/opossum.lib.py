@@ -43,10 +43,10 @@ Commands:
   generate  Generate an Opossum file from various other file formats.
 ```
 
-### `generate`
+### generate
 
 ```bash
-Usage: uv run opossum-file generate [OPTIONS]
+Usage: opossum-file generate [OPTIONS]
 
   Generate an Opossum file from various other file formats.
 
@@ -68,6 +68,8 @@ Options:
                          to. If appropriate, the extension ".opossum" will be
                          appended.  [default: output.opossum]
   --help                 Show this message and exit.
+
+
 ```
 
 # Development

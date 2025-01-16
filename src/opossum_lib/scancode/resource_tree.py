@@ -30,7 +30,7 @@ class ScanCodeFileTree(BaseModel):
             return self
         next_segment, *rest = path
         if next_segment not in self.children:
-            self.children[next_segment] = ScanCodeFileTree.model_construct(None)
+            self.children[next_segment] = ScanCodeFileTree.model_construct(None)  # type: ignore
         return self.children[next_segment].get_path(rest)
 
     def revalidate(self) -> None:
@@ -40,7 +40,7 @@ class ScanCodeFileTree(BaseModel):
 
 
 def scancode_to_file_tree(scancode_data: ScanCodeData) -> ScanCodeFileTree:
-    temp_root = ScanCodeFileTree.model_construct(file=None)
+    temp_root = ScanCodeFileTree.model_construct(file=None)  # type: ignore
     for file in scancode_data.files:
         segments = path_segments(file.path)
         temp_root.get_path(segments).file = file

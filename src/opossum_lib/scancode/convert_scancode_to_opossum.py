@@ -12,6 +12,7 @@ from opossum_lib.opossum.opossum_file import (
     Metadata,
     OpossumInformation,
 )
+from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 from opossum_lib.scancode.model import Header, ScanCodeData
 from opossum_lib.scancode.resource_tree import (
     convert_to_opossum_resources,
@@ -20,7 +21,7 @@ from opossum_lib.scancode.resource_tree import (
 )
 
 
-def convert_scancode_to_opossum(filename: str) -> OpossumInformation:
+def convert_scancode_to_opossum(filename: str) -> OpossumFileContent:
     logging.info(f"Converting scancode to opossum {filename}")
 
     scancode_data = load_scancode_json(filename)
@@ -38,13 +39,15 @@ def convert_scancode_to_opossum(filename: str) -> OpossumInformation:
         projectTitle="ScanCode file",
     )
 
-    return OpossumInformation(
-        metadata=metadata,
-        resources=resources,
-        externalAttributions=external_attributions,
-        resourcesToAttributions=resources_to_attributions,
-        attributionBreakpoints=[],
-        externalAttributionSources={},
+    return OpossumFileContent(
+        OpossumInformation(
+            metadata=metadata,
+            resources=resources,
+            externalAttributions=external_attributions,
+            resourcesToAttributions=resources_to_attributions,
+            attributionBreakpoints=[],
+            externalAttributionSources={},
+        )
     )
 
 

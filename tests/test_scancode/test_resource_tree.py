@@ -52,6 +52,7 @@ class TestRevalidate:
                     file=dummy_file, children={"C": ScanCodeFileTree(file=dummy_file)}
                 ),
             },
+            file=None,  # type: ignore
         )
         with pytest.raises(ValidationError):
             invalid_structure.revalidate()
@@ -64,7 +65,7 @@ class TestRevalidate:
                 "A": ScanCodeFileTree(file=dummy_file),
                 "B": ScanCodeFileTree(
                     file=dummy_file,
-                    children={"C": ScanCodeFileTree.model_construct(None)},
+                    children={"C": ScanCodeFileTree.model_construct(None)},  # type: ignore
                 ),
             },
         )
