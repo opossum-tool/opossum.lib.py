@@ -8,6 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 
 - **[Adrian Braemer](https://github.com/abraemer)** (<adrian.braemer@tngtech.com>)
 - **[Alexander zur Bonsen](https://github.com/alexzurbonsen)**
+- **[Benedikt Richter](https://github.com/benedikt-richter)** (<benedikt.richter@tngtech.com>)
 - **[Dominikus Hellgartner](https://github.com/Hellgartner)** (<dominikus.hellgartner@tngtech.com>)
 - **[Jakob Schubert](https://github.com/JakobSchubert)**
 - **[Max Huneshagen](https://github.com/MaxHun)**
