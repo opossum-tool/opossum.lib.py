@@ -45,3 +45,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/${{ matrix.asset-name }}
+      
+      - name: Upload readme
+        uses: softprops/action-gh-release@v2
+        with:
+          files: README.md
