@@ -176,15 +176,15 @@ def test_merge_dicts_without_duplicates_type_error(
     source_info: SourceInfo,
 ) -> None:
     dicts = [
-        {"A": OpossumPackage(source_info, comment="test package 1")},
-        {"A": OpossumPackage(source_info, comment="test package 2")},
+        {"A": OpossumPackage(source=source_info, comment="test package 1")},
+        {"A": OpossumPackage(source=source_info, comment="test package 2")},
     ]
     with pytest.raises(TypeError):
         _merge_dicts_without_duplicates(dicts)
 
 
 def test_expand_opossum_package_identifier() -> None:
-    opossum_package = OpossumPackage(SourceInfo(name="source-info"))
+    opossum_package = OpossumPackage(source=SourceInfo(name="source-info"))
     opossum_information_expanded = expand_opossum_package_identifier(
         OpossumInformation(
             Metadata(

@@ -79,7 +79,7 @@ def get_attribution_info(file: File) -> list[OpossumPackage]:
         attribution_confidence = int(max_score)
 
         package = OpossumPackage(
-            source_info,
+            source=source_info,
             licenseName=license_name,
             attributionConfidence=attribution_confidence,
             copyright=copyright,

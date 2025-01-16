@@ -54,8 +54,8 @@ class SourceInfo(BaseModel):
     additionalName: str | None = None
 
 
-@dataclass(frozen=True)
-class OpossumPackage:
+class OpossumPackage(BaseModel):
+    model_config = ConfigDict(frozen=True)
     source: SourceInfo
     attributionConfidence: int | None = None
     comment: str | None = None
