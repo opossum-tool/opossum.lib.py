@@ -27,25 +27,25 @@ from opossum_lib.opossum.opossum_file import (
 def test_merge_opossum_information() -> None:
     opossum_package = OpossumPackage(source=SourceInfo(name="source"))
     opossum_information = OpossumInformation(
-        Metadata(
+        metadata=Metadata(
             projectId="project-id",
             fileCreationDate="30-05-2023",
             projectTitle="test data",
         ),
-        {"A": {"B": {}}},
-        {"SPDXRef-Package": opossum_package},
-        {"/A/B/": ["SPDXRef-Package"]},
+        resources={"A": {"B": {}}},
+        externalAttributions={"SPDXRef-Package": opossum_package},
+        resourcesToAttributions={"/A/B/": ["SPDXRef-Package"]},
     )
 
     opossum_information_2 = OpossumInformation(
-        Metadata(
+        metadata=Metadata(
             projectId="test-data-id",
             fileCreationDate="29-05-2023",
             projectTitle="second test data",
         ),
-        {"A": {"D": {"C": 1}}},
-        {"SPDXRef-File": opossum_package},
-        {"/A/D/C": ["SPDXRef-File"]},
+        resources={"A": {"D": {"C": 1}}},
+        externalAttributions={"SPDXRef-File": opossum_package},
+        resourcesToAttributions={"/A/D/C": ["SPDXRef-File"]},
     )
 
     merged_information = merge_opossum_information(
@@ -189,7 +189,7 @@ def test_expand_opossum_package_identifier() -> None:
     opossum_package = OpossumPackage(source=SourceInfo(name="source-info"))
     opossum_information_expanded = expand_opossum_package_identifier(
         OpossumInformation(
-            Metadata(
+            metadata=Metadata(
                 projectId="project-id",
                 fileCreationDate="2022-03-02",
                 projectTitle="project title",

@@ -16,8 +16,8 @@ type ResourcePath = str
 type ResourceInFile = dict[str, ResourceInFile] | int
 
 
-@dataclass(frozen=True)
-class OpossumInformation:
+class OpossumInformation(BaseModel):
+    model_config = ConfigDict(frozen=True)
     metadata: Metadata
     resources: ResourceInFile
     externalAttributions: dict[OpossumPackageIdentifier, OpossumPackage]
