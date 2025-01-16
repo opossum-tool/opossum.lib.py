@@ -95,8 +95,8 @@ class ResourceType(Enum):
     OTHER = auto()
 
 
-@dataclass(frozen=True)
-class Resource:
+class Resource(BaseModel):
+    model_config = ConfigDict(frozen=True)
     type: ResourceType
     children: dict[str, Resource] = field(default_factory=dict)
 
@@ -138,7 +138,7 @@ class Resource:
             )
 
         else:
-            resource = Resource(ResourceType.TOP_LEVEL)
+            resource = Resource(type=ResourceType.TOP_LEVEL)
             paths_in_resource.remove(path_to_element_to_drop)
             paths_in_resource.append(path_to_element_to_drop[:-1])
 
@@ -200,7 +200,7 @@ def _build_resource_tree(resource: ResourceInFile) -> Resource:
 
 
 def convert_resource_in_file_to_resource(resource: ResourceInFile) -> Resource:
-    root_node = Resource(ResourceType.TOP_LEVEL)
+    root_node = Resource(type=ResourceType.TOP_LEVEL)
 
     if isinstance(resource, dict):
         dict_resource = cast(dict[str, ResourceInFile], resource)

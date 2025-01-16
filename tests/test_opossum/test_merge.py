@@ -80,7 +80,7 @@ def test_merge_resources() -> None:
         [("A", ResourceType.FOLDER), ("D", ResourceType.FILE)],
     ]
 
-    resource = Resource(ResourceType.TOP_LEVEL)
+    resource = Resource(type=ResourceType.TOP_LEVEL)
     for path in list_of_paths_with_resource_types:
         resource = resource.add_path(path)
 
@@ -98,7 +98,7 @@ def test_merge_resources() -> None:
             ("E", ResourceType.FOLDER),
         ],
     ]
-    resource2 = Resource(ResourceType.TOP_LEVEL)
+    resource2 = Resource(type=ResourceType.TOP_LEVEL)
     for path in list_of_paths_with_resource_type:
         resource2 = resource2.add_path(path)
 
@@ -106,22 +106,24 @@ def test_merge_resources() -> None:
     merged_resource = _merge_resources(resources)
 
     assert merged_resource == Resource(
-        ResourceType.TOP_LEVEL,
-        {
+        type=ResourceType.TOP_LEVEL,
+        children={
             "A": Resource(
-                ResourceType.FOLDER,
-                {
+                type=ResourceType.FOLDER,
+                children={
                     "B": Resource(
-                        ResourceType.FOLDER, {"C": Resource(ResourceType.FILE, {})}
+                        type=ResourceType.FOLDER,
+                        children={"C": Resource(type=ResourceType.FILE)},
                     ),
-                    "D": Resource(ResourceType.FILE, {}),
+                    "D": Resource(type=ResourceType.FILE),
                 },
             ),
             "C": Resource(
-                ResourceType.FOLDER,
-                {
+                type=ResourceType.FOLDER,
+                children={
                     "D": Resource(
-                        ResourceType.FOLDER, {"E": Resource(ResourceType.FOLDER, {})}
+                        type=ResourceType.FOLDER,
+                        children={"E": Resource(type=ResourceType.FOLDER)},
                     )
                 },
             ),

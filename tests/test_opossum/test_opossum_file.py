@@ -22,7 +22,7 @@ def test_resource_to_dict_with_file_as_leaf() -> None:
         [("A", ResourceType.FOLDER), ("B", ResourceType.FILE)],
         [("A", ResourceType.FOLDER), ("D", ResourceType.FILE)],
     ]
-    resource = Resource(ResourceType.TOP_LEVEL)
+    resource = Resource(type=ResourceType.TOP_LEVEL)
 
     for path in list_of_paths:
         resource = resource.add_path(path)
@@ -41,7 +41,7 @@ def test_resource_to_dict_with_package_as_leaf() -> None:
         [("A", ResourceType.FOLDER), ("B", ResourceType.FILE)],
         [("A", ResourceType.FOLDER), ("D", ResourceType.FOLDER)],
     ]
-    resource = Resource(ResourceType.TOP_LEVEL)
+    resource = Resource(type=ResourceType.TOP_LEVEL)
 
     for path in list_of_paths:
         resource = resource.add_path(path)
@@ -66,7 +66,7 @@ def test_resource_get_path() -> None:
             ("F", ResourceType.OTHER),
         ],
     ]
-    resource = Resource(ResourceType.TOP_LEVEL)
+    resource = Resource(type=ResourceType.TOP_LEVEL)
 
     for path in list_of_paths:
         resource = resource.add_path(path)
@@ -92,7 +92,7 @@ def test_resource_get_path() -> None:
 def test_resource_add_path_throws_err_if_leaf_element_exists_with_different_type() -> (
     None
 ):
-    resource = Resource(ResourceType.TOP_LEVEL)
+    resource = Resource(type=ResourceType.TOP_LEVEL)
     resource = resource.add_path(
         [
             ("A", ResourceType.FOLDER),
@@ -112,7 +112,7 @@ def test_resource_add_path_throws_err_if_leaf_element_exists_with_different_type
 
 
 def test_resource_add_path_throws_err_if_element_exists_with_different_type() -> None:
-    resource = Resource(ResourceType.TOP_LEVEL)
+    resource = Resource(type=ResourceType.TOP_LEVEL)
     resource = resource.add_path(
         [
             ("A", ResourceType.FOLDER),
@@ -133,7 +133,7 @@ def test_resource_add_path_throws_err_if_element_exists_with_different_type() ->
 
 
 def test_resource_drop_element_error() -> None:
-    resource = Resource(ResourceType.TOP_LEVEL)
+    resource = Resource(type=ResourceType.TOP_LEVEL)
     resource = resource.add_path(
         [
             ("A", ResourceType.FOLDER),
@@ -154,7 +154,7 @@ def test_resource_drop_element_error() -> None:
 
 
 def test_resource_drop_element_error_not_leaf() -> None:
-    resource = Resource(ResourceType.TOP_LEVEL)
+    resource = Resource(type=ResourceType.TOP_LEVEL)
     resource = resource.add_path(
         [
             ("A", ResourceType.FOLDER),
@@ -175,7 +175,7 @@ def test_resource_drop_element_error_not_leaf() -> None:
 
 
 def test_resource_drop_element() -> None:
-    resource = Resource(ResourceType.TOP_LEVEL)
+    resource = Resource(type=ResourceType.TOP_LEVEL)
     resource = resource.add_path(
         [
             ("A", ResourceType.FOLDER),
