@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from copy import deepcopy
-from pathlib import Path
 from typing import Any
 from unittest import mock
 
@@ -27,64 +26,65 @@ from opossum_lib.scancode.resource_tree import (
     get_attribution_info,
     scancode_to_file_tree,
 )
+from tests.test_scancode.model_helpers import _create_file
 
 
-def test_revalidate_valid() -> None:
-    dummy_file = _create_file("A", FileType.FILE)
-    valid_structure = ScanCodeFileTree(
-        file=dummy_file,
-        children={
-            "A": ScanCodeFileTree(file=dummy_file),
-            "B": ScanCodeFileTree(
-                file=dummy_file, children={"C": ScanCodeFileTree(file=dummy_file)}
-            ),
-        },
-    )
-    valid_structure.revalidate()
+class TestRevalidate:
+    def test_successfully_revalidate_valid_file_tree(self) -> None:
+        dummy_file = _create_file("A", FileType.FILE)
+        valid_structure = ScanCodeFileTree(
+            file=dummy_file,
+            children={
+                "A": ScanCodeFileTree(file=dummy_file),
+                "B": ScanCodeFileTree(
+                    file=dummy_file, children={"C": ScanCodeFileTree(file=dummy_file)}
+                ),
+            },
+        )
+        valid_structure.revalidate()
+
+    def test_fail_to_revalidate_file_tree_invalid_at_toplevel(self) -> None:
+        dummy_file = _create_file("A", FileType.FILE)
+        invalid_structure = ScanCodeFileTree.model_construct(
+            children={
+                "A": ScanCodeFileTree(file=dummy_file),
+                "B": ScanCodeFileTree(
+                    file=dummy_file, children={"C": ScanCodeFileTree(file=dummy_file)}
+                ),
+            },
+        )
+        with pytest.raises(ValidationError):
+            invalid_structure.revalidate()
+
+    def test_fail_to_revalidate_file_tree_invalid_only_at_lower_level(self) -> None:
+        dummy_file = _create_file("A", FileType.FILE)
+        invalid_structure = ScanCodeFileTree(
+            file=dummy_file,
+            children={
+                "A": ScanCodeFileTree(file=dummy_file),
+                "B": ScanCodeFileTree(
+                    file=dummy_file,
+                    children={"C": ScanCodeFileTree.model_construct(None)},
+                ),
+            },
+        )
+        with pytest.raises(ValidationError):
+            invalid_structure.revalidate()
 
 
-def test_revalidate_invalid_at_toplevel() -> None:
-    dummy_file = _create_file("A", FileType.FILE)
-    invalid_structure = ScanCodeFileTree.model_construct(
-        children={
-            "A": ScanCodeFileTree(file=dummy_file),
-            "B": ScanCodeFileTree(
-                file=dummy_file, children={"C": ScanCodeFileTree(file=dummy_file)}
-            ),
-        },
-    )
-    with pytest.raises(ValidationError):
-        invalid_structure.revalidate()
-
-
-def test_revalidate_invalid_nested() -> None:
-    dummy_file = _create_file("A", FileType.FILE)
-    invalid_structure = ScanCodeFileTree(
-        file=dummy_file,
-        children={
-            "A": ScanCodeFileTree(file=dummy_file),
-            "B": ScanCodeFileTree(
-                file=dummy_file, children={"C": ScanCodeFileTree.model_construct(None)}
-            ),
-        },
-    )
-    with pytest.raises(ValidationError):
-        invalid_structure.revalidate()
-
-
-def test_scancode_to_resource_tree() -> None:
+def test_scancode_to_resource_tree_produces_expected_result() -> None:
     files = _create_reference_scancode_files()
     scancode_data = ScanCodeData(
         headers=[], packages=[], dependencies=[], license_detections=[], files=files
     )
 
     tree = scancode_to_file_tree(scancode_data)
-    reference = _create_reference_Node_structure()
+    reference = _create_reference_node_structure()
 
     assert tree == reference
 
 
-def test_convert_to_opossum_resources() -> None:
+def test_convert_to_opossum_resources_produces_expected_result() -> None:
     scancode_data = ScanCodeData(
         headers=[],
         packages=[],
@@ -99,18 +99,17 @@ def test_convert_to_opossum_resources() -> None:
     assert resources == reference
 
 
-# OpossumUI automatically prepends every path with a "/"
-# So our resourcesToAttributions needs to start every path with "/" as well
 @mock.patch(
     "opossum_lib.scancode.resource_tree.get_attribution_info",
     autospec=True,
     return_value=[OpossumPackage(source=SourceInfo(name="mocked"))],
 )
 def test_create_attribution_mapping_paths_have_root_prefix(_: Any) -> None:
-    rootnode = _create_reference_Node_structure()
-    # rootnode.children["file1"].file.license_detections = [ld1]
-    # rootnode.children["B"].children["file3"].file.license_detections = [ld2]
+    rootnode = _create_reference_node_structure()
     _, resources_to_attributions = create_attribution_mapping(rootnode)
+    # OpossumUI automatically prepends every path with a "/"
+    # So our resourcesToAttributions needs to start every path with "/"
+    # even though ScanCode paths don't start with "/".
     assert "/A/file1" in resources_to_attributions
     assert "/A/file2.txt" in resources_to_attributions
     assert "/A/B/file3" in resources_to_attributions
@@ -132,7 +131,7 @@ def test_create_attribution_mapping() -> None:
         else:
             return []
 
-    root_node = _create_reference_Node_structure()
+    root_node = _create_reference_node_structure()
 
     with mock.patch(
         "opossum_lib.scancode.resource_tree.get_attribution_info",
@@ -240,7 +239,7 @@ def _create_reference_scancode_files() -> list[File]:
     ]
 
 
-def _create_reference_Node_structure() -> ScanCodeFileTree:
+def _create_reference_node_structure() -> ScanCodeFileTree:
     folder, subfolder, file1, file2, file3 = _create_reference_scancode_files()
     inner = ScanCodeFileTree(
         file=subfolder, children={"file3": ScanCodeFileTree(file=file3)}
@@ -254,45 +253,3 @@ def _create_reference_Node_structure() -> ScanCodeFileTree:
         },
     )
     return reference
-
-
-def _create_file(path: str, type: FileType, **kwargs: Any) -> File:
-    default_properties = {
-        "path": path,
-        "type": type,
-        "name": Path(path).name,
-        "base_name": Path(Path(path).name).stem,
-        "extension": Path(path).suffix,
-        "size": 0,
-        "date": None,
-        "sha1": None,
-        "md5": None,
-        "sha256": None,
-        "mime_type": None,
-        "file_type": None,
-        "programming_language": None,
-        "is_binary": False,
-        "is_text": False,
-        "is_archive": False,
-        "is_media": False,
-        "is_source": False,
-        "is_script": False,
-        "package_data": [],
-        "for_packages": [],
-        "detected_license_expression": None,
-        "detected_license_expression_spdx": None,
-        "license_detections": [],  # list[LicenseDetection1]
-        "license_clues": [],
-        "percentage_of_license_text": 0.0,
-        "copyrights": [],  # ,list[Copyright],
-        "holders": [],  # list[Holder],
-        "authors": [],
-        "emails": [],
-        "urls": [],  # list[Url],
-        "files_count": 0,
-        "dirs_count": 0,
-        "size_count": 0,
-        "scan_errors": [],
-        **kwargs,
-    }
-    return File.model_validate(default_properties)
