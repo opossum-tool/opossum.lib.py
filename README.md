@@ -4,14 +4,15 @@ SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# opossum.lib.py
+# opossum-file
 
 [![REUSE status](https://api.reuse.software/badge/git.fsfe.org/reuse/api)](https://api.reuse.software/info/git.fsfe.org/reuse/api)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/opossum-tool/opossum.lib.py)](https://github.com/opossum-tool/opossum.lib.py/releases/latest)
-![Lint and test](https://github.com/opossum-tool/opossum.lib.py/actions/workflows/lint_and_run_tests.yml/badge.svg)
-![build workflow](https://github.com/opossum-tool/opossum.lib.py/actions/workflows/build-and-e2e-test.yml/badge.svg)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/opossum-tool/opossum-file)](https://github.com/opossum-tool/opossum-file/releases/latest)
+![Lint and test](https://github.com/opossum-tool/opossum-file/actions/workflows/lint_and_run_tests.yml/badge.svg)
+![build workflow](https://github.com/opossum-tool/opossum-file/actions/workflows/build-and-e2e-test.yml/badge.svg)
 
-This is a library to convert an SPDX document to a file readable by [OpossumUI](https://github.com/opossum-tool/OpossumUI/).
+This is a library implementing operations around files readable by [OpossumUI](https://github.com/opossum-tool/OpossumUI/).
+Currently only supports conversion from single SPDX files to `.opossum` format.
 
 # Current state
 
@@ -98,7 +99,7 @@ This will create a self-contained executable file `dist/opossum-file` (`dist/opo
 
 Note: You will need the "maintain" role in order to create a new release.
 
-1. Go to the [GitHub releases page](https://github.com/opossum-tool/opossum.lib.py/releases/new) and use the UI to create a new release.
+1. Go to the [GitHub releases page](https://github.com/opossum-tool/opossum-file/releases/new) and use the UI to create a new release.
 2. The tag should have the format "opossum-file-$YEAR-$MONTH-$DAY" (in case of an Nth release on the same day "opossum-file-$YEAR-$MONTH-$DAY.N").
 3. The title of the release equals the tag.
 4. Click the button "Generate release notes" to get the description for the release. Then, remove all the contributions from @renovate which are just dependency upgrades.
