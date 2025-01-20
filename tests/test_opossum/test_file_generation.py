@@ -11,17 +11,20 @@ from faker import Faker
 import opossum_lib.opossum.output_model
 from opossum_lib.opossum.constants import INPUT_JSON_NAME, OUTPUT_JSON_NAME
 from opossum_lib.opossum.file_generation import write_opossum_information_to_file
-from opossum_lib.opossum.opossum_file import OpossumInformation
 from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 from opossum_lib.opossum.output_model import OpossumOutputFile
-from tests.test_opossum.generators.generate_file_information import (
-    FileInformationProvider,
-)
+from tests.test_setup.faker_setup import OpossumFaker, setup_faker
 
 
 @pytest.fixture(scope="session", autouse=True)
 def faker_seed() -> int:
     return 12345
+
+
+@pytest.fixture
+def opossum_faker(faker: Faker) -> OpossumFaker:
+    print("setting up faker")
+    return setup_faker(faker)
 
 
 def generate_opossum_outfile(faker: Faker) -> OpossumOutputFile:
@@ -37,15 +40,12 @@ def generate_opossum_outfile(faker: Faker) -> OpossumOutputFile:
     )
 
 
-def generate_opossum_information(faker: Faker) -> OpossumInformation:
-    file_information_provider = FileInformationProvider(faker)
-    return file_information_provider.opossum_file_information()
-
-
 def test_only_input_information_available_writes_only_input_information(
-    tmp_path: Path, faker: Faker
+    tmp_path: Path, opossum_faker: OpossumFaker
 ) -> None:
-    opossum_file_content = OpossumFileContent(generate_opossum_information(faker))
+    opossum_file_content = OpossumFileContent(
+        opossum_faker.opossum_file_information()
+    )
     output_path = tmp_path / "output.opossum"
 
     write_opossum_information_to_file(opossum_file_content, output_path)
@@ -55,11 +55,11 @@ def test_only_input_information_available_writes_only_input_information(
 
 
 def test_input_and_output_information_available_writes_both(
-    tmp_path: Path, faker: Faker
+    tmp_path: Path, opossum_faker: OpossumFaker
 ) -> None:
     opossum_file_content = OpossumFileContent(
-        input_file=generate_opossum_information(faker),
-        output_file=generate_opossum_outfile(faker),
+        input_file=opossum_faker.opossum_file_information(),
+        output_file=generate_opossum_outfile(opossum_faker),
     )
     print(opossum_file_content)
     output_path = tmp_path / "output.opossum"
