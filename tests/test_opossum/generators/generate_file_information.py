@@ -1,7 +1,9 @@
 # SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
+from typing import Any
 
+from faker.providers import BaseProvider
 from faker.providers.date_time import Provider as DatetimeProvider
 from faker.providers.lorem.en_US import Provider as LoremProvider
 from faker.providers.misc import Provider as MiscProvider
@@ -28,7 +30,17 @@ def _entry_or_none[T](
         return None
 
 
-class MetadataProvider(LoremProvider, DatetimeProvider, MiscProvider):
+class MetadataProvider(BaseProvider):
+    lorem_provider: LoremProvider
+    date_time_provider: DatetimeProvider
+    misc_provider: MiscProvider
+
+    def __init__(self, generator: Any):
+        super().__init__(generator)
+        self.lorem_provider = LoremProvider(generator)
+        self.date_time_provider = DatetimeProvider(generator)
+        self.misc_provider = MiscProvider(generator)
+
     def opossum_input_metadata(
         self,
         *,
@@ -40,18 +52,30 @@ class MetadataProvider(LoremProvider, DatetimeProvider, MiscProvider):
         build_date: str | None = None,
     ) -> Metadata:
         return Metadata(
-            project_id=project_id or "project-id-" + self.word(),
-            file_creation_date=file_creation_date or self.date_time().isoformat(),
-            project_title=project_title or "project-id-" + self.word(),
+            project_id=project_id or "project-id-" + self.lorem_provider.word(),
+            file_creation_date=file_creation_date
+            or self.date_time_provider.date_time().isoformat(),
+            project_title=project_title or "project-id-" + self.lorem_provider.word(),
             project_version=project_version
-            or _entry_or_none(self, self.numerify("##.##.##")),
+            or _entry_or_none(self.misc_provider, self.numerify("##.##.##")),
             expected_release_date=expected_release_date
-            or _entry_or_none(self, self.date_time().isoformat()),
-            build_date=build_date or _entry_or_none(self, self.date_time().isoformat()),
+            or _entry_or_none(
+                self.misc_provider, self.date_time_provider.date_time().isoformat()
+            ),
+            build_date=build_date
+            or _entry_or_none(
+                self.misc_provider, self.date_time_provider.date_time().isoformat()
+            ),
         )
 
 
-class FileInformationProvider(MetadataProvider):
+class FileInformationProvider(BaseProvider):
+    metadata_provider: MetadataProvider
+
+    def __init__(self, generator: Any):
+        super().__init__(generator)
+        self.metadata_provider = MetadataProvider(generator)
+
     def opossum_file_information(
         self,
         *,
@@ -69,7 +93,7 @@ class FileInformationProvider(MetadataProvider):
         base_urls_for_sources: BaseUrlsForSources | None = None,
     ) -> OpossumInformation:
         return OpossumInformation(
-            metadata=metadata or self.opossum_input_metadata(),
+            metadata=metadata or self.metadata_provider.opossum_input_metadata(),
             resources=resources or {},
             external_attributions=external_attributions or {},
             resources_to_attributions=resources_to_attributions or {},

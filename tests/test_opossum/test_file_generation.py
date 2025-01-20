@@ -20,7 +20,7 @@ from tests.test_opossum.generators.generate_file_information import (
 
 
 @pytest.fixture(scope="session", autouse=True)
-def faker_seed()  -> int:
+def faker_seed() -> int:
     return 12345
 
 
@@ -38,8 +38,8 @@ def generate_opossum_outfile(faker: Faker) -> OpossumOutputFile:
 
 
 def generate_opossum_information(faker: Faker) -> OpossumInformation:
-    faker.add_provider(FileInformationProvider)
-    return faker.opossum_file_information()
+    file_information_provider = FileInformationProvider(faker)
+    return file_information_provider.opossum_file_information()
 
 
 def test_only_input_information_available_writes_only_input_information(
