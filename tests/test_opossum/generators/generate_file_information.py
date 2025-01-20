@@ -5,6 +5,7 @@ from typing import Any
 
 from faker.providers import BaseProvider
 from faker.providers.date_time import Provider as DatetimeProvider
+from faker.providers.file import Provider as FileProvider
 from faker.providers.lorem.en_US import Provider as LoremProvider
 from faker.providers.misc import Provider as MiscProvider
 
@@ -71,10 +72,14 @@ class MetadataProvider(BaseProvider):
 
 class FileInformationProvider(BaseProvider):
     metadata_provider: MetadataProvider
+    file_provider: FileProvider
+    lorem_provider: LoremProvider
 
     def __init__(self, generator: Any):
         super().__init__(generator)
         self.metadata_provider = MetadataProvider(generator)
+        self.file_provider = FileProvider(generator)
+        self.lorem_provider = LoremProvider(generator)
 
     def opossum_file_information(
         self,
@@ -94,7 +99,7 @@ class FileInformationProvider(BaseProvider):
     ) -> OpossumInformation:
         return OpossumInformation(
             metadata=metadata or self.metadata_provider.opossum_input_metadata(),
-            resources=resources or {},
+            resources=resources or self.resource_in_file(),
             external_attributions=external_attributions or {},
             resources_to_attributions=resources_to_attributions or {},
             attribution_breakpoints=attribution_breakpoints or [],
@@ -103,3 +108,30 @@ class FileInformationProvider(BaseProvider):
             files_with_children=files_with_children,
             base_urls_for_sources=base_urls_for_sources,
         )
+
+    def resource_in_file(
+        self,
+        depth: int = 3,
+        max_folders_per_level: int = 3,
+        max_files_per_level: int = 3,
+    ) -> ResourceInFile:
+        if depth == 0:
+            files = self.random_int(0, max_files_per_level)
+            return {
+                self.file_provider.file_name(category="text"): 1 for _ in range(files)
+            }
+        else:
+            files = self.random_int(0, max_files_per_level)
+            file_result = {
+                self.file_provider.file_name(category="text"): 1 for _ in range(files)
+            }
+            folders = self.random_int(0, max_folders_per_level)
+            folder_result = {
+                self.lorem_provider.word(): self.resource_in_file(
+                    depth=depth - 1,
+                    max_files_per_level=max_files_per_level,
+                    max_folders_per_level=max_folders_per_level,
+                )
+                for _ in range(folders)
+            }
+            return {**file_result, **folder_result}
