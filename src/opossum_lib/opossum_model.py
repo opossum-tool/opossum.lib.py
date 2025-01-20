@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import uuid
+from collections import defaultdict
 from dataclasses import field
 from enum import Enum, auto
 from os.path import relpath
@@ -98,13 +100,23 @@ class Opossum(BaseModel):
     def get_attribution_key(
         self, attribution: OpossumPackage
     ) -> OpossumPackageIdentifier:
-        return f"{attribution.license_name}-{hash(attribution)}"
+        return str(uuid.uuid4())
+
+
+class OpossumWithFixedAttributionIdentifiers(Opossum):
+    attribution_to_id: dict[OpossumPackage, str] = field(default_factory=defaultdict)
+
+    def get_attribution_key(
+        self, attribution: OpossumPackage
+    ) -> OpossumPackageIdentifier:
+        id = self.attribution_to_id[attribution]
+        self.attribution_to_id[attribution] = id
+        return id
 
 
 class Resource(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     path: str
-    id: str
     type: ResourceType
     attributions: list[OpossumPackage]
     children: list[Resource]

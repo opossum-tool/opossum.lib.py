@@ -8,15 +8,10 @@ import logging
 import sys
 import uuid
 
-from opossum_lib.opossum.opossum_file import (
-    Metadata,
-    OpossumInformation,
-)
+import opossum_lib.opossum_model as opossum_model
 from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 from opossum_lib.scancode.model import Header, ScanCodeData
 from opossum_lib.scancode.resource_tree import (
-    convert_to_opossum_resources,
-    create_attribution_mapping,
     scancode_to_file_tree,
 )
 
@@ -27,27 +22,26 @@ def convert_scancode_to_opossum(filename: str) -> OpossumFileContent:
     scancode_data = load_scancode_json(filename)
 
     filetree = scancode_to_file_tree(scancode_data)
-    resources = convert_to_opossum_resources(filetree)
-    external_attributions, resources_to_attributions = create_attribution_mapping(
-        filetree
-    )
+    resources = filetree.to_opossum_resources()
+    with open("debug.json", "w") as out:
+        out.write(resources[0].model_dump_json(indent=4, by_alias=True))
 
     scancode_header = extract_scancode_header(scancode_data, filename)
-    metadata = Metadata(
+    metadata = opossum_model.Metadata(
         project_id=str(uuid.uuid4()),
         file_creation_date=scancode_header.end_timestamp,
         project_title="ScanCode file",
     )
 
     return OpossumFileContent(
-        OpossumInformation(
+        opossum_model.Opossum(
             metadata=metadata,
             resources=resources,
-            external_attributions=external_attributions,
-            resources_to_attributions=resources_to_attributions,
             attribution_breakpoints=[],
             external_attribution_sources={},
-        )
+            frequent_licenses=None,
+            files_with_children=None,
+        ).to_opossum_file_format()
     )
 
 
