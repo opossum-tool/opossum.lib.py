@@ -57,6 +57,12 @@ class Opossum(BaseModel):
             self.base_urls_for_sources
             and self.base_urls_for_sources.to_opossum_file_format()
         )
+
+        external_attribution_sources = {
+            key: val.to_opossum_file_format()
+            for (key, val) in self.external_attribution_sources.items()
+        }
+
         return opossum_file_content.OpossumFileContent(
             input_file=opossum_file.OpossumInformation(
                 metadata=self.metadata.to_opossum_file_format(),
@@ -67,7 +73,7 @@ class Opossum(BaseModel):
                 external_attributions=external_attributions,
                 resources_to_attributions=resources_to_attributions,
                 attribution_breakpoints=self.attribution_breakpoints,
-                external_attribution_sources=self.external_attribution_sources,
+                external_attribution_sources=external_attribution_sources,
                 frequent_licenses=frequent_licenses,
                 files_with_children=self.files_with_children,
                 base_urls_for_sources=base_urls_for_sources,
