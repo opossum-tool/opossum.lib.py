@@ -33,16 +33,14 @@ def convert_scancode_to_opossum(filename: str) -> OpossumFileContent:
         project_title="ScanCode file",
     )
 
-    return OpossumFileContent(
-        opossum_model.Opossum(
-            metadata=metadata,
-            resources=resources,
-            attribution_breakpoints=[],
-            external_attribution_sources={},
-            frequent_licenses=None,
-            files_with_children=None,
-        ).to_opossum_file_format()
-    )
+    return opossum_model.Opossum(
+        metadata=metadata,
+        resources=resources,
+        attribution_breakpoints=[],
+        external_attribution_sources={},
+        frequent_licenses=None,
+        files_with_children=None,
+    ).to_opossum_file_format()
 
 
 def load_scancode_json(filename: str) -> ScanCodeData:

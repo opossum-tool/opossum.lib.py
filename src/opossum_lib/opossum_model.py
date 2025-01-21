@@ -14,9 +14,15 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 import opossum_lib.opossum.opossum_file as opossum_file
+import opossum_lib.opossum.opossum_file_content as opossum_file_content
+from opossum_lib.opossum.output_model import OpossumOutputFile
 
 type OpossumPackageIdentifier = str
 type ResourcePath = str
+
+
+def default_attribution_id_mapper() -> dict[OpossumPackage, str]:
+    return defaultdict(lambda: str(uuid.uuid4()))
 
 
 class Opossum(BaseModel):
@@ -30,8 +36,12 @@ class Opossum(BaseModel):
     frequent_licenses: list[FrequentLicense] | None = None
     files_with_children: list[str] | None = None
     base_urls_for_sources: BaseUrlsForSources | None = None
+    attribution_to_id: dict[OpossumPackage, str] = field(
+        default_factory=default_attribution_id_mapper
+    )
+    output_file: OpossumOutputFile | None = None
 
-    def to_opossum_file_format(self) -> opossum_file.OpossumInformation:
+    def to_opossum_file_format(self) -> opossum_file_content.OpossumFileContent:
         external_attributions, resources_to_attributions = (
             self.create_attribution_mapping(self.resources)
         )
@@ -46,19 +56,22 @@ class Opossum(BaseModel):
             self.base_urls_for_sources
             and self.base_urls_for_sources.to_opossum_file_format()
         )
-        return opossum_file.OpossumInformation(
-            metadata=self.metadata.to_opossum_file_format(),
-            resources={
-                resource.path: resource.to_opossum_file_format()
-                for resource in self.resources
-            },
-            external_attributions=external_attributions,
-            resources_to_attributions=resources_to_attributions,
-            attribution_breakpoints=self.attribution_breakpoints,
-            external_attribution_sources=self.external_attribution_sources,
-            frequent_licenses=frequent_licenses,
-            files_with_children=self.files_with_children,
-            base_urls_for_sources=base_urls_for_sources,
+        return opossum_file_content.OpossumFileContent(
+            input_file=opossum_file.OpossumInformation(
+                metadata=self.metadata.to_opossum_file_format(),
+                resources={
+                    resource.path: resource.to_opossum_file_format()
+                    for resource in self.resources
+                },
+                external_attributions=external_attributions,
+                resources_to_attributions=resources_to_attributions,
+                attribution_breakpoints=self.attribution_breakpoints,
+                external_attribution_sources=self.external_attribution_sources,
+                frequent_licenses=frequent_licenses,
+                files_with_children=self.files_with_children,
+                base_urls_for_sources=base_urls_for_sources,
+            ),
+            output_file=self.output_file,
         )
 
     def create_attribution_mapping(
@@ -96,15 +109,6 @@ class Opossum(BaseModel):
             process_node(child)
 
         return external_attributions, resources_to_attributions
-
-    def get_attribution_key(
-        self, attribution: OpossumPackage
-    ) -> OpossumPackageIdentifier:
-        return str(uuid.uuid4())
-
-
-class OpossumWithFixedAttributionIdentifiers(Opossum):
-    attribution_to_id: dict[OpossumPackage, str] = field(default_factory=defaultdict)
 
     def get_attribution_key(
         self, attribution: OpossumPackage
