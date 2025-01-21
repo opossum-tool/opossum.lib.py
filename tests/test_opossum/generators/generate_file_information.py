@@ -118,14 +118,21 @@ class FileInformationProvider(BaseProvider):
         base_urls_for_sources: BaseUrlsForSources | None = None,
     ) -> OpossumInformation:
         generated_resources = resources or self.resource_in_file()
-        attributions = external_attributions or self.external_attributions(min_number_of_attributions=25)
+        attributions = external_attributions or self.external_attributions(
+            min_number_of_attributions=25
+        )
         return OpossumInformation(
             metadata=metadata or self.metadata_provider.opossum_input_metadata(),
             resources=generated_resources,
             external_attributions=attributions,
-            resources_to_attributions=resources_to_attributions or self.resources_to_attributions(resources=generated_resources, external_attributions=attributions),
-            attribution_breakpoints=attribution_breakpoints or [],
-            external_attribution_sources=external_attribution_sources or {},
+            resources_to_attributions=resources_to_attributions
+            or self.resources_to_attributions(
+                resources=generated_resources, external_attributions=attributions
+            ),
+            attribution_breakpoints=attribution_breakpoints
+            or self.attribution_breakpoints(),
+            external_attribution_sources=external_attribution_sources
+            or self.external_attribution_sources(),
             frequent_licenses=frequent_licenses,
             files_with_children=files_with_children,
             base_urls_for_sources=base_urls_for_sources,
@@ -253,20 +260,28 @@ class FileInformationProvider(BaseProvider):
     def external_attributions(
         self, max_number_of_attributions: int = 50, min_number_of_attributions: int = 5
     ) -> dict[OpossumPackageIdentifier, OpossumPackage]:
-        number_of_attributions = self.random_int(min_number_of_attributions, max_number_of_attributions)
+        number_of_attributions = self.random_int(
+            min_number_of_attributions, max_number_of_attributions
+        )
         return {
             cast(str, self.misc_provider.uuid4()): self.opossum_package()
             for _ in range(number_of_attributions)
         }
 
-    def resources_to_attributions(self, resources: ResourceInFile,
-                                  external_attributions: dict[OpossumPackageIdentifier, OpossumPackage]) -> dict[ResourcePath, list[OpossumPackageIdentifier]]:
-
+    def resources_to_attributions(
+        self,
+        resources: ResourceInFile,
+        external_attributions: dict[OpossumPackageIdentifier, OpossumPackage],
+    ) -> dict[ResourcePath, list[OpossumPackageIdentifier]]:
         def get_file_paths(resource: ResourceInFile, current_path: str) -> list[str]:
+            if isinstance(resource, int):
+                return []
             resulting_file_paths = []
-            for key,value in resource.items():
+            for key, value in resource.items():
                 if isinstance(value, dict):
-                    resulting_file_paths += (get_file_paths(value, current_path + key + "/"))
+                    resulting_file_paths += get_file_paths(
+                        value, current_path + key + "/"
+                    )
                 else:
                     resulting_file_paths.append(current_path + key)
             return resulting_file_paths
@@ -274,7 +289,9 @@ class FileInformationProvider(BaseProvider):
         file_paths = get_file_paths(resources, "/")
         package_identifiers = list(external_attributions.keys())
         result = defaultdict(list)
-        print("package identifiers start:", package_identifiers , len(package_identifiers))
+        print(
+            "package identifiers start:", package_identifiers, len(package_identifiers)
+        )
         for path in file_paths:
             if len(package_identifiers) > 0:
                 result[path].append(package_identifiers.pop())
@@ -286,3 +303,33 @@ class FileInformationProvider(BaseProvider):
             result[path].append(package_identifier)
         return result
 
+    def attribution_breakpoints(self, max_nb_of_breakpoints: int = 5) -> list[str]:
+        nb_of_breakpoints = self.random_int(1, max_nb_of_breakpoints)
+        return [
+            self.file_provider.file_path(extension=[], depth=3)
+            for _ in range(nb_of_breakpoints)
+        ]
+
+    def external_attribution_source(
+        self,
+        name: str | None = None,
+        priority: int | None = None,
+        is_relevant_for_preferred: bool | None = None,
+    ) -> ExternalAttributionSource:
+        return ExternalAttributionSource(
+            name=name or self.person_provider.name(),
+            priority=priority or self.random_int(1, 100),
+            is_relevant_for_preferred=is_relevant_for_preferred
+            or _entry_or_none(self.misc_provider, self.misc_provider.boolean()),
+        )
+
+    def external_attribution_sources(
+        self, max_nb_of_external_attributions: int = 5
+    ) -> dict[str, ExternalAttributionSource]:
+        nb_of_external_attributions = self.random_int(
+            1, max_nb_of_external_attributions
+        )
+        return {
+            self.person_provider.first_name(): self.external_attribution_source()
+            for _ in range(nb_of_external_attributions)
+        }
