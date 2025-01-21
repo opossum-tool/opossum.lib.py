@@ -14,6 +14,16 @@ from opossum_lib.scancode.model import (
 )
 
 
+def _create_reference_scancode_files() -> list[File]:
+    return [
+        _create_file("A", FileType.DIRECTORY),
+        _create_file("A/B", FileType.DIRECTORY),
+        _create_file("A/file1", FileType.FILE),
+        _create_file("A/file2.txt", FileType.FILE),
+        _create_file("A/B/file3", FileType.FILE),
+    ]
+
+
 def _create_file(
     path: str,
     type: FileType,

@@ -4,81 +4,18 @@
 
 from copy import deepcopy
 
-import pytest
-from pydantic import ValidationError
-
 from opossum_lib.opossum_model import OpossumPackage, SourceInfo
 from opossum_lib.scancode.constants import SCANCODE_SOURCE_NAME
 from opossum_lib.scancode.model import (
     Copyright,
-    File,
     FileBasedLicenseDetection,
     FileType,
     Match,
-    ScanCodeData,
 )
 from opossum_lib.scancode.resource_tree import (
-    ScanCodeFileTree,
     get_attribution_info,
-    scancode_to_file_tree,
 )
 from tests.test_scancode.model_helpers import _create_file
-
-
-class TestRevalidate:
-    def test_successfully_revalidate_valid_file_tree(self) -> None:
-        dummy_file = _create_file("A", FileType.FILE)
-        valid_structure = ScanCodeFileTree(
-            file=dummy_file,
-            children={
-                "A": ScanCodeFileTree(file=dummy_file),
-                "B": ScanCodeFileTree(
-                    file=dummy_file, children={"C": ScanCodeFileTree(file=dummy_file)}
-                ),
-            },
-        )
-        valid_structure.revalidate()
-
-    def test_fail_to_revalidate_file_tree_invalid_at_toplevel(self) -> None:
-        dummy_file = _create_file("A", FileType.FILE)
-        invalid_structure = ScanCodeFileTree.model_construct(
-            children={
-                "A": ScanCodeFileTree(file=dummy_file),
-                "B": ScanCodeFileTree(
-                    file=dummy_file, children={"C": ScanCodeFileTree(file=dummy_file)}
-                ),
-            },
-            file=None,  # type: ignore
-        )
-        with pytest.raises(ValidationError):
-            invalid_structure.revalidate()
-
-    def test_fail_to_revalidate_file_tree_invalid_only_at_lower_level(self) -> None:
-        dummy_file = _create_file("A", FileType.FILE)
-        invalid_structure = ScanCodeFileTree(
-            file=dummy_file,
-            children={
-                "A": ScanCodeFileTree(file=dummy_file),
-                "B": ScanCodeFileTree(
-                    file=dummy_file,
-                    children={"C": ScanCodeFileTree.model_construct(None)},  # type: ignore
-                ),
-            },
-        )
-        with pytest.raises(ValidationError):
-            invalid_structure.revalidate()
-
-
-def test_scancode_to_resource_tree_produces_expected_result() -> None:
-    files = _create_reference_scancode_files()
-    scancode_data = ScanCodeData(
-        headers=[], packages=[], dependencies=[], license_detections=[], files=files
-    )
-
-    tree = scancode_to_file_tree(scancode_data)
-    reference = _create_reference_node_structure()
-
-    assert tree == reference
 
 
 def test_get_attribution_info_directory() -> None:
@@ -159,29 +96,3 @@ def test_get_attribution_info_file_multiple() -> None:
         attribution_confidence=50,
     )
     assert set(attributions) == {expected1, expected2}
-
-
-def _create_reference_scancode_files() -> list[File]:
-    return [
-        _create_file("A", FileType.DIRECTORY),
-        _create_file("A/B", FileType.DIRECTORY),
-        _create_file("A/file1", FileType.FILE),
-        _create_file("A/file2.txt", FileType.FILE),
-        _create_file("A/B/file3", FileType.FILE),
-    ]
-
-
-def _create_reference_node_structure() -> ScanCodeFileTree:
-    folder, subfolder, file1, file2, file3 = _create_reference_scancode_files()
-    inner = ScanCodeFileTree(
-        file=subfolder, children={"file3": ScanCodeFileTree(file=file3)}
-    )
-    reference = ScanCodeFileTree(
-        file=folder,
-        children={
-            "B": inner,
-            "file1": ScanCodeFileTree(file=file1),
-            "file2.txt": ScanCodeFileTree(file=file2),
-        },
-    )
-    return reference

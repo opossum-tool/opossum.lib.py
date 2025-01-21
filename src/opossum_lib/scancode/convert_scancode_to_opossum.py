@@ -21,10 +21,7 @@ def convert_scancode_to_opossum(filename: str) -> OpossumFileContent:
 
     scancode_data = load_scancode_json(filename)
 
-    filetree = scancode_to_file_tree(scancode_data)
-    resources = filetree.to_opossum_resources()
-    with open("debug.json", "w") as out:
-        out.write(resources[0].model_dump_json(indent=4, by_alias=True))
+    resources = [scancode_to_file_tree(scancode_data)]
 
     scancode_header = extract_scancode_header(scancode_data, filename)
     metadata = opossum_model.Metadata(

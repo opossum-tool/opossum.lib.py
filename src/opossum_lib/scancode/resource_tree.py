@@ -5,59 +5,25 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pathlib import Path
 
 import opossum_lib.opossum_model as opossum_model
 from opossum_lib.scancode.constants import SCANCODE_SOURCE_NAME
-from opossum_lib.scancode.helpers import check_schema, path_segments
 from opossum_lib.scancode.model import File, FileType, ScanCodeData
 
 
-class ScanCodeFileTree(BaseModel):
-    file: File
-    children: dict[str, ScanCodeFileTree] = {}
-
-    def get_path(self, path: list[str]) -> ScanCodeFileTree:
-        if len(path) == 0:
-            return self
-        next_segment, *rest = path
-        if next_segment not in self.children:
-            self.children[next_segment] = ScanCodeFileTree.model_construct(None)  # type: ignore
-        return self.children[next_segment].get_path(rest)
-
-    def revalidate(self) -> None:
-        check_schema(self)
-        for child in self.children.values():
-            child.revalidate()
-
-    def to_opossum_resources(
-        self,
-    ) -> list[opossum_model.Resource]:
-        def process_node(
-            node: ScanCodeFileTree,
-        ) -> opossum_model.Resource:
-            return opossum_model.Resource(
-                path=node.file.path,
-                attributions=get_attribution_info(node.file),
-                type=convert_resource_type(node.file.type),
-                children={
-                    key: process_node(child) for (key, child) in node.children.items()
-                },
-            )
-
-        return [process_node(self)]
-
-
-def scancode_to_file_tree(scancode_data: ScanCodeData) -> ScanCodeFileTree:
-    temp_root = ScanCodeFileTree.model_construct(file=None)  # type: ignore
+def scancode_to_file_tree(scancode_data: ScanCodeData) -> opossum_model.Resource:
+    temp_root = opossum_model.Resource(path=Path(""))
     for file in scancode_data.files:
-        segments = path_segments(file.path)
-        temp_root.get_path(segments).file = file
+        resource = opossum_model.Resource(
+            path=Path(file.path),
+            attributions=get_attribution_info(file),
+            type=convert_resource_type(file.type),
+        )
+        temp_root.add_resource(resource)
 
     assert len(temp_root.children) == 1
-    root = list(temp_root.children.values())[0]
-    check_schema(root)
-    return root
+    return list(temp_root.children.values())[0]
 
 
 def get_attribution_info(file: File) -> list[opossum_model.OpossumPackage]:
