@@ -25,24 +25,7 @@ from opossum_lib.opossum.opossum_file import (
     ResourcePath,
     SourceInfo,
 )
-
-
-def _entry_or_none[T](
-    faker: MiscProvider, entry: T, chance_of_getting_entry: int = 50
-) -> T | None:
-    if faker.boolean(chance_of_getting_entry):
-        return entry
-    else:
-        return None
-
-
-def _random_list[T](
-    faker: BaseProvider,
-    entry_generator: Callable[[], T],
-    max_number_of_entries: int = 3,
-) -> list[T]:
-    number_of_entries = faker.random_int(1, max_number_of_entries)
-    return [entry_generator() for _ in range(number_of_entries)]
+from tests.test_opossum.generators.helpers import entry_or_none, random_list
 
 
 class MetadataProvider(BaseProvider):
@@ -72,13 +55,13 @@ class MetadataProvider(BaseProvider):
             or self.date_time_provider.date_time().isoformat(),
             project_title=project_title or "project-id-" + self.lorem_provider.word(),
             project_version=project_version
-            or _entry_or_none(self.misc_provider, self.numerify("##.##.##")),
+            or entry_or_none(self.misc_provider, self.numerify("##.##.##")),
             expected_release_date=expected_release_date
-            or _entry_or_none(
+            or entry_or_none(
                 self.misc_provider, self.date_time_provider.date_time().isoformat()
             ),
             build_date=build_date
-            or _entry_or_none(
+            or entry_or_none(
                 self.misc_provider, self.date_time_provider.date_time().isoformat()
             ),
         )
@@ -174,9 +157,9 @@ class FileInformationProvider(BaseProvider):
         return SourceInfo(
             name=name or self.person_provider.name(),
             document_confidence=document_confidence
-            or _entry_or_none(self.misc_provider, self.random_int(0, 100)),
+            or entry_or_none(self.misc_provider, self.random_int(0, 100)),
             additional_name=additional_name
-            or _entry_or_none(self.misc_provider, self.person_provider.name()),
+            or entry_or_none(self.misc_provider, self.person_provider.name()),
         )
 
     def opossum_package(
@@ -205,56 +188,56 @@ class FileInformationProvider(BaseProvider):
         return OpossumPackage(
             source=source or self.source_info(),
             attribution_confidence=attribution_confidence
-            or _entry_or_none(self.misc_provider, self.random_int()),
+            or entry_or_none(self.misc_provider, self.random_int()),
             comment=comment
-            or _entry_or_none(
+            or entry_or_none(
                 self.misc_provider, self.lorem_provider.paragraph(nb_sentences=5)
             ),
             package_name=package_name
-            or _entry_or_none(self.misc_provider, self.person_provider.name()),
+            or entry_or_none(self.misc_provider, self.person_provider.name()),
             package_version=package_version
-            or _entry_or_none(self.misc_provider, self.numerify("##.##.##")),
+            or entry_or_none(self.misc_provider, self.numerify("##.##.##")),
             package_namespace=package_namespace
-            or _entry_or_none(self.misc_provider, self.internet_provider.domain_name()),
+            or entry_or_none(self.misc_provider, self.internet_provider.domain_name()),
             package_type=package_type
-            or _entry_or_none(
+            or entry_or_none(
                 self.misc_provider,
                 self.lorem_provider.word(ext_word_list=["maven", "github"]),
             ),
             package_p_u_r_l_appendix=package_p_u_r_l_appendix
-            or _entry_or_none(
+            or entry_or_none(
                 self.misc_provider, self.lorem_provider.paragraph(nb_sentences=1)
             ),
             copyright=copyright
-            or _entry_or_none(
+            or entry_or_none(
                 self.misc_provider, self.lorem_provider.paragraph(nb_sentences=1)
             ),
             license_name=license_name
-            or _entry_or_none(self.misc_provider, self.person_provider.name()),
+            or entry_or_none(self.misc_provider, self.person_provider.name()),
             license_text=license_text
-            or _entry_or_none(
+            or entry_or_none(
                 self.misc_provider, self.lorem_provider.paragraph(nb_sentences=10)
             ),
             url=url
-            or _entry_or_none(self.misc_provider, self.internet_provider.uri(deep=5)),
+            or entry_or_none(self.misc_provider, self.internet_provider.uri(deep=5)),
             first_party=first_party
-            or _entry_or_none(self.misc_provider, self.misc_provider.boolean()),
+            or entry_or_none(self.misc_provider, self.misc_provider.boolean()),
             exclude_from_notice=exclude_from_notice
-            or _entry_or_none(self.misc_provider, self.misc_provider.boolean()),
+            or entry_or_none(self.misc_provider, self.misc_provider.boolean()),
             pre_selected=pre_selected
-            or _entry_or_none(self.misc_provider, self.misc_provider.boolean()),
-            follow_up=follow_up or _entry_or_none(self.misc_provider, "FOLLOW_UP"),
+            or entry_or_none(self.misc_provider, self.misc_provider.boolean()),
+            follow_up=follow_up or entry_or_none(self.misc_provider, "FOLLOW_UP"),
             origin_id=origin_id
-            or _entry_or_none(self.misc_provider, self.misc_provider.uuid4()),
+            or entry_or_none(self.misc_provider, self.misc_provider.uuid4()),
             origin_ids=origin_ids
-            or _random_list(self, cast(Callable[[], str], self.misc_provider.uuid4)),
+            or random_list(self, cast(Callable[[], str], self.misc_provider.uuid4)),
             criticality=criticality
-            or _entry_or_none(
+            or entry_or_none(
                 self.misc_provider,
                 self.misc_provider.random_element(["high", "medium"]),
             ),
             was_preferred=was_preferred
-            or _entry_or_none(self.misc_provider, self.misc_provider.boolean()),
+            or entry_or_none(self.misc_provider, self.misc_provider.boolean()),
         )
 
     def external_attributions(
@@ -316,7 +299,7 @@ class FileInformationProvider(BaseProvider):
             name=name or self.person_provider.name(),
             priority=priority or self.random_int(1, 100),
             is_relevant_for_preferred=is_relevant_for_preferred
-            or _entry_or_none(self.misc_provider, self.misc_provider.boolean()),
+            or entry_or_none(self.misc_provider, self.misc_provider.boolean()),
         )
 
     def external_attribution_sources(

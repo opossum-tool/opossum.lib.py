@@ -45,7 +45,7 @@ def test_input_and_output_information_available_writes_both(
 ) -> None:
     opossum_file_content = OpossumFileContent(
         input_file=opossum_faker.opossum_file_information(),
-        output_file=generate_opossum_outfile(opossum_faker),
+        output_file=opossum_faker.generate_output_file(),
     )
     output_path = tmp_path / "output.opossum"
 
