@@ -53,7 +53,6 @@ def test_input_and_output_information_available_writes_both(
         input_file=opossum_faker.opossum_file_information(),
         output_file=generate_opossum_outfile(opossum_faker),
     )
-    print(opossum_file_content)
     output_path = tmp_path / "output.opossum"
 
     write_opossum_information_to_file(opossum_file_content, output_path)
