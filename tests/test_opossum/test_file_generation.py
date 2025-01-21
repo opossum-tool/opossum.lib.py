@@ -18,7 +18,7 @@ from tests.test_setup.faker_setup import OpossumFaker
 
 @pytest.fixture(scope="session", autouse=True)
 def faker_seed() -> int:
-    return 12345
+    return 1234
 
 
 def generate_opossum_outfile(faker: Faker) -> OpossumOutputFile:
@@ -54,6 +54,8 @@ def test_input_and_output_information_available_writes_both(
         output_file=generate_opossum_outfile(opossum_faker),
     )
     output_path = tmp_path / "output.opossum"
+
+    print(opossum_file_content.input_file.model_dump_json(indent=4))
 
     write_opossum_information_to_file(opossum_file_content, output_path)
 
