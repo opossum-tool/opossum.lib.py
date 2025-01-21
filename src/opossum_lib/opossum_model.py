@@ -6,9 +6,10 @@ from __future__ import annotations
 
 import uuid
 from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import field
 from enum import Enum, auto
-from os.path import relpath
+from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
@@ -60,7 +61,7 @@ class Opossum(BaseModel):
             input_file=opossum_file.OpossumInformation(
                 metadata=self.metadata.to_opossum_file_format(),
                 resources={
-                    resource.path: resource.to_opossum_file_format()
+                    str(resource.path): resource.to_opossum_file_format()
                     for resource in self.resources
                 },
                 external_attributions=external_attributions,
@@ -89,8 +90,10 @@ class Opossum(BaseModel):
         ] = {}
 
         def process_node(node: Resource) -> None:
-            # the / is required by OpossumUI
-            path = "/" + node.path
+            path = str(node.path)
+            if not path.startswith("/"):
+                # the / is required by OpossumUI
+                path = "/" + path
             attributions = node.attributions
 
             new_attributions_with_id = {
@@ -102,11 +105,11 @@ class Opossum(BaseModel):
             if len(new_attributions_with_id) > 0:
                 resources_to_attributions[path] = list(new_attributions_with_id.keys())
 
-            for child in node.children:
+            for child in node.children.values():
                 process_node(child)
 
-        for child in root_nodes:
-            process_node(child)
+        for root in root_nodes:
+            process_node(root)
 
         return external_attributions, resources_to_attributions
 
@@ -119,20 +122,58 @@ class Opossum(BaseModel):
 
 
 class Resource(BaseModel):
-    model_config = ConfigDict(frozen=True, extra="forbid")
-    path: str
-    type: ResourceType
-    attributions: list[OpossumPackage]
-    children: list[Resource]
+    model_config = ConfigDict(extra="forbid")
+    path: Path
+    type: ResourceType | None = None
+    attributions: list[OpossumPackage] = []
+    children: dict[str, Resource] = {}
 
     def to_opossum_file_format(self) -> opossum_file.ResourceInFile:
         if self.type == ResourceType.FILE:
             return 1
         else:
             return {
-                relpath(child.path, self.path): child.to_opossum_file_format()
-                for child in self.children
+                str(child.path.relative_to(self.path)): child.to_opossum_file_format()
+                for child in self.children.values()
             }
+
+    def add_resource(self, resource: Resource) -> None:
+        if not resource.path.is_relative_to(self.path):
+            raise RuntimeError(
+                f"The path {resource.path} is not a child of this node at {self.path}."
+            )
+        remaining_path_parts = resource.path.relative_to(self.path).parts
+        if remaining_path_parts:
+            self._add_resource(resource, remaining_path_parts)
+        else:
+            self._update(resource)
+
+    def _add_resource(
+        self, resource: Resource, remaining_path_parts: Iterable[str]
+    ) -> None:
+        if not remaining_path_parts:
+            self._update(resource)
+            return
+        next, *rest_parts = remaining_path_parts
+        if next not in self.children:
+            self.children[next] = Resource(path=self.path / next)
+        self.children[next]._add_resource(resource, rest_parts)
+
+    def _update(self, other: Resource) -> None:
+        if self.path != other.path:
+            raise RuntimeError(
+                "Trying to merge nodes with different paths: "
+                + f"{self.path} vs. {other.path}"
+            )
+        if self.type and other.type and self.type != other.type:
+            raise RuntimeError("Trying to merge incompatible node types.")
+        self.type = self.type or other.type
+        self.attributions.extend(other.attributions)
+        for key, child in other.children.items():
+            if key in self.children:
+                self.children[key]._update(child)
+            else:
+                self.children[key] = child
 
 
 class BaseUrlsForSources(BaseModel):

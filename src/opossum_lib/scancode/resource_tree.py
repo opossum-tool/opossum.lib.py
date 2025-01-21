@@ -40,7 +40,9 @@ class ScanCodeFileTree(BaseModel):
                 path=node.file.path,
                 attributions=get_attribution_info(node.file),
                 type=convert_resource_type(node.file.type),
-                children=[process_node(child) for child in node.children.values()],
+                children={
+                    key: process_node(child) for (key, child) in node.children.items()
+                },
             )
 
         return [process_node(self)]
