@@ -9,7 +9,7 @@ from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import field
 from enum import Enum, auto
-from pathlib import Path
+from pathlib import PurePath
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
@@ -123,7 +123,7 @@ class Opossum(BaseModel):
 
 class Resource(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    path: Path
+    path: PurePath
     type: ResourceType | None = None
     attributions: list[OpossumPackage] = []
     children: dict[str, Resource] = {}

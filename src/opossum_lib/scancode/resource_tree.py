@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+from pathlib import PurePath
 
 import opossum_lib.opossum_model as opossum_model
 from opossum_lib.scancode.constants import SCANCODE_SOURCE_NAME
@@ -13,10 +13,10 @@ from opossum_lib.scancode.model import File, FileType, ScanCodeData
 
 
 def scancode_to_file_tree(scancode_data: ScanCodeData) -> opossum_model.Resource:
-    temp_root = opossum_model.Resource(path=Path(""))
+    temp_root = opossum_model.Resource(path=PurePath(""))
     for file in scancode_data.files:
         resource = opossum_model.Resource(
-            path=Path(file.path),
+            path=PurePath(file.path.replace("\\", "/")),
             attributions=get_attribution_info(file),
             type=convert_resource_type(file.type),
         )
