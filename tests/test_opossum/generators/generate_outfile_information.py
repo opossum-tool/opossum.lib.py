@@ -28,7 +28,7 @@ class OpossumOutputFileProvider(BaseProvider):
         self.date_time_provider = DatetimeProvider(generator)
         self.misc_provider = MiscProvider(generator)
 
-    def generate_output_file(
+    def output_file(
         self,
         metadata: Metadata | None = None,
         manual_attributions: dict[str, ManualAttributions] | None = None,
@@ -36,13 +36,13 @@ class OpossumOutputFileProvider(BaseProvider):
         resolved_external_attributions: list[str] | None = None,
     ) -> OpossumOutputFile:
         return OpossumOutputFile(
-            metadata=metadata or self.generate_outfile_metadata(),
+            metadata=metadata or self.outfile_metadata(),
             manual_attributions=manual_attributions or {},
             resources_to_attributions=resources_to_attributions or {},
             resolved_external_attributions=resolved_external_attributions,
         )
 
-    def generate_outfile_metadata(
+    def outfile_metadata(
         self,
         project_id: str | None = None,
         file_creation_date: str | None = None,

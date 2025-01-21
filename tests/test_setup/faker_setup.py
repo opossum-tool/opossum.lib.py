@@ -20,11 +20,15 @@ from opossum_lib.opossum.opossum_file import (
     ResourcePath,
     SourceInfo,
 )
+from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 from opossum_lib.opossum.output_model import ManualAttributions, OpossumOutputFile
 from opossum_lib.opossum.output_model import Metadata as OutputMetadata
 from tests.test_opossum.generators.generate_file_information import (
     FileInformationProvider,
     MetadataProvider,
+)
+from tests.test_opossum.generators.generate_opossum_file_content import (
+    OpossumFileContentProvider,
 )
 from tests.test_opossum.generators.generate_outfile_information import (
     OpossumOutputFileProvider,
@@ -35,6 +39,7 @@ class OpossumFaker(Faker):
     file_information_provider: FileInformationProvider
     metadata_provider: MetadataProvider
     opossum_output_file_provider: OpossumOutputFileProvider
+    opossum_file_content_provider: OpossumFileContentProvider
 
     def __init__(
         self,
@@ -50,6 +55,8 @@ class OpossumFaker(Faker):
         )
         self.file_information_provider = FileInformationProvider(self)
         self.metadata_provider = MetadataProvider(self)
+        self.opossum_file_content_provider = OpossumFileContentProvider(self)
+        self.opossum_output_file_provider = OpossumOutputFileProvider(self)
 
     def opossum_file_information(
         self,
@@ -175,30 +182,39 @@ class OpossumFaker(Faker):
             max_nb_of_external_attributions
         )
 
-    def generate_output_file(
+    def output_file(
         self,
         metadata: OutputMetadata | None = None,
         manual_attributions: dict[str, ManualAttributions] | None = None,
         resources_to_attributions: dict[str, list[str]] | None = None,
         resolved_external_attributions: list[str] | None = None,
     ) -> OpossumOutputFile:
-        return self.opossum_output_file_provider.generate_output_file(
+        return self.opossum_output_file_provider.output_file(
             metadata=metadata,
             manual_attributions=manual_attributions,
             resources_to_attributions=resources_to_attributions,
             resolved_external_attributions=resolved_external_attributions,
         )
 
-    def generate_outfile_metadata(
+    def outfile_metadata(
         self,
         project_id: str | None = None,
         file_creation_date: str | None = None,
         input_file_md5_checksum: str | None = None,
     ) -> OutputMetadata:
-        return self.opossum_output_file_provider.generate_outfile_metadata(
+        return self.opossum_output_file_provider.outfile_metadata(
             project_id=project_id,
             file_creation_date=file_creation_date,
             input_file_md5_checksum=input_file_md5_checksum,
+        )
+
+    def opossum_file_content(
+        self,
+        in_file: OpossumInformation | None = None,
+        out_file: OpossumOutputFile | None = None,
+    ) -> OpossumFileContent:
+        return self.opossum_file_content_provider.opossum_file_content(
+            in_file=in_file, out_file=out_file
         )
 
 
@@ -206,6 +222,7 @@ def setup_faker(faker: Faker) -> OpossumFaker:
     faker.add_provider(MetadataProvider)
     faker.add_provider(FileInformationProvider)
     faker.add_provider(OpossumOutputFileProvider)
+    faker.add_provider(OpossumFileContentProvider)
     faker = cast(OpossumFaker, faker)
     seed = int(datetime.now().timestamp())
     Faker.seed(seed)
