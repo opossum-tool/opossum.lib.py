@@ -289,15 +289,11 @@ class FileInformationProvider(BaseProvider):
         file_paths = get_file_paths(resources, "/")
         package_identifiers = list(external_attributions.keys())
         result = defaultdict(list)
-        print(
-            "package identifiers start:", package_identifiers, len(package_identifiers)
-        )
         for path in file_paths:
             if len(package_identifiers) > 0:
                 result[path].append(package_identifiers.pop())
             else:
                 break
-        print("package identifiers:", package_identifiers)
         for package_identifier in package_identifiers:
             path = self.random_element(file_paths)
             result[path].append(package_identifier)

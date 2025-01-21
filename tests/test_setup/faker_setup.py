@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from collections.abc import Sequence
-from typing import Any, cast
+from datetime import datetime
+from typing import Any, Literal, cast
 
 from faker import Faker, Generator
 
@@ -17,6 +18,7 @@ from opossum_lib.opossum.opossum_file import (
     OpossumPackageIdentifier,
     ResourceInFile,
     ResourcePath,
+    SourceInfo,
 )
 from tests.test_opossum.generators.generate_file_information import (
     FileInformationProvider,
@@ -90,9 +92,89 @@ class OpossumFaker(Faker):
             build_date=build_date,
         )
 
+    def opossum_package(
+        self,
+        source: SourceInfo | None = None,
+        attribution_confidence: int | None = None,
+        comment: str | None = None,
+        package_name: str | None = None,
+        package_version: str | None = None,
+        package_namespace: str | None = None,
+        package_type: str | None = None,
+        package_p_u_r_l_appendix: str | None = None,
+        copyright: str | None = None,
+        license_name: str | None = None,
+        license_text: str | None = None,
+        url: str | None = None,
+        first_party: bool | None = None,
+        exclude_from_notice: bool | None = None,
+        pre_selected: bool | None = None,
+        follow_up: Literal["FOLLOW_UP"] | None = None,
+        origin_id: str | None = None,
+        origin_ids: list[str] | None = None,
+        criticality: Literal["high"] | Literal["medium"] | None = None,
+        was_preferred: bool | None = None,
+    ) -> OpossumPackage:
+        return self.file_information_provider.opossum_package(
+            source=source,
+            attribution_confidence=attribution_confidence,
+            comment=comment,
+            package_name=package_name,
+            package_version=package_version,
+            package_namespace=package_namespace,
+            package_type=package_type,
+            package_p_u_r_l_appendix=package_p_u_r_l_appendix,
+            copyright=copyright,
+            license_name=license_name,
+            license_text=license_text,
+            url=url,
+            first_party=first_party,
+            exclude_from_notice=exclude_from_notice,
+            pre_selected=pre_selected,
+            follow_up=follow_up,
+            origin_id=origin_id,
+            origin_ids=origin_ids,
+            criticality=criticality,
+            was_preferred=was_preferred,
+        )
+
+    def external_attributions(
+        self, max_number_of_attributions: int = 50, min_number_of_attributions: int = 5
+    ) -> dict[OpossumPackageIdentifier, OpossumPackage]:
+        return self.file_information_provider.external_attributions(
+            max_number_of_attributions, min_number_of_attributions
+        )
+
+    def attribution_breakpoints(self, max_nb_of_breakpoints: int = 5) -> list[str]:
+        return self.file_information_provider.attribution_breakpoints(
+            max_nb_of_breakpoints
+        )
+
+    def external_attribution_source(
+        self,
+        name: str | None = None,
+        priority: int | None = None,
+        is_relevant_for_preferred: bool | None = None,
+    ) -> ExternalAttributionSource:
+        return self.file_information_provider.external_attribution_source(
+            name=name,
+            priority=priority,
+            is_relevant_for_preferred=is_relevant_for_preferred,
+        )
+
+    def external_attribution_sources(
+        self, max_nb_of_external_attributions: int = 5
+    ) -> dict[str, ExternalAttributionSource]:
+        return self.file_information_provider.external_attribution_sources(
+            max_nb_of_external_attributions
+        )
+
 
 def setup_faker(faker: Faker) -> OpossumFaker:
     faker.add_provider(MetadataProvider)
     faker.add_provider(FileInformationProvider)
     faker = cast(OpossumFaker, faker)
+    seed = int(datetime.now().timestamp())
+    Faker.seed(seed)
+    print("\nSeeding faker with ", seed)
     return faker
