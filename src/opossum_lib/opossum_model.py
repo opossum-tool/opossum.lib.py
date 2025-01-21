@@ -90,7 +90,7 @@ class Opossum(BaseModel):
         ] = {}
 
         def process_node(node: Resource) -> None:
-            path = str(node.path)
+            path = str(node.path).replace("\\", "/")
             if not path.startswith("/"):
                 # the / is required by OpossumUI
                 path = "/" + path
@@ -133,7 +133,9 @@ class Resource(BaseModel):
             return 1
         else:
             return {
-                str(child.path.relative_to(self.path)): child.to_opossum_file_format()
+                str(child.path.relative_to(self.path)).replace(
+                    "\\", "/"
+                ): child.to_opossum_file_format()
                 for child in self.children.values()
             }
 
