@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
+from collections import defaultdict
 from collections.abc import Callable
 from typing import Any, Literal, cast
 
@@ -116,11 +117,13 @@ class FileInformationProvider(BaseProvider):
         files_with_children: list[str] | None = None,
         base_urls_for_sources: BaseUrlsForSources | None = None,
     ) -> OpossumInformation:
+        generated_resources = resources or self.resource_in_file()
+        attributions = external_attributions or self.external_attributions(min_number_of_attributions=25)
         return OpossumInformation(
             metadata=metadata or self.metadata_provider.opossum_input_metadata(),
-            resources=resources or self.resource_in_file(),
-            external_attributions=external_attributions or self.external_attributions(),
-            resources_to_attributions=resources_to_attributions or {},
+            resources=generated_resources,
+            external_attributions=attributions,
+            resources_to_attributions=resources_to_attributions or self.resources_to_attributions(resources=generated_resources, external_attributions=attributions),
             attribution_breakpoints=attribution_breakpoints or [],
             external_attribution_sources=external_attribution_sources or {},
             frequent_licenses=frequent_licenses,
@@ -248,10 +251,38 @@ class FileInformationProvider(BaseProvider):
         )
 
     def external_attributions(
-        self, max_number_of_attributions: int = 10
+        self, max_number_of_attributions: int = 50, min_number_of_attributions: int = 5
     ) -> dict[OpossumPackageIdentifier, OpossumPackage]:
-        number_of_attributions = self.random_int(0, max_number_of_attributions)
+        number_of_attributions = self.random_int(min_number_of_attributions, max_number_of_attributions)
         return {
             cast(str, self.misc_provider.uuid4()): self.opossum_package()
             for _ in range(number_of_attributions)
         }
+
+    def resources_to_attributions(self, resources: ResourceInFile,
+                                  external_attributions: dict[OpossumPackageIdentifier, OpossumPackage]) -> dict[ResourcePath, list[OpossumPackageIdentifier]]:
+
+        def get_file_paths(resource: ResourceInFile, current_path: str) -> list[str]:
+            resulting_file_paths = []
+            for key,value in resource.items():
+                if isinstance(value, dict):
+                    resulting_file_paths += (get_file_paths(value, current_path + key + "/"))
+                else:
+                    resulting_file_paths.append(current_path + key)
+            return resulting_file_paths
+
+        file_paths = get_file_paths(resources, "/")
+        package_identifiers = list(external_attributions.keys())
+        result = defaultdict(list)
+        print("package identifiers start:", package_identifiers , len(package_identifiers))
+        for path in file_paths:
+            if len(package_identifiers) > 0:
+                result[path].append(package_identifiers.pop())
+            else:
+                break
+        print("package identifiers:", package_identifiers)
+        for package_identifier in package_identifiers:
+            path = self.random_element(file_paths)
+            result[path].append(package_identifier)
+        return result
+
