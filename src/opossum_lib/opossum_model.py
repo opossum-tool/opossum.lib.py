@@ -135,15 +135,15 @@ class Resource(BaseModel):
     children: dict[str, Resource] = {}
 
     def to_opossum_file_format(self) -> opossum_file.ResourceInFile:
-        if self.type == ResourceType.FILE:
-            return 1
-        else:
+        if self.children or self.type == ResourceType.FOLDER:
             return {
                 str(child.path.relative_to(self.path)).replace(
                     "\\", "/"
                 ): child.to_opossum_file_format()
                 for child in self.children.values()
             }
+        else:
+            return 1
 
     def add_resource(self, resource: Resource) -> None:
         if not resource.path.is_relative_to(self.path):
@@ -174,7 +174,10 @@ class Resource(BaseModel):
                 + f"{self.path} vs. {other.path}"
             )
         if self.type and other.type and self.type != other.type:
-            raise RuntimeError("Trying to merge incompatible node types.")
+            raise RuntimeError(
+                "Trying to merge incompatible node types. "
+                + f"Current node is {self.type}. Other is {other.type}"
+            )
         self.type = self.type or other.type
         self.attributions.extend(other.attributions)
         for key, child in other.children.items():
