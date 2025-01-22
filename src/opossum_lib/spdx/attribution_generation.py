@@ -12,7 +12,7 @@ from spdx_tools.spdx.writer.tagvalue.file_writer import write_file
 from spdx_tools.spdx.writer.tagvalue.package_writer import write_package
 from spdx_tools.spdx.writer.tagvalue.snippet_writer import write_snippet
 
-from opossum_lib.opossum.opossum_file import OpossumPackage, SourceInfo
+from opossum_lib.opossum_model import OpossumPackage, SourceInfo
 from opossum_lib.spdx.constants import (
     PURL,
     SPDX_FILE_IDENTIFIER,
@@ -34,13 +34,13 @@ def create_package_attribution(package: Package) -> OpossumPackage:
     source = SourceInfo(name=SPDX_PACKAGE_IDENTIFIER)
     package_attribution = OpossumPackage(
         source=source,
-        packageName=package.name,
+        package_name=package.name,
         url=str(package.download_location),
-        packageVersion=package.version,
-        packagePURLAppendix=_get_purl(package),
+        package_version=package.version,
+        package_purl_appendix=_get_purl(package),
         copyright=str(package.copyright_text),
         comment=package_data.getvalue(),
-        licenseName=str(package.license_concluded),
+        license_name=str(package.license_concluded),
     )
 
     return package_attribution
@@ -52,10 +52,10 @@ def create_file_attribution(file: File) -> OpossumPackage:
     source = SourceInfo(name=SPDX_FILE_IDENTIFIER)
     file_attribution = OpossumPackage(
         source=source,
-        packageName=file.name.split("/")[-1],
+        package_name=file.name.split("/")[-1],
         copyright=str(file.copyright_text),
         comment=file_data.getvalue(),
-        licenseName=str(file.license_concluded),
+        license_name=str(file.license_concluded),
     )
     return file_attribution
 
@@ -66,10 +66,10 @@ def create_snippet_attribution(snippet: Snippet) -> OpossumPackage:
     source = SourceInfo(name=SPDX_SNIPPET_IDENTIFIER)
     snippet_attribution = OpossumPackage(
         source=source,
-        packageName=snippet.name,
+        package_name=snippet.name,
         copyright=str(snippet.copyright_text),
         comment=snippet_data.getvalue(),
-        licenseName=str(snippet.license_concluded),
+        license_name=str(snippet.license_concluded),
     )
 
     return snippet_attribution
@@ -83,8 +83,8 @@ def create_document_attribution(
     source = SourceInfo(name=creation_info.spdx_id)
     document_attribution = OpossumPackage(
         source=source,
-        packageName=creation_info.name,
-        licenseName=creation_info.data_license,
+        package_name=creation_info.name,
+        license_name=creation_info.data_license,
         comment=creation_info_data.getvalue(),
     )
 

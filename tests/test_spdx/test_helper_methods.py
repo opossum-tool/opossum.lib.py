@@ -1,15 +1,12 @@
 # SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from unittest import TestCase
 
 import pytest
 from networkx import DiGraph
 
-from opossum_lib.opossum.opossum_file import ResourceType
 from opossum_lib.spdx.helper_methods import (
     _create_file_path_from_graph_path,
-    _replace_node_ids_with_labels_and_add_resource_type,
 )
 
 
@@ -22,28 +19,7 @@ def test_create_file_path_from_graph_path(node_label: str) -> None:
 
     file_path = _create_file_path_from_graph_path(path, graph)
 
-    assert file_path == "/root/node/with/path/leaf"
-
-
-@pytest.mark.parametrize(
-    "node_label", ["node/with/path", "./node/with/path", "/node/with/path"]
-)
-def test_replace_node_ids_with_labels(node_label: str) -> None:
-    graph = _create_simple_graph(node_label)
-    path = ["root", "node", "leaf"]
-
-    file_path = _replace_node_ids_with_labels_and_add_resource_type(path, graph)
-
-    TestCase().assertCountEqual(
-        file_path,
-        [
-            ("root", ResourceType.OTHER),
-            ("node", ResourceType.OTHER),
-            ("with", ResourceType.OTHER),
-            ("path", ResourceType.OTHER),
-            ("leaf", ResourceType.OTHER),
-        ],
-    )
+    assert file_path == "root/node/with/path/leaf"
 
 
 def _create_simple_graph(node_label: str) -> DiGraph:
