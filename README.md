@@ -95,6 +95,11 @@ uv run python build.py opossum-file
 
 This will create a self-contained executable file `dist/opossum-file` (`dist/opossum-file.exe` on Windows).
 
+# Test
+* This project uses [faker](https://faker.readthedocs.io/en/master/) for testing
+* By default, every test runs with a different seed
+* To fix the seed, just adapt the line in faker_setup.py (without committing)
+
 # Creating a new release
 
 Note: You will need the "maintain" role in order to create a new release.

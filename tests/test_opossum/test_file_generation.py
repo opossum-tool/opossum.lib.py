@@ -5,40 +5,16 @@
 from pathlib import Path
 from zipfile import ZipFile
 
-import opossum_lib.opossum.output_model
 from opossum_lib.opossum.constants import INPUT_JSON_NAME, OUTPUT_JSON_NAME
 from opossum_lib.opossum.file_generation import write_opossum_information_to_file
-from opossum_lib.opossum.opossum_file import Metadata, OpossumInformation
 from opossum_lib.opossum.opossum_file_content import OpossumFileContent
-from opossum_lib.opossum.output_model import OpossumOutputFile
-
-OPOSSUM_INFILE = OpossumInformation(
-    metadata=Metadata(
-        project_id="project-id",
-        file_creation_date="30-05-2023",
-        project_title="project-title",
-    ),
-    resources={},
-    external_attributions={},
-    resources_to_attributions={},
-)
-
-OPOSSUM_OUTFILE = OpossumOutputFile(
-    metadata=opossum_lib.opossum.output_model.Metadata(
-        project_id="project-id",
-        file_creation_date="30-05-2023",
-        input_file_md5_checksum="checksum",
-    ),
-    manual_attributions={},
-    resources_to_attributions={},
-    resolved_external_attributions=None,
-)
+from tests.test_setup.faker_setup import OpossumFaker
 
 
 def test_only_input_information_available_writes_only_input_information(
-    tmp_path: Path,
+    tmp_path: Path, opossum_faker: OpossumFaker
 ) -> None:
-    opossum_file_content = OpossumFileContent(OPOSSUM_INFILE)
+    opossum_file_content = OpossumFileContent(opossum_faker.opossum_file_information())
     output_path = tmp_path / "output.opossum"
 
     write_opossum_information_to_file(opossum_file_content, output_path)
@@ -47,10 +23,10 @@ def test_only_input_information_available_writes_only_input_information(
         assert zip_file.namelist() == [INPUT_JSON_NAME]
 
 
-def test_input_and_output_information_available_writes_both(tmp_path: Path) -> None:
-    opossum_file_content = OpossumFileContent(
-        input_file=OPOSSUM_INFILE, output_file=OPOSSUM_OUTFILE
-    )
+def test_input_and_output_information_available_writes_both(
+    tmp_path: Path, opossum_faker: OpossumFaker
+) -> None:
+    opossum_file_content = opossum_faker.opossum_file_content()
     output_path = tmp_path / "output.opossum"
 
     write_opossum_information_to_file(opossum_file_content, output_path)
