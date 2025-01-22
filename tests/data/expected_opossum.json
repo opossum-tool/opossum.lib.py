@@ -109,10 +109,10 @@
     }
   },
   "resourcesToAttributions":{
-    "/SPDX Lite Document/":[
+    "/SPDX Lite Document":[
       "SPDXRef-DOCUMENT"
     ],
-    "/SPDX Lite Document/DESCRIBES/Package A/":[
+    "/SPDX Lite Document/DESCRIBES/Package A":[
       "SPDXRef-Package-A"
     ],
     "/SPDX Lite Document/DESCRIBES/Package B":[
@@ -124,7 +124,7 @@
     "/SPDX Lite Document/DESCRIBES/Package A/CONTAINS/File-C":[
       "SPDXRef-File-C"
     ],
-    "/SPDX Lite Document/DESCRIBES/Package A/COPY_OF/Package C/":[
+    "/SPDX Lite Document/DESCRIBES/Package A/COPY_OF/Package C":[
       "SPDXRef-Package-C"
     ],
     "/SPDX Lite Document/DESCRIBES/Package A/COPY_OF/Package C/CONTAINS/File-B":[

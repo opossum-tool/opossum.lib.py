@@ -5,8 +5,9 @@
 import logging
 import sys
 import uuid
+from typing import Any
 
-from networkx import DiGraph, shortest_path
+from networkx import DiGraph
 from spdx_tools.spdx.model.document import CreationInfo
 from spdx_tools.spdx.model.document import Document as SpdxDocument
 from spdx_tools.spdx.model.file import File
@@ -16,17 +17,16 @@ from spdx_tools.spdx.parser.error import SPDXParsingError
 from spdx_tools.spdx.parser.parse_anything import parse_file
 from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
 
-from opossum_lib.opossum.opossum_file import (
+from opossum_lib.opossum.opossum_file_content import OpossumFileContent
+from opossum_lib.opossum_model import (
     ExternalAttributionSource,
     Metadata,
-    OpossumInformation,
+    Opossum,
     OpossumPackage,
-    OpossumPackageIdentifier,
     Resource,
-    ResourceType,
+    ScanResults,
     SourceInfo,
 )
-from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 from opossum_lib.spdx.attribution_generation import (
     create_document_attribution,
     create_file_attribution,
@@ -40,10 +40,10 @@ from opossum_lib.spdx.constants import (
 )
 from opossum_lib.spdx.graph_generation import generate_graph_from_spdx
 from opossum_lib.spdx.helper_methods import (
-    _create_file_path_from_graph_path,
+    _get_file_path,
+    _get_resource_type,
     _get_source_for_graph_traversal,
     _node_represents_a_spdx_element,
-    _replace_node_ids_with_labels_and_add_resource_type,
     _weakly_connected_component_sub_graphs,
 )
 from opossum_lib.spdx.tree_generation import generate_tree_from_graph
@@ -69,15 +69,15 @@ def convert_spdx_to_opossum_information(filename: str) -> OpossumFileContent:
         )
     graph = generate_graph_from_spdx(document)
     tree = generate_tree_from_graph(graph)
-    opossum_information = convert_tree_to_opossum_information(tree)
-    return OpossumFileContent(input_file=opossum_information)
+    return convert_tree_to_opossum(tree).to_opossum_file_format()
 
 
-def convert_tree_to_opossum_information(tree: DiGraph) -> OpossumInformation:
+def convert_tree_to_opossum(tree: DiGraph) -> Opossum:
     metadata = create_metadata(tree)
-    resources = Resource(type=ResourceType.TOP_LEVEL)
-    resources_to_attributions: dict[str, list[str]] = dict()
-    external_attributions: dict[str, OpossumPackage] = dict()
+    resources = []  # Resource(type=ResourceType.TOP_LEVEL)
+    # resources_to_attributions: dict[str, list[str]] = dict()
+    # external_attributions: dict[str, OpossumPackage] = dict()
+    attribution_to_id: dict[OpossumPackage, str] = {}
     attribution_breakpoints = []
     external_attribution_sources = {
         SPDX_FILE_IDENTIFIER: ExternalAttributionSource(
@@ -97,78 +97,53 @@ def convert_tree_to_opossum_information(tree: DiGraph) -> OpossumInformation:
             raise RuntimeError(
                 "A tree should always have a node without incoming edge."
             )
-        for node in connected_subgraph.nodes():
-            path: list[str] = shortest_path(connected_subgraph, source, node)
-            path_with_labels: list[tuple[str, ResourceType]] = (
-                _replace_node_ids_with_labels_and_add_resource_type(
-                    path, connected_subgraph
+        source_file_path = _get_file_path(connected_subgraph, source, source)
+        rootnode = Resource(path=source_file_path)
+        resources.append(rootnode)
+        for node_label in connected_subgraph.nodes():
+            node = connected_subgraph.nodes[node_label]
+            file_path: str = _get_file_path(connected_subgraph, source, node_label)
+            new_resource = Resource(path=file_path, type=_get_resource_type(node))
+            if _node_represents_a_spdx_element(connected_subgraph, node_label):
+                attribution = create_attribution(node)
+                attribution_to_id[attribution] = (
+                    get_attribution_id(node["element"]) or node_label
                 )
-            )
-            resources = resources.add_path(path_with_labels)
-            file_path: str = _create_file_path_from_graph_path(path, connected_subgraph)
-            if _node_represents_a_spdx_element(connected_subgraph, node):
-                create_attribution_and_link_with_resource(
-                    external_attributions,
-                    resources_to_attributions,
-                    file_path,
-                    node,
-                    connected_subgraph,
-                )
-
+                new_resource.attributions.append(attribution)
             else:
-                attribution_breakpoints.append(file_path)
+                attribution_breakpoints.append("/" + file_path)
+            rootnode.add_resource(new_resource)
 
-    opossum_information = OpossumInformation(
+    scan_results = ScanResults(
         metadata=metadata,
-        resources=resources.convert_to_file_resource(),
-        external_attributions=external_attributions,
-        resources_to_attributions=resources_to_attributions,
+        resources=resources,
+        attribution_to_id=attribution_to_id,
         attribution_breakpoints=attribution_breakpoints,
         external_attribution_sources=external_attribution_sources,
     )
-    return opossum_information
+    return Opossum(scan_results=scan_results)
 
 
-def create_attribution_and_link_with_resource(
-    external_attributions: dict[OpossumPackageIdentifier, OpossumPackage],
-    resources_to_attributions: dict[OpossumPackageIdentifier, list[str]],
-    file_path: str,
-    node: str,
-    tree: DiGraph,
-) -> None:
-    node_element = tree.nodes[node]["element"]
+def create_attribution(
+    node: dict[str, Any],
+) -> OpossumPackage:
+    node_element = node["element"]
     if isinstance(node_element, Package):
-        external_attributions[node_element.spdx_id] = create_package_attribution(
-            package=node_element
-        )
-        resources_to_attributions[file_path] = [
-            node_element.spdx_id,
-        ]
+        return create_package_attribution(package=node_element)
     elif isinstance(node_element, File):
-        external_attributions[node_element.spdx_id] = create_file_attribution(
-            node_element
-        )
-        resources_to_attributions[file_path] = [
-            node_element.spdx_id,
-        ]
+        return create_file_attribution(node_element)
     elif isinstance(node_element, Snippet):
-        external_attributions[node_element.spdx_id] = create_snippet_attribution(
-            node_element
-        )
-        resources_to_attributions[file_path] = [
-            node_element.spdx_id,
-        ]
+        return create_snippet_attribution(node_element)
     elif isinstance(node_element, CreationInfo):
-        external_attributions[node_element.spdx_id] = create_document_attribution(
-            node_element
-        )
-        resources_to_attributions[file_path] = [node_element.spdx_id]
-
+        return create_document_attribution(node_element)
     else:
-        external_attributions[node] = OpossumPackage(
-            source=SourceInfo(name=tree.nodes[node]["label"])
-        )
-        resources_to_attributions[file_path] = [node]
+        return OpossumPackage(source=SourceInfo(name=node["label"]))
+
+
+def get_attribution_id(element: Any) -> str | None:
+    if isinstance(element, Package | File | Snippet | CreationInfo):
+        return element.spdx_id
+    return None
 
 
 def create_metadata(tree: DiGraph) -> Metadata:

@@ -54,7 +54,7 @@ def test_create_package_attribution() -> None:
     write_package(package, package_data)
     package_attribution = create_package_attribution(package)
 
-    assert package_attribution == OpossumPackage(
+    assert package_attribution.to_opossum_file_format() == OpossumPackage(
         source=SourceInfo(name=SPDX_PACKAGE_IDENTIFIER),
         comment=package_data.getvalue(),
         package_name=package.name,
@@ -79,7 +79,7 @@ def test_create_file_attribution() -> None:
     write_file(file, file_data)
     file_attribution = create_file_attribution(file)
 
-    assert file_attribution == OpossumPackage(
+    assert file_attribution.to_opossum_file_format() == OpossumPackage(
         source=SourceInfo(name=SPDX_FILE_IDENTIFIER),
         comment=file_data.getvalue(),
         package_name=file.name,
@@ -102,7 +102,7 @@ def test_create_snippet_attribution() -> None:
     write_snippet(snippet, snippet_data)
     snippet_attribution = create_snippet_attribution(snippet)
 
-    assert snippet_attribution == OpossumPackage(
+    assert snippet_attribution.to_opossum_file_format() == OpossumPackage(
         source=SourceInfo(name=SPDX_SNIPPET_IDENTIFIER),
         comment=snippet_data.getvalue(),
         package_name=snippet.name,
@@ -124,7 +124,7 @@ def test_create_document_attribution() -> None:
     write_creation_info(creation_info, creation_info_data)
     document_attribution = create_document_attribution(creation_info)
 
-    assert document_attribution == OpossumPackage(
+    assert document_attribution.to_opossum_file_format() == OpossumPackage(
         source=SourceInfo(name=DOCUMENT_SPDX_ID),
         package_name=creation_info.name,
         license_name=creation_info.data_license,
