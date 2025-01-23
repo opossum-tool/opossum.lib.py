@@ -218,7 +218,7 @@ class OpossumFileFaker(Faker):
         )
 
 
-def setup_faker(faker: Faker) -> OpossumFileFaker:
+def setup_opossum_file_faker(faker: Faker) -> OpossumFileFaker:
     faker.add_provider(MetadataProvider)
     faker.add_provider(FileInformationProvider)
     faker.add_provider(OpossumOutputFileProvider)
