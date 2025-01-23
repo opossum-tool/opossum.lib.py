@@ -8,13 +8,15 @@ from zipfile import ZipFile
 from opossum_lib.opossum.constants import INPUT_JSON_NAME, OUTPUT_JSON_NAME
 from opossum_lib.opossum.file_generation import write_opossum_information_to_file
 from opossum_lib.opossum.opossum_file_content import OpossumFileContent
-from tests.test_setup.faker_setup import OpossumFaker
+from tests.test_setup.opossum_file_faker_setup import OpossumFileFaker
 
 
 def test_only_input_information_available_writes_only_input_information(
-    tmp_path: Path, opossum_faker: OpossumFaker
+    tmp_path: Path, opossum_file_faker: OpossumFileFaker
 ) -> None:
-    opossum_file_content = OpossumFileContent(opossum_faker.opossum_file_information())
+    opossum_file_content = OpossumFileContent(
+        opossum_file_faker.opossum_file_information()
+    )
     output_path = tmp_path / "output.opossum"
 
     write_opossum_information_to_file(opossum_file_content, output_path)
@@ -24,9 +26,9 @@ def test_only_input_information_available_writes_only_input_information(
 
 
 def test_input_and_output_information_available_writes_both(
-    tmp_path: Path, opossum_faker: OpossumFaker
+    tmp_path: Path, opossum_file_faker: OpossumFileFaker
 ) -> None:
-    opossum_file_content = opossum_faker.opossum_file_content()
+    opossum_file_content = opossum_file_faker.opossum_file_content()
     output_path = tmp_path / "output.opossum"
 
     write_opossum_information_to_file(opossum_file_content, output_path)

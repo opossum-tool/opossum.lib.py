@@ -35,7 +35,7 @@ from tests.test_opossum.generators.generate_outfile_information import (
 )
 
 
-class OpossumFaker(Faker):
+class OpossumFileFaker(Faker):
     file_information_provider: FileInformationProvider
     metadata_provider: MetadataProvider
     opossum_output_file_provider: OpossumOutputFileProvider
@@ -218,12 +218,12 @@ class OpossumFaker(Faker):
         )
 
 
-def setup_faker(faker: Faker) -> OpossumFaker:
+def setup_opossum_file_faker(faker: Faker) -> OpossumFileFaker:
     faker.add_provider(MetadataProvider)
     faker.add_provider(FileInformationProvider)
     faker.add_provider(OpossumOutputFileProvider)
     faker.add_provider(OpossumFileContentProvider)
-    faker = cast(OpossumFaker, faker)
+    faker = cast(OpossumFileFaker, faker)
     seed = int(datetime.now().timestamp())
     Faker.seed(seed)
     print("\nSeeding faker with ", seed)
