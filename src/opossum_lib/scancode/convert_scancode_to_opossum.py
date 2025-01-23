@@ -31,8 +31,10 @@ def convert_scancode_to_opossum(filename: str) -> OpossumFileContent:
     )
 
     return opossum_model.Opossum(
-        metadata=metadata,
-        resources=resources,
+        scan_results=opossum_model.ScanResults(
+            metadata=metadata,
+            resources=resources,
+        )
     ).to_opossum_file_format()
 
 
