@@ -9,8 +9,14 @@ from tests.test_setup.opossum_file_faker_setup import (
     OpossumFileFaker,
     setup_opossum_file_faker,
 )
+from tests.test_setup.scancode_faker_setup import ScanCodeFaker, setup_scancode_faker
 
 
 @pytest.fixture
 def opossum_file_faker(faker: Faker) -> OpossumFileFaker:
     return setup_opossum_file_faker(faker)
+
+
+@pytest.fixture
+def scancode_faker(faker: Faker) -> ScanCodeFaker:
+    return setup_scancode_faker(faker)

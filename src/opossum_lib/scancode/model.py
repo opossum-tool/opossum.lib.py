@@ -58,14 +58,6 @@ class ReferenceMatch(BaseModel):
     start_line: int
 
 
-class GlobalLicenseDetection(BaseModel):
-    detection_count: int
-    identifier: str
-    license_expression: str
-    license_expression_spdx: str
-    reference_matches: list[ReferenceMatch]
-
-
 class Match(BaseModel):
     end_line: int
     from_file: str
@@ -79,6 +71,14 @@ class Match(BaseModel):
     rule_url: Any
     score: float
     start_line: int
+
+
+class GlobalLicenseDetection(BaseModel):
+    detection_count: int
+    identifier: str
+    license_expression: str
+    license_expression_spdx: str
+    reference_matches: list[ReferenceMatch]
 
 
 class FileBasedLicenseDetection(BaseModel):
@@ -106,6 +106,12 @@ class Url(BaseModel):
     url: str
 
 
+class Email(BaseModel):
+    email: str
+    end_line: int
+    start_line: int
+
+
 class FileType(Enum):
     FILE = "file"
     DIRECTORY = "directory"
@@ -119,7 +125,7 @@ class File(BaseModel):
     detected_license_expression: str | None
     detected_license_expression_spdx: str | None
     dirs_count: int
-    emails: list
+    emails: list[Email]
     extension: str
     files_count: int
     file_type: str | None
