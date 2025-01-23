@@ -21,7 +21,7 @@ class CamelBaseModel(BaseModel):
 
 
 class OpossumInformation(CamelBaseModel):
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(frozen=True, extra="forbid")
     metadata: Metadata
     resources: ResourceInFile
     external_attributions: dict[OpossumPackageIdentifier, OpossumPackage]

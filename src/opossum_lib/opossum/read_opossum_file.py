@@ -3,7 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from opossum_lib.opossum.opossum_file_content import OpossumFileContent
+from opossum_lib.opossum.opossum_file_to_opossum_converter import (
+    OpossumFileToOpossumConverter,
+)
 
 
 def read_opossum_file(filename: str) -> OpossumFileContent:
-    return OpossumFileContent.from_file(file_name=filename)
+    opossum_input_file = OpossumFileContent.from_file(file_name=filename)
+    opossum = OpossumFileToOpossumConverter().convert(opossum_input_file)
+
+    return opossum.to_opossum_file_format()
