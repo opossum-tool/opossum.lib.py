@@ -16,7 +16,7 @@ def scancode_to_file_tree(scancode_data: ScanCodeData) -> opossum_model.Resource
     temp_root = opossum_model.Resource(path=PurePath(""))
     for file in scancode_data.files:
         resource = opossum_model.Resource(
-            path=PurePath(file.path.replace("\\", "/")),
+            path=PurePath(file.path),
             attributions=get_attribution_info(file),
             type=convert_resource_type(file.type),
         )
@@ -49,8 +49,8 @@ def get_attribution_info(file: File) -> list[opossum_model.OpossumPackage]:
     return attribution_infos
 
 
-def convert_resource_type(val: FileType) -> opossum_model.ResourceType:
-    if val == FileType.FILE:
+def convert_resource_type(file_type: FileType) -> opossum_model.ResourceType:
+    if file_type == FileType.FILE:
         return opossum_model.ResourceType.FILE
     else:
         return opossum_model.ResourceType.FOLDER
