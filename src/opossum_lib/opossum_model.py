@@ -33,6 +33,18 @@ def default_attribution_id_mapper() -> dict[OpossumPackage, str]:
 
 class Opossum(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
+    scan_results: ScanResults
+    review_results: OpossumOutputFile | None = None
+
+    def to_opossum_file_format(self) -> OpossumFileContent:
+        return OpossumFileContent(
+            input_file=self.scan_results.to_opossum_file_format(),
+            output_file=self.review_results,
+        )
+
+
+class ScanResults(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
     metadata: Metadata
     resources: list[Resource]
     attribution_breakpoints: list[str] = []
@@ -43,9 +55,8 @@ class Opossum(BaseModel):
     attribution_to_id: dict[OpossumPackage, str] = field(
         default_factory=default_attribution_id_mapper
     )
-    output_file: OpossumOutputFile | None = None
 
-    def to_opossum_file_format(self) -> OpossumFileContent:
+    def to_opossum_file_format(self) -> opossum_file.OpossumInformation:
         external_attributions, resources_to_attributions = (
             self.create_attribution_mapping(self.resources)
         )
@@ -64,22 +75,19 @@ class Opossum(BaseModel):
             for (key, val) in self.external_attribution_sources.items()
         }
 
-        return OpossumFileContent(
-            input_file=opossum_file.OpossumInformation(
-                metadata=self.metadata.to_opossum_file_format(),
-                resources={
-                    str(resource.path): resource.to_opossum_file_format()
-                    for resource in self.resources
-                },
-                external_attributions=external_attributions,
-                resources_to_attributions=resources_to_attributions,
-                attribution_breakpoints=deepcopy(self.attribution_breakpoints),
-                external_attribution_sources=external_attribution_sources,
-                frequent_licenses=frequent_licenses,
-                files_with_children=deepcopy(self.files_with_children),
-                base_urls_for_sources=base_urls_for_sources,
-            ),
-            output_file=self.output_file,
+        return opossum_file.OpossumInformation(
+            metadata=self.metadata.to_opossum_file_format(),
+            resources={
+                str(resource.path): resource.to_opossum_file_format()
+                for resource in self.resources
+            },
+            external_attributions=external_attributions,
+            resources_to_attributions=resources_to_attributions,
+            attribution_breakpoints=deepcopy(self.attribution_breakpoints),
+            external_attribution_sources=external_attribution_sources,
+            frequent_licenses=frequent_licenses,
+            files_with_children=deepcopy(self.files_with_children),
+            base_urls_for_sources=base_urls_for_sources,
         )
 
     def create_attribution_mapping(
