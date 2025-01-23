@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from pathlib import Path
+
+from pathlib import PurePath
 
 from opossum_lib.scancode.model import (
     Copyright,
@@ -12,6 +13,16 @@ from opossum_lib.scancode.model import (
     Holder,
     Url,
 )
+
+
+def _create_reference_scancode_files() -> list[File]:
+    return [
+        _create_file("A", FileType.DIRECTORY),
+        _create_file("A/B", FileType.DIRECTORY),
+        _create_file("A/file1", FileType.FILE),
+        _create_file("A/file2.txt", FileType.FILE),
+        _create_file("A/B/file3", FileType.FILE),
+    ]
 
 
 def _create_file(
@@ -73,11 +84,11 @@ def _create_file(
     if copyrights is None:
         copyrights = []
     if name is None:
-        name = Path(path).name
+        name = PurePath(path).name
     if base_name is None:
-        base_name = Path(Path(path).name).stem
+        base_name = PurePath(PurePath(path).name).stem
     if extension is None:
-        extension = Path(path).suffix
+        extension = PurePath(path).suffix
     return File(
         authors=authors,
         base_name=base_name,
