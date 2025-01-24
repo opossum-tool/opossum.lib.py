@@ -23,7 +23,7 @@ type OpossumPackageIdentifier = str
 type ResourcePath = str
 
 
-def _convert_path_to_str(path: PurePath) -> str:
+def convert_path_to_str(path: PurePath) -> str:
     return str(path).replace("\\", "/")
 
 
@@ -55,11 +55,14 @@ class ScanResults(BaseModel):
     attribution_to_id: dict[OpossumPackage, str] = field(
         default_factory=default_attribution_id_mapper
     )
+    unassigned_attributions: list[OpossumPackage] | None = None
 
     def to_opossum_file_format(self) -> opossum_file.OpossumInformation:
         external_attributions, resources_to_attributions = (
             self.create_attribution_mapping(self.resources)
         )
+        external_attributions.update(self._get_unassigned_attributions())
+
         frequent_licenses = None
         if self.frequent_licenses:
             frequent_licenses = [
@@ -90,6 +93,19 @@ class ScanResults(BaseModel):
             base_urls_for_sources=base_urls_for_sources,
         )
 
+    def _get_unassigned_attributions(
+        self,
+    ) -> dict[opossum_file.OpossumPackageIdentifier, opossum_file.OpossumPackage]:
+        if self.unassigned_attributions:
+            return {
+                self.attribution_to_id[
+                    unused_attribution
+                ]: unused_attribution.to_opossum_file_format()
+                for unused_attribution in self.unassigned_attributions
+            }
+        else:
+            return {}
+
     def create_attribution_mapping(
         self,
         root_nodes: list[Resource],
@@ -105,7 +121,7 @@ class ScanResults(BaseModel):
         ] = {}
 
         def process_node(node: Resource) -> None:
-            path = _convert_path_to_str(node.path)
+            path = convert_path_to_str(node.path)
             if not path.startswith("/"):
                 # the / is required by OpossumUI
                 path = "/" + path
@@ -150,7 +166,7 @@ class Resource(BaseModel):
     def to_opossum_file_format(self) -> opossum_file.ResourceInFile:
         if self.children or self.type == ResourceType.FOLDER:
             return {
-                _convert_path_to_str(
+                convert_path_to_str(
                     child.path.relative_to(self.path)
                 ): child.to_opossum_file_format()
                 for child in self.children.values()
@@ -254,7 +270,7 @@ class OpossumPackage(BaseModel):
     pre_selected: bool | None = None
     follow_up: Literal["FOLLOW_UP"] | None = None
     origin_id: str | None = None
-    origin_ids: list[str] | None = None
+    origin_ids: tuple[str] | None = None
     criticality: Literal["high"] | Literal["medium"] | None = None
     was_preferred: bool | None = None
 

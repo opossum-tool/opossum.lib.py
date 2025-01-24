@@ -4,12 +4,12 @@
 
 from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 from opossum_lib.opossum.opossum_file_to_opossum_converter import (
-    OpossumFileToOpossumConverter,
+    convert_to_opossum,
 )
 
 
 def read_opossum_file(filename: str) -> OpossumFileContent:
     opossum_input_file = OpossumFileContent.from_file(file_name=filename)
-    opossum = OpossumFileToOpossumConverter().convert(opossum_input_file)
+    opossum = convert_to_opossum(opossum_input_file)
 
     return opossum.to_opossum_file_format()

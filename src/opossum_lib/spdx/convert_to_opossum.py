@@ -123,8 +123,8 @@ def convert_tree_to_opossum_information(tree: DiGraph) -> OpossumInformation:
         resources=resources.convert_to_file_resource(),
         external_attributions=external_attributions,
         resources_to_attributions=resources_to_attributions,
-        attributionBreakpoints=attribution_breakpoints,
-        externalAttributionSources=external_attribution_sources,
+        attribution_breakpoints=attribution_breakpoints,
+        external_attribution_sources=external_attribution_sources,
     )
     return opossum_information
 

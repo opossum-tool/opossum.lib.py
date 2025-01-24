@@ -40,13 +40,13 @@ def merge_opossum_information(
                 for opossum_information in expanded_opossum_information
             ]
         ),
-        attributionBreakpoints=_merge_attribution_breakpoints(
+        attribution_breakpoints=_merge_attribution_breakpoints(
             [
                 opossum_information.attribution_breakpoints
                 for opossum_information in expanded_opossum_information
             ]
         ),
-        externalAttributionSources=_merge_dicts_without_duplicates(
+        external_attribution_sources=_merge_dicts_without_duplicates(
             [
                 opossum_information.external_attribution_sources
                 for opossum_information in expanded_opossum_information
@@ -82,8 +82,8 @@ def expand_opossum_package_identifier(
         resources=opossum_information.resources,
         external_attributions=extended_external_attributions,
         resources_to_attributions=extended_resources_to_attributions,
-        attributionBreakpoints=opossum_information.attribution_breakpoints,
-        externalAttributionSources=opossum_information.external_attribution_sources,
+        attribution_breakpoints=opossum_information.attribution_breakpoints,
+        external_attribution_sources=opossum_information.external_attribution_sources,
     )
 
 
