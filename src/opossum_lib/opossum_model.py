@@ -270,7 +270,7 @@ class OpossumPackage(BaseModel):
     pre_selected: bool | None = None
     follow_up: Literal["FOLLOW_UP"] | None = None
     origin_id: str | None = None
-    origin_ids: tuple[str] | None = None
+    origin_ids: tuple[str, ...] | None = None
     criticality: Literal["high"] | Literal["medium"] | None = None
     was_preferred: bool | None = None
 
