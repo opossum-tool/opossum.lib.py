@@ -218,10 +218,17 @@ class OpossumFileToOpossumConverter:
             opossum_lib.opossum.opossum_file.OpossumPackage,
         ],
     ) -> dict[OpossumPackage, str]:
-        return {
-            OpossumFileToOpossumConverter._convert_package(package): package_identifier
-            for package_identifier, package in external_attributions.items()
-        }
+        result = {}
+        for package_identifier, package in external_attributions.items():
+            converted_package = OpossumFileToOpossumConverter._convert_package(package)
+            if converted_package not in result:
+                result[converted_package] = package_identifier
+            else:
+                raise RuntimeError(
+                    "An attribution was duplicated in the "
+                    "scan breaking internal assertions"
+                )
+        return result
 
     @staticmethod
     def _convert_frequent_license(
