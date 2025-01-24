@@ -5,9 +5,7 @@
 
 from opossum_lib.opossum_model import OpossumPackage, SourceInfo
 from opossum_lib.scancode.constants import SCANCODE_SOURCE_NAME
-from opossum_lib.scancode.resource_tree import (
-    get_attribution_info,
-)
+from opossum_lib.scancode.convert_scancode_to_opossum import get_attribution_info
 from tests.test_setup.scancode_faker_setup import ScanCodeFaker
 
 
