@@ -236,7 +236,7 @@ class ScanCodeDataProvider(BaseProvider):
                     file = self.single_file(
                         path=path,
                     )
-                files.append(file)
+                    files.append(file)
             return files
 
         return process_path("", path_tree=path_tree)
