@@ -15,14 +15,18 @@ from opossum_lib.scancode.constants import SCANCODE_SOURCE_NAME
 from opossum_lib.scancode.model import File, FileType, Header, ScanCodeData
 
 
-def convert_scancode_to_opossum(filename: str) -> OpossumFileContent:
+def convert_scancode_file_to_opossum(filename: str) -> OpossumFileContent:
     logging.info(f"Converting scancode to opossum {filename}")
 
     scancode_data = load_scancode_json(filename)
 
-    resources = [scancode_to_file_tree(scancode_data)]
+    return convert_scancode_to_opossum(scancode_data).to_opossum_file_format()
 
-    scancode_header = extract_scancode_header(scancode_data, filename)
+
+def convert_scancode_to_opossum(scancode_data: ScanCodeData) -> opossum_model.Opossum:
+    resources = extract_opossum_resources(scancode_data)
+
+    scancode_header = extract_scancode_header(scancode_data)
     metadata = opossum_model.Metadata(
         project_id=str(uuid.uuid4()),
         file_creation_date=scancode_header.end_timestamp,
@@ -34,7 +38,7 @@ def convert_scancode_to_opossum(filename: str) -> OpossumFileContent:
             metadata=metadata,
             resources=resources,
         )
-    ).to_opossum_file_format()
+    )
 
 
 def load_scancode_json(filename: str) -> ScanCodeData:
@@ -53,14 +57,16 @@ def load_scancode_json(filename: str) -> ScanCodeData:
     return scancode_data
 
 
-def extract_scancode_header(scancode_data: ScanCodeData, filename: str) -> Header:
+def extract_scancode_header(scancode_data: ScanCodeData) -> Header:
     if len(scancode_data.headers) != 1:
-        logging.error(f"Headers of ScanCode file are invalid. File: {filename}")
+        logging.error("Headers of ScanCode file are invalid.")
         sys.exit(1)
     return scancode_data.headers[0]
 
 
-def scancode_to_file_tree(scancode_data: ScanCodeData) -> opossum_model.Resource:
+def extract_opossum_resources(
+    scancode_data: ScanCodeData,
+) -> list[opossum_model.Resource]:
     temp_root = opossum_model.Resource(path=PurePath(""))
     for file in scancode_data.files:
         resource = opossum_model.Resource(
@@ -70,8 +76,7 @@ def scancode_to_file_tree(scancode_data: ScanCodeData) -> opossum_model.Resource
         )
         temp_root.add_resource(resource)
 
-    assert len(temp_root.children) == 1
-    return list(temp_root.children.values())[0]
+    return list(temp_root.children.values())
 
 
 def convert_resource_type(file_type: FileType) -> opossum_model.ResourceType:

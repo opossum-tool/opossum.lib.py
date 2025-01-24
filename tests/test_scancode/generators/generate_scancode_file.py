@@ -220,9 +220,9 @@ class ScanCodeDataProvider(BaseProvider):
         def process_path(current_path: str, path_tree: TempPathTree) -> list[File]:
             files: list[File] = []
             for name, data in path_tree.items():
-                path = current_path + "/" + name
+                path = current_path + name
                 if data:
-                    child_files = process_path(path, data)
+                    child_files = process_path(path + "/", data)
                     child_types = [c.type for c in child_files]
                     folder = self.single_folder(
                         path=path,

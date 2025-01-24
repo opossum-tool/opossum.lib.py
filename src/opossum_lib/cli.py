@@ -14,7 +14,9 @@ import click
 from opossum_lib.opossum.file_generation import write_opossum_information_to_file
 from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 from opossum_lib.opossum.read_opossum_file import read_opossum_file
-from opossum_lib.scancode.convert_scancode_to_opossum import convert_scancode_to_opossum
+from opossum_lib.scancode.convert_scancode_to_opossum import (
+    convert_scancode_file_to_opossum,
+)
 from opossum_lib.spdx.convert_to_opossum import convert_spdx_to_opossum_information
 
 
@@ -107,7 +109,7 @@ def convert_after_valid_input(
         return convert_spdx_to_opossum_information(spdx_input_file)
     elif len(scancode_json_files) == 1:
         scancode_json_input_file = scancode_json_files[0]
-        return convert_scancode_to_opossum(scancode_json_input_file)
+        return convert_scancode_file_to_opossum(scancode_json_input_file)
     else:
         opossum_input_file = opossum_files[0]
         return read_opossum_file(opossum_input_file)
