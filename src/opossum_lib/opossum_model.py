@@ -97,12 +97,20 @@ class ScanResults(BaseModel):
         self,
     ) -> dict[opossum_file.OpossumPackageIdentifier, opossum_file.OpossumPackage]:
         if self.unassigned_attributions:
-            return {
-                self.attribution_to_id[
-                    unused_attribution
-                ]: unused_attribution.to_opossum_file_format()
-                for unused_attribution in self.unassigned_attributions
-            }
+            result = {}
+            for unassigned_attribution in self.unassigned_attributions:
+                if unassigned_attribution in self.attribution_to_id:
+                    package_identifier = self.attribution_to_id[unassigned_attribution]
+                    result[package_identifier] = (
+                        unassigned_attribution.to_opossum_file_format()
+                    )
+                else:
+                    package_identifier = str(uuid.uuid4())
+                    self.attribution_to_id[unassigned_attribution] = package_identifier
+                    result[package_identifier] = (
+                        unassigned_attribution.to_opossum_file_format()
+                    )
+            return result
         else:
             return {}
 

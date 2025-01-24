@@ -4,6 +4,7 @@
 from typing import Any
 
 from faker.providers import BaseProvider
+from faker.providers.misc.en_US import Provider as MiscProvider
 
 from opossum_lib.opossum_model import (
     BaseUrlsForSources,
@@ -15,14 +16,20 @@ from opossum_lib.opossum_model import (
     ScanResults,
 )
 from tests.opossum_model_generators.metadata_provider import MetadataProvider
+from tests.opossum_model_generators.package_provider import PackageProvider
+from tests.test_opossum.generators.helpers import entry_or_none, random_list
 
 
 class ScanResultsProvider(BaseProvider):
     metadata_provider: MetadataProvider
+    package_provider: PackageProvider
+    misc_provider: MiscProvider
 
     def __init__(self, generator: Any) -> None:
         super().__init__(generator)
         self.metadata_provider = MetadataProvider(generator)
+        self.package_provider = PackageProvider(generator)
+        self.misc_provider = MiscProvider(generator)
 
     def scan_results(
         self,
@@ -46,5 +53,11 @@ class ScanResultsProvider(BaseProvider):
             files_with_children=files_with_children,
             base_urls_for_sources=base_urls_for_sources,
             attribution_to_id=attribution_to_id or {},
-            unassigned_attributions=unassigned_attributions or None,
+            unassigned_attributions=unassigned_attributions
+            or entry_or_none(
+                self.misc_provider,
+                random_list(
+                    self, entry_generator=lambda: self.package_provider.package()
+                ),
+            ),
         )

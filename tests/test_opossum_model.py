@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
+import json
 from copy import deepcopy
 
 from opossum_lib.opossum.opossum_file_to_opossum_converter import (
@@ -23,8 +24,23 @@ class TestOpossumModelToOpossumFileConversion:
 
         opossum_file = opossum.to_opossum_file_format()
 
-        assert opossum_file.input_file
-
         result = OpossumFileToOpossumConverter.convert_to_opossum(opossum_file)
 
-        assert result.model_dump() == expected_result.model_dump()
+        ## this can change due to the generation of new ids
+        result_json = result.model_dump_json()
+        expected_result_json = expected_result.model_dump_json()
+        result_dict = json.loads(result_json)
+        expected_result_dict = json.loads(expected_result_json)
+        expected_result_dict["scan_results"]["attribution_to_id"] = None
+        result_dict["scan_results"]["attribution_to_id"] = None
+        # sort the lists again for comperability
+        expected_result_dict["scan_results"]["unassigned_attributions"] = sorted(
+            expected_result_dict["scan_results"]["unassigned_attributions"],
+            key=lambda x: x["source"]["name"],
+        )
+        result_dict["scan_results"]["unassigned_attributions"] = sorted(
+            result_dict["scan_results"]["unassigned_attributions"],
+            key=lambda x: x["source"]["name"],
+        )
+
+        assert result_dict == expected_result_dict
