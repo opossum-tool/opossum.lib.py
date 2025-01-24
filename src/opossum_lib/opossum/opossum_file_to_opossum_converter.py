@@ -104,14 +104,17 @@ class OpossumFileToOpossumConverter:
             opossum_lib.opossum.opossum_file.OpossumPackageIdentifier,
             opossum_lib.opossum.opossum_file.OpossumPackage,
         ],
-    ) -> list[OpossumPackage]:
+    ) -> list[OpossumPackage] | None:
         available_attribution_ids = external_attributions.keys()
         unused_attributions_ids = set(available_attribution_ids) - used_attribution_ids
         unused_attributions = [
             OpossumFileToOpossumConverter._convert_package(external_attributions[id])
             for id in unused_attributions_ids
         ]
-        return unused_attributions
+        if unused_attributions:
+            return unused_attributions
+        else:
+            return None
 
     @staticmethod
     def _convert_external_attribution_source(
