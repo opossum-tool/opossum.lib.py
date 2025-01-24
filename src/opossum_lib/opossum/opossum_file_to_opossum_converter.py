@@ -23,7 +23,7 @@ from opossum_lib.opossum_model import (
     ResourceType,
     ScanResults,
     SourceInfo,
-    convert_path_to_str,
+    _convert_path_to_str,
 )
 
 
@@ -139,7 +139,7 @@ def convert_to_opossum_model_resource_tree(
         to_insert: opossum_lib.opossum.opossum_file.ResourceInFile,
     ) -> Resource:
         path = deepcopy(current_path)
-        current_path_as_string = "/" + convert_path_to_str(current_path)
+        current_path_as_string = "/" + _convert_path_to_str(current_path)
         attributions, attribution_ids = get_applicable_attributions(
             current_path_as_string
         )

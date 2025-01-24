@@ -23,7 +23,7 @@ type OpossumPackageIdentifier = str
 type ResourcePath = str
 
 
-def convert_path_to_str(path: PurePath) -> str:
+def _convert_path_to_str(path: PurePath) -> str:
     return str(path).replace("\\", "/")
 
 
@@ -121,7 +121,7 @@ class ScanResults(BaseModel):
         ] = {}
 
         def process_node(node: Resource) -> None:
-            path = convert_path_to_str(node.path)
+            path = _convert_path_to_str(node.path)
             if not path.startswith("/"):
                 # the / is required by OpossumUI
                 path = "/" + path
@@ -166,7 +166,7 @@ class Resource(BaseModel):
     def to_opossum_file_format(self) -> opossum_file.ResourceInFile:
         if self.children or self.type == ResourceType.FOLDER:
             return {
-                convert_path_to_str(
+                _convert_path_to_str(
                     child.path.relative_to(self.path)
                 ): child.to_opossum_file_format()
                 for child in self.children.values()
