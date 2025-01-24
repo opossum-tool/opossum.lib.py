@@ -6,18 +6,16 @@ from __future__ import annotations
 import json
 import logging
 import sys
-from dataclasses import dataclass
 from zipfile import ZipFile
 
-from pydantic import TypeAdapter
+from pydantic import BaseModel, TypeAdapter
 
 from opossum_lib.opossum.constants import INPUT_JSON_NAME, OUTPUT_JSON_NAME
 from opossum_lib.opossum.opossum_file import OpossumInformation
 from opossum_lib.opossum.output_model import OpossumOutputFile
 
 
-@dataclass
-class OpossumFileContent:
+class OpossumFileContent(BaseModel):
     input_file: OpossumInformation
     output_file: OpossumOutputFile | None = None
 
