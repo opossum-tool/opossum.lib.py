@@ -12,7 +12,7 @@ dependencies = [
     "spdx-tools>=0.8.3,<0.9",
     "networkx~=3.4",
     "click>=8.1.8,<9",
-    "pydantic>=2.10.5",
+    "pydantic>=2.10.6",
     "pyinstaller>=6.11.1",
     "faker>=35.0.0",
 ]
