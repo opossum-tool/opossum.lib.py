@@ -14,7 +14,7 @@ dependencies = [
     "click>=8.1.8,<9",
     "pydantic>=2.10.5",
     "pyinstaller>=6.11.1",
-    "faker>=34.0.2",
+    "faker>=35.0.0",
 ]
 
 [project.urls]
