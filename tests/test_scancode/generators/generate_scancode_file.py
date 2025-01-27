@@ -67,15 +67,15 @@ class ScanCodeDataProvider(BaseProvider):
         license_detections: list[GlobalLicenseDetection] | None = None,
         headers: list[Header] | None = None,
         packages: list | None = None,
-        **additional_options: Any,
+        options: Options | None = None,
     ) -> ScanCodeData:
-        # TODO depending on which options are passed in additional_options
+        # TODO: #184 depending on which options are passed in additional_options
         # we need to generate different fields, e.g. --licenses
         # out of scope for now
         files = files or self.files()
         license_detections = license_detections or self.global_license_detections(files)
         if headers is None:
-            headers = [self.header(options=self.options(**additional_options))]
+            headers = [self.header(options=options)]
         return ScanCodeData(
             dependencies=dependencies or [],
             files=files,
@@ -106,7 +106,7 @@ class ScanCodeDataProvider(BaseProvider):
             errors=errors or [],
             extra_data=extra_data or self.extra_data(),
             message=message,
-            notice=notice or "Generated with ScanCode and provided blablabla...",
+            notice=notice or "Generated with ScanCode and provided...",
             options=options or self.options(),
             output_format_version=output_format_version or "4.0.0",
             start_timestamp=start_timestamp or self.date_provider.iso8601(),
@@ -166,15 +166,15 @@ class ScanCodeDataProvider(BaseProvider):
     def global_license_detections(
         self, files: list[File]
     ) -> list[GlobalLicenseDetection]:
-        counter: dict[str, int] = defaultdict(int)
+        license_counter: dict[str, int] = defaultdict(int)
         id_to_license_detection: dict[str, FileBasedLicenseDetection] = {}
         for file in files:
             for ld in file.license_detections:
-                counter[ld.identifier] += 1
+                license_counter[ld.identifier] += 1
                 id_to_license_detection[ld.identifier] = ld
 
         global_license_detections = []
-        for id, count in counter.items():
+        for id, count in license_counter.items():
             ld = id_to_license_detection[id]
             gld = GlobalLicenseDetection(
                 detection_count=count,
@@ -182,7 +182,21 @@ class ScanCodeDataProvider(BaseProvider):
                 license_expression_spdx=ld.license_expression_spdx,
                 identifier=ld.identifier,
                 reference_matches=[
-                    ReferenceMatch(**match.model_dump()) for match in ld.matches
+                    ReferenceMatch(
+                        end_line=match.end_line,
+                        from_file=match.from_file,
+                        license_expression=match.license_expression,
+                        license_expression_spdx=match.license_expression_spdx,
+                        matched_length=match.matched_length,
+                        matcher=match.matcher,
+                        match_coverage=match.match_coverage,
+                        rule_identifier=match.rule_identifier,
+                        rule_relevance=match.rule_relevance,
+                        rule_url=match.rule_url,
+                        score=match.score,
+                        start_line=match.start_line,
+                    )
+                    for match in ld.matches
                 ],
             )
             global_license_detections.append(gld)
@@ -510,8 +524,6 @@ class ScanCodeDataProvider(BaseProvider):
         path: str | None = None,
     ) -> FileBasedLicenseDetection:
         if path is None and matches is None:
-            # throw informative error to avoid generating invalid license detections
-            # by accident
             raise RuntimeError(
                 "Neither path nor matches given which is likely a user error. "
                 + "To generate a LicenseDetection without matches pass "

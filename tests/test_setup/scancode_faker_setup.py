@@ -30,7 +30,7 @@ class ScanCodeFaker(Faker):
             locale, providers, generator, includes, use_weighting, **config
         )
         scdp = ScanCodeDataProvider(self)
-        self.scancode_data_provider = ScanCodeDataProvider(self)
+        self.scancode_data_provider = scdp
         self.generate_path_structure = scdp.generate_path_structure
         self.files = scdp.files
         self.sc_email = scdp.email

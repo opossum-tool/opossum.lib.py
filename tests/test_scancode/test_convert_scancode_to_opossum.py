@@ -9,7 +9,6 @@ from _pytest.logging import LogCaptureFixture
 from opossum_lib.opossum_model import Resource
 from opossum_lib.scancode.convert_scancode_to_opossum import (
     convert_scancode_to_opossum,
-    extract_scancode_header,
 )
 from tests.test_setup.scancode_faker_setup import ScanCodeFaker
 
@@ -18,10 +17,13 @@ def test_extract_scancode_header_produces_expected_result(
     scancode_faker: ScanCodeFaker,
 ) -> None:
     scancode_data = scancode_faker.scancode_data()
-    extracted_header = extract_scancode_header(
+    opossum = convert_scancode_to_opossum(
         scancode_data,
     )
-    assert extracted_header == scancode_data.headers[0]
+    metadata = opossum.scan_results.metadata
+    header = scancode_data.headers[0]
+    assert metadata.file_creation_date == header.end_timestamp
+    assert metadata.project_title == "ScanCode file"
 
 
 def test_extract_scancode_header_errors_with_missing_header(
@@ -30,7 +32,7 @@ def test_extract_scancode_header_errors_with_missing_header(
     scancode_data = scancode_faker.scancode_data(headers=[])
 
     with pytest.raises(SystemExit):
-        extract_scancode_header(scancode_data)
+        convert_scancode_to_opossum(scancode_data)
 
     assert "header" in caplog.messages[0].lower()
 
@@ -43,7 +45,7 @@ def test_extract_scancode_header_error_with_multiple_headers(
     scancode_data = scancode_faker.scancode_data(headers=[header1, header2])
 
     with pytest.raises(SystemExit):
-        extract_scancode_header(scancode_data)
+        convert_scancode_to_opossum(scancode_data)
 
     assert "header" in caplog.messages[0].lower()
 
