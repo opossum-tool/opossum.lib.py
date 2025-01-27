@@ -55,11 +55,14 @@ class ScanResults(BaseModel):
     attribution_to_id: dict[OpossumPackage, str] = field(
         default_factory=default_attribution_id_mapper
     )
+    unassigned_attributions: list[OpossumPackage] = []
 
     def to_opossum_file_format(self) -> opossum_file.OpossumInformation:
         external_attributions, resources_to_attributions = (
             self.create_attribution_mapping(self.resources)
         )
+        external_attributions.update(self._get_unassigned_attributions())
+
         frequent_licenses = None
         if self.frequent_licenses:
             frequent_licenses = [
@@ -89,6 +92,27 @@ class ScanResults(BaseModel):
             files_with_children=deepcopy(self.files_with_children),
             base_urls_for_sources=base_urls_for_sources,
         )
+
+    def _get_unassigned_attributions(
+        self,
+    ) -> dict[opossum_file.OpossumPackageIdentifier, opossum_file.OpossumPackage]:
+        if self.unassigned_attributions:
+            result = {}
+            for unassigned_attribution in self.unassigned_attributions:
+                if unassigned_attribution in self.attribution_to_id:
+                    package_identifier = self.attribution_to_id[unassigned_attribution]
+                    result[package_identifier] = (
+                        unassigned_attribution.to_opossum_file_format()
+                    )
+                else:
+                    package_identifier = str(uuid.uuid4())
+                    self.attribution_to_id[unassigned_attribution] = package_identifier
+                    result[package_identifier] = (
+                        unassigned_attribution.to_opossum_file_format()
+                    )
+            return result
+        else:
+            return {}
 
     def create_attribution_mapping(
         self,
@@ -254,7 +278,7 @@ class OpossumPackage(BaseModel):
     pre_selected: bool | None = None
     follow_up: Literal["FOLLOW_UP"] | None = None
     origin_id: str | None = None
-    origin_ids: list[str] | None = None
+    origin_ids: tuple[str, ...] | None = None
     criticality: Literal["high"] | Literal["medium"] | None = None
     was_preferred: bool | None = None
 

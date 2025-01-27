@@ -57,12 +57,12 @@ def test_create_package_attribution() -> None:
     assert package_attribution == OpossumPackage(
         source=SourceInfo(name=SPDX_PACKAGE_IDENTIFIER),
         comment=package_data.getvalue(),
-        packageName=package.name,
-        packageVersion=package.version,
+        package_name=package.name,
+        package_version=package.version,
         copyright=str(package.copyright_text),
         url=str(package.download_location),
-        licenseName=str(package.license_concluded),
-        packagePURLAppendix="pkg:maven/org.apache.jena/apache-jena@3.12.0",
+        license_name=str(package.license_concluded),
+        package_p_u_r_l_appendix="pkg:maven/org.apache.jena/apache-jena@3.12.0",
     )
 
 
@@ -82,9 +82,9 @@ def test_create_file_attribution() -> None:
     assert file_attribution == OpossumPackage(
         source=SourceInfo(name=SPDX_FILE_IDENTIFIER),
         comment=file_data.getvalue(),
-        packageName=file.name,
+        package_name=file.name,
         copyright=str(file.copyright_text),
-        licenseName=str(file.license_concluded),
+        license_name=str(file.license_concluded),
     )
 
 
@@ -105,8 +105,8 @@ def test_create_snippet_attribution() -> None:
     assert snippet_attribution == OpossumPackage(
         source=SourceInfo(name=SPDX_SNIPPET_IDENTIFIER),
         comment=snippet_data.getvalue(),
-        packageName=snippet.name,
-        licenseName=str(snippet.license_concluded),
+        package_name=snippet.name,
+        license_name=str(snippet.license_concluded),
         copyright=str(snippet.copyright_text),
     )
 
@@ -126,7 +126,7 @@ def test_create_document_attribution() -> None:
 
     assert document_attribution == OpossumPackage(
         source=SourceInfo(name=DOCUMENT_SPDX_ID),
-        packageName=creation_info.name,
-        licenseName=creation_info.data_license,
+        package_name=creation_info.name,
+        license_name=creation_info.data_license,
         comment=creation_info_data.getvalue(),
     )

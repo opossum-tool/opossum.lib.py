@@ -70,7 +70,7 @@ def convert_spdx_to_opossum_information(filename: str) -> OpossumFileContent:
     graph = generate_graph_from_spdx(document)
     tree = generate_tree_from_graph(graph)
     opossum_information = convert_tree_to_opossum_information(tree)
-    return OpossumFileContent(opossum_information)
+    return OpossumFileContent(input_file=opossum_information)
 
 
 def convert_tree_to_opossum_information(tree: DiGraph) -> OpossumInformation:
@@ -123,8 +123,8 @@ def convert_tree_to_opossum_information(tree: DiGraph) -> OpossumInformation:
         resources=resources.convert_to_file_resource(),
         external_attributions=external_attributions,
         resources_to_attributions=resources_to_attributions,
-        attributionBreakpoints=attribution_breakpoints,
-        externalAttributionSources=external_attribution_sources,
+        attribution_breakpoints=attribution_breakpoints,
+        external_attribution_sources=external_attribution_sources,
     )
     return opossum_information
 
