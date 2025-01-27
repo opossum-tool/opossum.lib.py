@@ -44,3 +44,15 @@ class TestOpossumModelToOpossumFileConversion:
         )
 
         assert result_dict == expected_result_dict
+
+    def test_roundtrip_with_resource_ids(self, opossum_faker: OpossumFaker) -> None:
+        opossum = opossum_faker.opossum(
+            scan_results=opossum_faker.scan_results(generate_attribution_to_id=True)
+        )
+        expected_result = deepcopy(opossum)
+
+        opossum_file = opossum.to_opossum_file_format()
+
+        result = OpossumFileToOpossumConverter.convert_to_opossum(opossum_file)
+
+        assert result == expected_result
