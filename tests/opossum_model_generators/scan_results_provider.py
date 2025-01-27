@@ -8,7 +8,7 @@ from faker.providers import BaseProvider
 from faker.providers.file.en_US import Provider as FileProvider
 from faker.providers.misc.en_US import Provider as MiscProvider
 
-from opossum_lib.opossum_model import (
+from opossum_lib.core.opossum_model import (
     BaseUrlsForSources,
     ExternalAttributionSource,
     FrequentLicense,

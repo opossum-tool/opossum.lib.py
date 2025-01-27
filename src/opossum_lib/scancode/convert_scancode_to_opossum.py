@@ -9,7 +9,7 @@ import sys
 import uuid
 from pathlib import PurePath
 
-import opossum_lib.opossum_model as opossum_model
+import opossum_lib.core.opossum_model as opossum_model
 from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 from opossum_lib.scancode.constants import SCANCODE_SOURCE_NAME
 from opossum_lib.scancode.model import File, FileType, Header, ScanCodeData

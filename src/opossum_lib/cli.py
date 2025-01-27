@@ -7,7 +7,10 @@
 
 import click
 
-from opossum_lib.opossum_generator import OpossumGenerationArguments, OpossumGenerator
+from opossum_lib.core.opossum_generator import (
+    OpossumGenerationArguments,
+    OpossumGenerator,
+)
 
 
 @click.group()

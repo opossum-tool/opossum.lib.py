@@ -8,7 +8,7 @@ from faker.providers.date_time import Provider as DatetimeProvider
 from faker.providers.lorem.en_US import Provider as LoremProvider
 from faker.providers.misc import Provider as MiscProvider
 
-from opossum_lib.opossum_model import Metadata
+from opossum_lib.core.opossum_model import Metadata
 from tests.util.generator_helpers import entry_or_none
 
 
