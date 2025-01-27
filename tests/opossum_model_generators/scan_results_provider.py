@@ -21,6 +21,7 @@ from tests.opossum_model_generators.external_attribution_source_provider import 
 )
 from tests.opossum_model_generators.metadata_provider import MetadataProvider
 from tests.opossum_model_generators.package_provider import PackageProvider
+from tests.opossum_model_generators.resource_provider import ResourceProvider
 from tests.test_opossum.generators.helpers import entry_or_none, random_list
 
 
@@ -30,6 +31,7 @@ class ScanResultsProvider(BaseProvider):
     misc_provider: MiscProvider
     external_attribution_source_provider: ExternalAttributionSourceProvider
     file_provider: FileProvider
+    resource_provider: ResourceProvider
 
     def __init__(self, generator: Any) -> None:
         super().__init__(generator)
@@ -40,6 +42,7 @@ class ScanResultsProvider(BaseProvider):
             generator
         )
         self.file_provider = FileProvider(generator)
+        self.resource_provider = ResourceProvider(generator)
 
     def scan_results(
         self,
@@ -56,7 +59,7 @@ class ScanResultsProvider(BaseProvider):
     ) -> ScanResults:
         return ScanResults(
             metadata=metadata or self.metadata_provider.metadata(),
-            resources=resources or [],
+            resources=resources or [self.resource_provider.resource_tree()],
             attribution_breakpoints=attribution_breakpoints
             or self.attribution_breakpoints(),
             external_attribution_sources=external_attribution_sources
@@ -64,7 +67,6 @@ class ScanResultsProvider(BaseProvider):
             frequent_licenses=frequent_licenses,
             files_with_children=files_with_children,
             base_urls_for_sources=base_urls_for_sources,
-            attribution_to_id=attribution_to_id or {},
             unassigned_attributions=unassigned_attributions
             or entry_or_none(
                 self.misc_provider,

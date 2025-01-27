@@ -163,7 +163,9 @@ class OpossumFileToOpossumConverter:
             to_insert: opossum_lib.opossum.opossum_file.ResourceInFile,
         ) -> Resource:
             path = deepcopy(current_path)
-            current_path_as_string = "/" + _convert_path_to_str(current_path)
+            current_path_as_string = _convert_path_to_str(current_path)
+            if not current_path_as_string.startswith("/"):
+                current_path_as_string = "/" + current_path_as_string
             attributions, attribution_ids = _get_applicable_attributions(
                 current_path_as_string
             )
