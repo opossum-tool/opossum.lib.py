@@ -7,7 +7,7 @@
 
 import click
 
-from opossum_lib.opossum_generator import OpossumGenerator
+from opossum_lib.opossum_generator import OpossumGenerationArguments, OpossumGenerator
 
 
 @click.group()
@@ -64,10 +64,12 @@ def generate(
       - Opossum
     """
     OpossumGenerator.generate(
-        spdx_files=spdx_files,
-        opossum_files=opossum_files,
-        scancode_json_files=scancode_json_files,
-        outfile=outfile,
+        opossum_generation_arguments=OpossumGenerationArguments(
+            spdx_files=spdx_files,
+            opossum_files=opossum_files,
+            scancode_json_files=scancode_json_files,
+            outfile=outfile,
+        )
     )
 
 
