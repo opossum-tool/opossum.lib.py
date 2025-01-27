@@ -4,15 +4,10 @@
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from pydantic import TypeAdapter
-
 from opossum_lib.opossum.constants import (
     COMPRESSION_LEVEL,
     INPUT_JSON_NAME,
     OUTPUT_JSON_NAME,
-)
-from opossum_lib.opossum.opossum_file import (
-    OpossumInformation,
 )
 from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 
@@ -48,8 +43,7 @@ class OpossumFileWriter:
     ) -> None:
         zip_file.writestr(
             INPUT_JSON_NAME,
-            TypeAdapter(OpossumInformation).dump_json(
-                opossum_file_content.input_file,
+            opossum_file_content.input_file.model_dump_json(
                 indent=4,
                 exclude_none=True,
                 by_alias=True,

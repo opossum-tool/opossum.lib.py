@@ -194,7 +194,8 @@ def assert_expected_file_equals_generated_file(
     assert expected_opossum_dict.keys() == opossum_dict.keys()
     opossum_top_level = expected_opossum_dict.keys()
     for field in opossum_top_level:
-        print("asserting equality for", field)
+        if opossum_dict.get(field, None) != expected_opossum_dict.get(field, None):
+            print("asserting equality failed for", field)
         assert opossum_dict.get(field, None) == expected_opossum_dict.get(field, None)
 
 

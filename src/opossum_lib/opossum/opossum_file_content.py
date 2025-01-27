@@ -45,7 +45,7 @@ class OpossumFileContent(BaseModel):
     def _read_input_json_from_zip_file(input_zip_file: ZipFile) -> OpossumInformation:
         with input_zip_file.open(INPUT_JSON_NAME) as input_json_file:
             input_json = json.load(input_json_file)
-            input_file = TypeAdapter(OpossumInformation).validate_python(input_json)
+            input_file = OpossumInformation.model_validate(input_json)
         return input_file
 
     @staticmethod

@@ -55,7 +55,7 @@ class ScanResults(BaseModel):
     attribution_to_id: dict[OpossumPackage, str] = field(
         default_factory=default_attribution_id_mapper
     )
-    unassigned_attributions: list[OpossumPackage] | None = None
+    unassigned_attributions: list[OpossumPackage] = []
 
     def to_opossum_file_format(self) -> opossum_file.OpossumInformation:
         external_attributions, resources_to_attributions = (

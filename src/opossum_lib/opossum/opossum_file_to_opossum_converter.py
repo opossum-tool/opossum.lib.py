@@ -111,10 +111,7 @@ class OpossumFileToOpossumConverter:
             OpossumFileToOpossumConverter._convert_package(external_attributions[id])
             for id in unused_attributions_ids
         ]
-        if unused_attributions:
-            return unused_attributions
-        else:
-            return None
+        return unused_attributions
 
     @staticmethod
     def _convert_external_attribution_source(
@@ -162,7 +159,7 @@ class OpossumFileToOpossumConverter:
             current_path: PurePath,
             to_insert: opossum_lib.opossum.opossum_file.ResourceInFile,
         ) -> Resource:
-            path = deepcopy(current_path)
+            path = current_path
             current_path_as_string = _convert_path_to_str(current_path)
             if not current_path_as_string.startswith("/"):
                 current_path_as_string = "/" + current_path_as_string
