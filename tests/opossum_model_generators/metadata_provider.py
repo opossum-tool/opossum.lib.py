@@ -9,7 +9,7 @@ from faker.providers.lorem.en_US import Provider as LoremProvider
 from faker.providers.misc import Provider as MiscProvider
 
 from opossum_lib.opossum_model import Metadata
-from tests.test_opossum.generators.helpers import entry_or_none
+from tests.util.generator_helpers import entry_or_none
 
 
 class MetadataProvider(BaseProvider):

@@ -12,7 +12,7 @@ from faker.providers.person.en_US import Provider as PersonProvider
 
 from opossum_lib.opossum_model import OpossumPackage, SourceInfo
 from tests.opossum_model_generators.source_info_provider import SourceInfoProvider
-from tests.test_opossum.generators.helpers import entry_or_none, random_list
+from tests.util.generator_helpers import entry_or_none, random_list
 
 
 class PackageProvider(BaseProvider):

@@ -24,7 +24,7 @@ from tests.opossum_model_generators.external_attribution_source_provider import 
 from tests.opossum_model_generators.metadata_provider import MetadataProvider
 from tests.opossum_model_generators.package_provider import PackageProvider
 from tests.opossum_model_generators.resource_provider import ResourceProvider
-from tests.test_opossum.generators.helpers import entry_or_none, random_list
+from tests.util.generator_helpers import entry_or_none, random_list
 
 
 class ScanResultsProvider(BaseProvider):

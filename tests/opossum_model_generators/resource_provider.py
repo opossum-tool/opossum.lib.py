@@ -10,7 +10,7 @@ from faker.providers.misc import Provider as MiscProvider
 
 from opossum_lib.opossum_model import OpossumPackage, Resource, ResourceType
 from tests.opossum_model_generators.package_provider import PackageProvider
-from tests.test_opossum.generators.helpers import random_list
+from tests.util.generator_helpers import random_list
 
 
 class ResourceProvider(BaseProvider):

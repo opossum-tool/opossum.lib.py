@@ -14,7 +14,7 @@ from opossum_lib.opossum.output_model import (
     Metadata,
     OpossumOutputFile,
 )
-from tests.test_opossum.generators.helpers import entry_or_none
+from tests.util.generator_helpers import entry_or_none
 
 
 class OpossumOutputFileProvider(BaseProvider):

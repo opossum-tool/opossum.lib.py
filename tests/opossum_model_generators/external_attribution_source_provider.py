@@ -8,7 +8,7 @@ from faker.providers.misc import Provider as MiscProvider
 from faker.providers.person import Provider as PersonProvider
 
 from opossum_lib.opossum_model import ExternalAttributionSource
-from tests.test_opossum.generators.helpers import entry_or_none
+from tests.util.generator_helpers import entry_or_none
 
 
 class ExternalAttributionSourceProvider(BaseProvider):

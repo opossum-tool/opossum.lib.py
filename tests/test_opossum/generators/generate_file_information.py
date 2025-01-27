@@ -25,7 +25,7 @@ from opossum_lib.opossum.opossum_file import (
     ResourcePath,
     SourceInfo,
 )
-from tests.test_opossum.generators.helpers import entry_or_none, random_list
+from tests.util.generator_helpers import entry_or_none, random_list
 
 
 class MetadataProvider(BaseProvider):
