@@ -12,9 +12,9 @@ dependencies = [
     "spdx-tools>=0.8.3,<0.9",
     "networkx~=3.4",
     "click>=8.1.8,<9",
-    "pydantic>=2.10.5",
+    "pydantic>=2.10.6",
     "pyinstaller>=6.11.1",
-    "faker>=33.3.1",
+    "faker>=35.0.0",
 ]
 
 [project.urls]
@@ -28,7 +28,7 @@ test = ["pytest>=8.3.4,<9"]
 dev = [
     "mypy>=1.14.1,<2",
     "pre-commit>=4.1.0,<5",
-    "ruff>=0.9.2",
+    "ruff>=0.9.3",
 ]
 
 [tool.uv]

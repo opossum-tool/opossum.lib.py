@@ -17,11 +17,12 @@ type ResourceInFile = dict[str, ResourceInFile] | int
 
 
 class CamelBaseModel(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+    model_config = ConfigDict(
+        alias_generator=to_camel, populate_by_name=True, extra="forbid", frozen=True
+    )
 
 
 class OpossumInformation(CamelBaseModel):
-    model_config = ConfigDict(frozen=True)
     metadata: Metadata
     resources: ResourceInFile
     external_attributions: dict[OpossumPackageIdentifier, OpossumPackage]
@@ -42,7 +43,7 @@ class BaseUrlsForSources(CamelBaseModel):
         # In this case this is valid and should be part of the serialization
         return {k: v for k, v in self}
 
-    model_config = ConfigDict(extra="allow", frozen=True)
+    model_config = ConfigDict(extra="allow")
 
 
 class FrequentLicense(CamelBaseModel):
@@ -52,14 +53,12 @@ class FrequentLicense(CamelBaseModel):
 
 
 class SourceInfo(CamelBaseModel):
-    model_config = ConfigDict(frozen=True)
     name: str
     document_confidence: int | float | None = 0
     additional_name: str | None = None
 
 
 class OpossumPackage(CamelBaseModel):
-    model_config = ConfigDict(frozen=True)
     source: SourceInfo
     attribution_confidence: int | None = None
     comment: str | None = None
@@ -83,7 +82,7 @@ class OpossumPackage(CamelBaseModel):
 
 
 class Metadata(CamelBaseModel):
-    model_config = ConfigDict(extra="allow", frozen=True)
+    model_config = ConfigDict(extra="allow")
     project_id: str
     file_creation_date: str
     project_title: str
@@ -100,7 +99,6 @@ class ResourceType(Enum):
 
 
 class Resource(CamelBaseModel):
-    model_config = ConfigDict(frozen=True)
     type: ResourceType
     children: dict[str, Resource] = field(default_factory=dict)
 

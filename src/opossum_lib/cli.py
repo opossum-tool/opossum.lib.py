@@ -11,7 +11,7 @@ from pathlib import Path
 
 import click
 
-from opossum_lib.opossum.file_generation import write_opossum_information_to_file
+from opossum_lib.opossum.file_generation import OpossumFileWriter
 from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 from opossum_lib.opossum.read_opossum_file import read_opossum_file
 from opossum_lib.scancode.convert_scancode_to_opossum import (
@@ -84,7 +84,9 @@ def generate(
     if Path.is_file(Path(outfile)):
         logging.warning(f"{outfile} already exists and will be overwritten.")
 
-    write_opossum_information_to_file(opossum_file_content, Path(outfile))
+    OpossumFileWriter.write_opossum_information_to_file(
+        opossum_file_content, Path(outfile)
+    )
 
 
 def validate_input_and_exit_on_error(

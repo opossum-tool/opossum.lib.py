@@ -14,12 +14,12 @@ from pydantic.alias_generators import to_camel
 
 
 class CamelBaseModel(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+    model_config = ConfigDict(
+        alias_generator=to_camel, populate_by_name=True, extra="forbid", frozen=True
+    )
 
 
 class Metadata(CamelBaseModel):
-    model_config = ConfigDict(extra="forbid")
-
     project_id: str = Field(
         ..., description="An ID for the compliance scan, copied from the input file."
     )
@@ -36,7 +36,7 @@ class FollowUp(Enum):
 
 
 class ManualAttributions(CamelBaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="allow")
 
     package_name: str | None = Field(
         None, description="Name of the package (part of a package URL)"

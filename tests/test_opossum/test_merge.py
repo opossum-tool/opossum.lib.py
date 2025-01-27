@@ -197,8 +197,8 @@ def test_expand_opossum_package_identifier() -> None:
             resources={},
             external_attributions={"SPDXRef-Package": opossum_package},
             resources_to_attributions={"/path/to/resource": ["SPDXRef-Package"]},
-            attributionBreakpoints=[],
-            externalAttributionSources={},
+            attribution_breakpoints=[],
+            external_attribution_sources={},
         )
     )
 

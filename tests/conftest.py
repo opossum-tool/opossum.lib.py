@@ -5,6 +5,7 @@
 import pytest
 from faker.proxy import Faker
 
+from tests.test_setup.opossum_faker_setup import OpossumFaker, setup_opossum_faker
 from tests.test_setup.opossum_file_faker_setup import (
     OpossumFileFaker,
     setup_opossum_file_faker,
@@ -20,3 +21,8 @@ def opossum_file_faker(faker: Faker) -> OpossumFileFaker:
 @pytest.fixture
 def scancode_faker(faker: Faker) -> ScanCodeFaker:
     return setup_scancode_faker(faker)
+
+
+@pytest.fixture
+def opossum_faker(faker: Faker) -> OpossumFaker:
+    return setup_opossum_faker(faker)
