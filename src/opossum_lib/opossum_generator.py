@@ -47,15 +47,6 @@ class OpossumGenerationArguments(BaseModel):
 class OpossumGenerator:
     @staticmethod
     def generate(opossum_generation_arguments: OpossumGenerationArguments) -> None:
-        """
-        Generate an Opossum file from various other file formats.
-
-        \b
-        Currently supported input formats:
-          - SPDX
-          - ScanCode
-          - Opossum
-        """
         opossum_generation_arguments.validate_input_and_exit_on_error()
         opossum_file_content = OpossumGenerator.convert_after_valid_input(
             opossum_generation_arguments
