@@ -32,6 +32,7 @@ class OpossumGenerationArguments(BaseModel):
         if Path.is_file(Path(self.outfile)):
             logging.warning(f"{self.outfile} already exists and will be overwritten.")
 
+    @property
     def input_files(self) -> list[InputFile]:
         result = []
         result += [
