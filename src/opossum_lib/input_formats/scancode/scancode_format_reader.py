@@ -7,7 +7,7 @@ import logging
 import sys
 from pathlib import Path
 
-from opossum_lib.core.input_file import FileType
+from opossum_lib.core.input_file import InputFileType
 from opossum_lib.core.input_format_reader import InputFormatReader
 from opossum_lib.core.opossum_model import (
     Opossum,
@@ -19,8 +19,8 @@ from opossum_lib.input_formats.scancode.scancode_data_to_opossum_converter impor
 
 
 class ScancodeFormatReader(InputFormatReader):
-    def can_handle(self, file_type: FileType) -> bool:
-        return file_type == FileType.SCAN_CODE
+    def can_handle(self, file_type: InputFileType) -> bool:
+        return file_type == InputFileType.SCAN_CODE
 
     def read(self, path: Path) -> Opossum:
         logging.info(f"Converting scancode to opossum {path}")

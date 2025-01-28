@@ -8,7 +8,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from opossum_lib.core.input_file import FileType, InputFile
+from opossum_lib.core.input_file import InputFile, InputFileType
 
 
 class OpossumGenerationArguments(BaseModel):
@@ -35,10 +35,11 @@ class OpossumGenerationArguments(BaseModel):
     def input_files(self) -> list[InputFile]:
         result = []
         result += [
-            InputFile(path=path, type=FileType.SCAN_CODE)
+            InputFile(path=path, type=InputFileType.SCAN_CODE)
             for path in self.scancode_json_files
         ]
         result += [
-            InputFile(path=path, type=FileType.OPOSSUM) for path in self.opossum_files
+            InputFile(path=path, type=InputFileType.OPOSSUM)
+            for path in self.opossum_files
         ]
         return result

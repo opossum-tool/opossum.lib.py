@@ -7,11 +7,11 @@ from pathlib import Path
 from pydantic import BaseModel
 
 
-class FileType(Enum):
+class InputFileType(Enum):
     OPOSSUM = (auto(),)
     SCAN_CODE = (auto(),)
 
 
 class InputFile(BaseModel):
     path: Path
-    type: FileType
+    type: InputFileType
