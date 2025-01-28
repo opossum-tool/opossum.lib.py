@@ -6,13 +6,9 @@ from abc import abstractmethod
 from pathlib import Path
 from typing import Protocol
 
-from opossum_lib.core.input_file import InputFileType
 from opossum_lib.core.opossum_model import Opossum
 
 
 class InputFormatReader(Protocol):
-    @abstractmethod
-    def can_handle(self, file_type: InputFileType) -> bool: ...
-
     @abstractmethod
     def read(self, path: Path) -> Opossum: ...
