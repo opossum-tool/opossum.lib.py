@@ -26,5 +26,5 @@ def test_read_opossum_file_containing_output_json() -> None:
     result = read_opossum_file(str(input_path))
 
     assert result is not None
-    assert result.input_file is not None
-    assert result.output_file is not None
+    assert result.scan_results is not None
+    assert result.review_results is not None

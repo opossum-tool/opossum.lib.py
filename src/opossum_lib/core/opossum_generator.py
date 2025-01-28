@@ -6,6 +6,7 @@ from pathlib import Path
 
 from opossum_lib.core.input_file import FileType, InputFile
 from opossum_lib.core.opossum_generation_arguments import OpossumGenerationArguments
+from opossum_lib.core.opossum_model import Opossum
 from opossum_lib.opossum.file_generation import OpossumFileWriter
 from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 from opossum_lib.opossum.read_opossum_file import read_opossum_file
@@ -35,10 +36,14 @@ class OpossumGenerator:
 
         if input_file.type == FileType.SPDX:
             return convert_spdx_to_opossum_information(input_file.path)
-
-        elif input_file.type == FileType.SCAN_CODE:
-            return convert_scancode_file_to_opossum(
-                input_file.path
-            ).to_opossum_file_format()
         else:
-            return read_opossum_file(input_file.path).to_opossum_file_format()
+            return OpossumGenerator._read_to_internal_format(
+                input_file
+            ).to_opossum_file_format()
+
+    @staticmethod
+    def _read_to_internal_format(input_file: InputFile) -> Opossum:
+        if input_file.type == FileType.SCAN_CODE:
+            return convert_scancode_file_to_opossum(input_file.path)
+        else:
+            return read_opossum_file(input_file.path)
