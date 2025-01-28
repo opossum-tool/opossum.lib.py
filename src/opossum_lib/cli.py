@@ -20,14 +20,6 @@ def opossum_file() -> None:
 
 @opossum_file.command()
 @click.option(
-    "--spdx",
-    "spdx_files",
-    help="Specify a path to a SPDX file that you would like to "
-    + "include in the final output. Option can be repeated.",
-    multiple=True,
-    type=click.Path(exists=True),
-)
-@click.option(
     "--opossum",
     "opossum_files",
     help="Specify a path to a .opossum file that you would like to "
@@ -52,7 +44,6 @@ def opossum_file() -> None:
     'If appropriate, the extension ".opossum" will be appended.',
 )
 def generate(
-    spdx_files: list[str],
     scancode_json_files: list[str],
     opossum_files: list[str],
     outfile: str,
@@ -62,13 +53,12 @@ def generate(
 
     \b
     Currently supported input formats:
-      - SPDX
       - ScanCode
       - Opossum
     """
     OpossumGenerator().generate(
         opossum_generation_arguments=OpossumGenerationArguments(
-            spdx_files=spdx_files,
+            spdx_files=[],
             opossum_files=opossum_files,
             scancode_json_files=scancode_json_files,
             outfile=outfile,

@@ -7,7 +7,6 @@ from pydantic import BaseModel
 
 
 class FileType(Enum):
-    SPDX = (auto(),)
     OPOSSUM = (auto(),)
     SCAN_CODE = (auto(),)
 

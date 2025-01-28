@@ -46,5 +46,4 @@ class OpossumGenerationArguments(BaseModel):
         result += [
             InputFile(path=path, type=FileType.OPOSSUM) for path in self.opossum_files
         ]
-        result += [InputFile(path=path, type=FileType.SPDX) for path in self.spdx_files]
         return result

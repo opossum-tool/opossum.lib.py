@@ -4,14 +4,13 @@
 
 from pathlib import Path
 
-from opossum_lib.core.input_file import FileType, InputFile
+from opossum_lib.core.input_file import InputFile
 from opossum_lib.core.opossum_generation_arguments import OpossumGenerationArguments
 from opossum_lib.core.opossum_model import Opossum
 from opossum_lib.opossum.file_generation import OpossumFileWriter
 from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 from opossum_lib.opossum.opossum_format_reader import OpossumFormatReader
 from opossum_lib.scancode.scancode_format_reader import ScancodeFormatReader
-from opossum_lib.spdx.convert_to_opossum import convert_spdx_to_opossum_information
 
 
 class OpossumGenerator:
@@ -36,10 +35,7 @@ class OpossumGenerator:
     ) -> OpossumFileContent:
         input_file = input_file_list[0]
 
-        if input_file.type == FileType.SPDX:
-            return convert_spdx_to_opossum_information(input_file.path)
-        else:
-            return self._read_to_internal_format(input_file).to_opossum_file_format()
+        return self._read_to_internal_format(input_file).to_opossum_file_format()
 
     def _read_to_internal_format(self, input_file: InputFile) -> Opossum:
         if self.scancode_format_reader.can_handle(input_file.type):
