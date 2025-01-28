@@ -5,7 +5,7 @@
 
 from opossum_lib.core.input_reader import InputReader
 from opossum_lib.core.opossum_generation_arguments import OpossumGenerationArguments
-from opossum_lib.opossum.opossum_file_writer import OpossumFileWriter
+from opossum_lib.input_formats.opossum.opossum_file_writer import OpossumFileWriter
 
 
 class OpossumGenerator:

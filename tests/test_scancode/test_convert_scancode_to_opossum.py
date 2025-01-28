@@ -7,7 +7,7 @@ import pytest
 from _pytest.logging import LogCaptureFixture
 
 from opossum_lib.core.opossum_model import Resource
-from opossum_lib.scancode.scancode_data_to_opossum_converter import (
+from opossum_lib.input_formats.scancode.scancode_data_to_opossum_converter import (
     ScancodeDataToOpossumConverter,
 )
 from tests.test_setup.scancode_faker_setup import ScanCodeFaker

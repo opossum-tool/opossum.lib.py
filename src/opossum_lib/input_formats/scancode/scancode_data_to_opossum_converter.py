@@ -16,8 +16,13 @@ from opossum_lib.core.opossum_model import (
     ScanResults,
     SourceInfo,
 )
-from opossum_lib.scancode.constants import SCANCODE_SOURCE_NAME
-from opossum_lib.scancode.model import File, FileType, Header, ScanCodeData
+from opossum_lib.input_formats.scancode.constants import SCANCODE_SOURCE_NAME
+from opossum_lib.input_formats.scancode.model import (
+    File,
+    FileType,
+    Header,
+    ScanCodeData,
+)
 
 
 class ScancodeDataToOpossumConverter:

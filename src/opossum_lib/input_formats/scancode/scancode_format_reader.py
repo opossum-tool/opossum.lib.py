@@ -12,8 +12,8 @@ from opossum_lib.core.input_format_reader import InputFormatReader
 from opossum_lib.core.opossum_model import (
     Opossum,
 )
-from opossum_lib.scancode.model import ScanCodeData
-from opossum_lib.scancode.scancode_data_to_opossum_converter import (
+from opossum_lib.input_formats.scancode.model import ScanCodeData
+from opossum_lib.input_formats.scancode.scancode_data_to_opossum_converter import (
     ScancodeDataToOpossumConverter,
 )
 

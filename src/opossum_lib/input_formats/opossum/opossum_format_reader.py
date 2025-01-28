@@ -6,8 +6,8 @@ from pathlib import Path
 from opossum_lib.core.input_file import FileType
 from opossum_lib.core.input_format_reader import InputFormatReader
 from opossum_lib.core.opossum_model import Opossum
-from opossum_lib.opossum.opossum_file_content import OpossumFileContent
-from opossum_lib.opossum.opossum_file_to_opossum_converter import (
+from opossum_lib.input_formats.opossum.opossum_file_content import OpossumFileContent
+from opossum_lib.input_formats.opossum.opossum_file_to_opossum_converter import (
     OpossumFileToOpossumConverter,
 )
 

@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from _pytest.logging import LogCaptureFixture
 
-from opossum_lib.opossum.opossum_format_reader import OpossumFormatReader
+from opossum_lib.input_formats.opossum.opossum_format_reader import OpossumFormatReader
 
 TEST_DATA_DIRECTORY = Path(__file__).resolve().parent.parent / "data"
 

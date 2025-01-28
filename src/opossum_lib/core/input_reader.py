@@ -5,8 +5,10 @@
 from opossum_lib.core.input_file import InputFile
 from opossum_lib.core.input_format_reader import InputFormatReader
 from opossum_lib.core.opossum_model import Opossum
-from opossum_lib.opossum.opossum_format_reader import OpossumFormatReader
-from opossum_lib.scancode.scancode_format_reader import ScancodeFormatReader
+from opossum_lib.input_formats.opossum.opossum_format_reader import OpossumFormatReader
+from opossum_lib.input_formats.scancode.scancode_format_reader import (
+    ScancodeFormatReader,
+)
 
 
 class InputReader:

@@ -12,7 +12,6 @@ exclude_type_checking_imports = True
 name = The different file formats should be independent
 type = independence
 modules =
-    opossum_lib.opossum
-    opossum_lib.scancode
+    opossum_lib.input_formats.*
 ignore_imports =
     ** -> opossum_lib.core.opossum_model

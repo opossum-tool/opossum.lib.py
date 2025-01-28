@@ -20,7 +20,7 @@ from faker.providers.internet import Provider as InternetProvider
 from faker.providers.lorem.en_US import Provider as LoremProvider
 from faker.providers.misc import Provider as MiscProvider
 
-from opossum_lib.scancode.model import (
+from opossum_lib.input_formats.scancode.model import (
     Copyright,
     Email,
     ExtraData,

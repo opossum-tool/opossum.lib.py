@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-from opossum_lib.opossum.opossum_file import OpossumPackage, SourceInfo
-from opossum_lib.scancode.constants import SCANCODE_SOURCE_NAME
-from opossum_lib.scancode.scancode_data_to_opossum_converter import (
+from opossum_lib.input_formats.opossum.opossum_file import OpossumPackage, SourceInfo
+from opossum_lib.input_formats.scancode.constants import SCANCODE_SOURCE_NAME
+from opossum_lib.input_formats.scancode.scancode_data_to_opossum_converter import (
     ScancodeDataToOpossumConverter,
 )
 from tests.test_setup.scancode_faker_setup import ScanCodeFaker

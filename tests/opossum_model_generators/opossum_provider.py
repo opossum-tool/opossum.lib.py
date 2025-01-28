@@ -6,7 +6,7 @@ from typing import Any
 from faker.providers import BaseProvider
 
 from opossum_lib.core.opossum_model import Opossum, ScanResults
-from opossum_lib.opossum.output_model import OpossumOutputFile
+from opossum_lib.input_formats.opossum.output_model import OpossumOutputFile
 from tests.opossum_model_generators.scan_results_provider import ScanResultsProvider
 from tests.test_opossum.generators.generate_outfile_information import (
     OpossumOutputFileProvider,
