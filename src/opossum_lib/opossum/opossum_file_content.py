@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import logging
 import sys
+from pathlib import Path
 from zipfile import ZipFile
 
 from pydantic import BaseModel, TypeAdapter
@@ -20,12 +21,12 @@ class OpossumFileContent(BaseModel):
     output_file: OpossumOutputFile | None = None
 
     @staticmethod
-    def from_file(file_name: str) -> OpossumFileContent:
-        logging.info(f"Converting opossum to opossum {file_name}")
+    def from_file(path: Path) -> OpossumFileContent:
+        logging.info(f"Converting opossum to opossum {path}")
 
         try:
             with (
-                ZipFile(file_name, "r") as input_zip_file,
+                ZipFile(path, "r") as input_zip_file,
             ):
                 OpossumFileContent._validate_zip_file_contents(input_zip_file)
                 input_file = OpossumFileContent._read_input_json_from_zip_file(
@@ -38,7 +39,7 @@ class OpossumFileContent(BaseModel):
                     ),
                 )
         except Exception as e:
-            print(f"Error reading file {file_name}: {e}")
+            print(f"Error reading file {path}: {e}")
             sys.exit(1)
 
     @staticmethod

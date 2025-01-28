@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from pathlib import Path
 
 from opossum_lib.core.input_reader import InputReader
 from opossum_lib.core.opossum_generation_arguments import OpossumGenerationArguments
@@ -23,5 +22,5 @@ class OpossumGenerator:
         opossum_file_content = opossum.to_opossum_file_format()
         opossum_generation_arguments.add_outfile_ending_and_warn_on_existing_outfile()
         OpossumFileWriter.write(
-            opossum_file_content, Path(opossum_generation_arguments.outfile)
+            opossum_file_content, opossum_generation_arguments.outfile
         )

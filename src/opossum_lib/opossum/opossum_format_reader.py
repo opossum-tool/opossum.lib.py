@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
+from pathlib import Path
 
 from opossum_lib.core.input_file import FileType
 from opossum_lib.core.input_format_reader import InputFormatReader
@@ -15,6 +16,6 @@ class OpossumFormatReader(InputFormatReader):
     def can_handle(self, file_type: FileType) -> bool:
         return file_type == FileType.OPOSSUM
 
-    def read(self, path: str) -> Opossum:
-        opossum_input_file = OpossumFileContent.from_file(file_name=path)
+    def read(self, path: Path) -> Opossum:
+        opossum_input_file = OpossumFileContent.from_file(path=path)
         return OpossumFileToOpossumConverter.convert_to_opossum(opossum_input_file)

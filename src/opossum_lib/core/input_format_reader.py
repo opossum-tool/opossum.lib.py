@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from abc import abstractmethod
+from pathlib import Path
 from typing import Protocol
 
 from opossum_lib.core.input_file import FileType
@@ -14,4 +15,4 @@ class InputFormatReader(Protocol):
     def can_handle(self, file_type: FileType) -> bool: ...
 
     @abstractmethod
-    def read(self, path: str) -> Opossum: ...
+    def read(self, path: Path) -> Opossum: ...

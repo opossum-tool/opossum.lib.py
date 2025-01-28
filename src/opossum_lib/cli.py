@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
+from pathlib import Path
 
 # SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-
-
 import click
 
 from opossum_lib.core.opossum_generator import (
@@ -44,9 +43,9 @@ def opossum_file() -> None:
     'If appropriate, the extension ".opossum" will be appended.',
 )
 def generate(
-    scancode_json_files: list[str],
-    opossum_files: list[str],
-    outfile: str,
+    scancode_json_files: list[Path],
+    opossum_files: list[Path],
+    outfile: Path,
 ) -> None:
     """
     Generate an Opossum file from various other file formats.
@@ -58,7 +57,6 @@ def generate(
     """
     OpossumGenerator().generate(
         opossum_generation_arguments=OpossumGenerationArguments(
-            spdx_files=[],
             opossum_files=opossum_files,
             scancode_json_files=scancode_json_files,
             outfile=outfile,

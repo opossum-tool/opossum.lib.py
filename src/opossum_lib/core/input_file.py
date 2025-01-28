@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 from enum import Enum, auto
+from pathlib import Path
 
 from pydantic import BaseModel
 
@@ -12,5 +13,5 @@ class FileType(Enum):
 
 
 class InputFile(BaseModel):
-    path: str
+    path: Path
     type: FileType

@@ -12,9 +12,9 @@ from opossum_lib.core.input_file import FileType, InputFile
 
 
 class OpossumGenerationArguments(BaseModel):
-    scancode_json_files: list[str]
-    opossum_files: list[str]
-    outfile: str
+    scancode_json_files: list[Path]
+    opossum_files: list[Path]
+    outfile: Path
 
     def validate_and_exit_on_error(self) -> None:
         total_number_of_files = +len(self.scancode_json_files) + len(self.opossum_files)
@@ -26,8 +26,8 @@ class OpossumGenerationArguments(BaseModel):
             sys.exit(1)
 
     def add_outfile_ending_and_warn_on_existing_outfile(self) -> None:
-        if not self.outfile.endswith(".opossum"):
-            self.outfile += ".opossum"
+        if self.outfile.suffix != ".opossum":
+            self.outfile = self.outfile.with_suffix(".opossum")
 
         if Path.is_file(Path(self.outfile)):
             logging.warning(f"{self.outfile} already exists and will be overwritten.")

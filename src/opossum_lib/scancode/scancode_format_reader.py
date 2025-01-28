@@ -5,6 +5,7 @@
 import json
 import logging
 import sys
+from pathlib import Path
 
 from opossum_lib.core.input_file import FileType
 from opossum_lib.core.input_format_reader import InputFormatReader
@@ -21,7 +22,7 @@ class ScancodeFormatReader(InputFormatReader):
     def can_handle(self, file_type: FileType) -> bool:
         return file_type == FileType.SCAN_CODE
 
-    def read(self, path: str) -> Opossum:
+    def read(self, path: Path) -> Opossum:
         logging.info(f"Converting scancode to opossum {path}")
 
         scancode_data = ScancodeFormatReader.load_scancode_json(path)
@@ -29,15 +30,15 @@ class ScancodeFormatReader(InputFormatReader):
         return ScancodeDataToOpossumConverter.convert_scancode_to_opossum(scancode_data)
 
     @staticmethod
-    def load_scancode_json(filename: str) -> ScanCodeData:
+    def load_scancode_json(path: Path) -> ScanCodeData:
         try:
-            with open(filename) as inp:
+            with open(path) as inp:
                 json_data = json.load(inp)
         except json.JSONDecodeError as e:
-            logging.error(f"Error decoding json for file {filename}. Message: {e.msg}")
+            logging.error(f"Error decoding json for file {path}. Message: {e.msg}")
             sys.exit(1)
         except UnicodeDecodeError:
-            logging.error(f"Error decoding json for file {filename}.")
+            logging.error(f"Error decoding json for file {path}.")
             sys.exit(1)
 
         scancode_data = ScanCodeData.model_validate(json_data)
