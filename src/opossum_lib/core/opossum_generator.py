@@ -20,9 +20,7 @@ class OpossumGenerator:
     def generate(opossum_generation_arguments: OpossumGenerationArguments) -> None:
         opossum_generation_arguments.validate_input_and_exit_on_error()
         input_files = opossum_generation_arguments.generate_input_file_list()
-        opossum_file_content = OpossumGenerator.convert_after_valid_input(
-            input_files
-        )
+        opossum_file_content = OpossumGenerator._convert_after_valid_input(input_files)
         opossum_generation_arguments.add_outfile_ending_and_warn_on_existing_outfile()
 
         OpossumFileWriter.write_opossum_information_to_file(
@@ -30,7 +28,7 @@ class OpossumGenerator:
         )
 
     @staticmethod
-    def convert_after_valid_input(
+    def _convert_after_valid_input(
         input_file_list: list[InputFile],
     ) -> OpossumFileContent:
         input_file = input_file_list[0]
