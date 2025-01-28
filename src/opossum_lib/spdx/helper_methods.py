@@ -3,11 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 from typing import Any
 
-from networkx import DiGraph, weakly_connected_components
+from networkx import DiGraph, shortest_path, weakly_connected_components
 from spdx_tools.spdx.constants import DOCUMENT_SPDX_ID
 from spdx_tools.spdx.model import File, Package, Snippet
 
-from opossum_lib.opossum.opossum_file import ResourceType
+from opossum_lib.opossum_model import ResourceType
 
 
 def _get_source_for_graph_traversal(connected_subgraph: DiGraph) -> str | None:
@@ -41,36 +41,16 @@ def _weakly_connected_component_sub_graphs(graph: DiGraph) -> list[DiGraph]:
     return connected_sub_graphs
 
 
+def _get_file_path(graph: DiGraph, source: str, to: str) -> str:
+    path = shortest_path(graph, source, to)
+    return _create_file_path_from_graph_path(path, graph)
+
+
 def _create_file_path_from_graph_path(path: list[str], graph: DiGraph) -> str:
-    base_path = "/" + "/".join(
-        [_replace_prefix(graph.nodes[node]["label"]) for node in path]
-    )
+    base_path = "/".join([_replace_prefix(graph.nodes[node]["label"]) for node in path])
     if list(graph.successors(path[-1])):
         base_path += "/"
     return base_path
-
-
-def _replace_node_ids_with_labels_and_add_resource_type(
-    path: list[str], graph: DiGraph
-) -> list[tuple[str, ResourceType]]:
-    resulting_path = []
-    path_with_label_and_resource_type = [
-        (
-            _replace_prefix(graph.nodes[node]["label"]),
-            _get_resource_type(graph.nodes[node]),
-        )
-        for node in path
-    ]
-    for element_or_path, resource_type in path_with_label_and_resource_type:
-        resulting_path.extend(
-            [
-                (element, resource_type)
-                for element in element_or_path.split("/")
-                if element
-            ]
-        )
-
-    return resulting_path
 
 
 def _replace_prefix(label: str) -> str:
@@ -85,11 +65,11 @@ def _replace_prefix(label: str) -> str:
     return label
 
 
-def _get_resource_type(node_attributes: dict[str, Any]) -> ResourceType:
+def _get_resource_type(node_attributes: dict[str, Any]) -> ResourceType | None:
     element = node_attributes.get("element")
     if isinstance(element, Package):
         return ResourceType.FOLDER
     elif isinstance(element, Snippet | File):
         return ResourceType.FILE
     else:
-        return ResourceType.OTHER
+        return None

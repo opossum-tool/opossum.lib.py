@@ -19,7 +19,7 @@ from opossum_lib.spdx.constants import (
     SPDX_PACKAGE_IDENTIFIER,
     SPDX_SNIPPET_IDENTIFIER,
 )
-from opossum_lib.spdx.convert_to_opossum import convert_tree_to_opossum_information
+from opossum_lib.spdx.convert_to_opossum import convert_tree_to_opossum
 from opossum_lib.spdx.graph_generation import generate_graph_from_spdx
 from opossum_lib.spdx.tree_generation import generate_tree_from_graph
 from tests.test_spdx.helper_methods import (
@@ -52,12 +52,12 @@ def test_different_paths_graph() -> None:
         ],
     )
     assert opossum_information.resources_to_attributions == {
-        "/SPDX Lite Document/": ["SPDXRef-DOCUMENT"],
-        "/SPDX Lite Document/DESCRIBES/Example package A/": ["SPDXRef-Package-A"],
+        "/SPDX Lite Document": ["SPDXRef-DOCUMENT"],
+        "/SPDX Lite Document/DESCRIBES/Example package A": ["SPDXRef-Package-A"],
         "/SPDX Lite Document/DESCRIBES/Example package A/CONTAINS/Example file": [
             "SPDXRef-File"
         ],
-        "/SPDX Lite Document/DESCRIBES/Example package B/": ["SPDXRef-Package-B"],
+        "/SPDX Lite Document/DESCRIBES/Example package B": ["SPDXRef-Package-B"],
         "/SPDX Lite Document/DESCRIBES/Example package B/CONTAINS/Example file": [
             "SPDXRef-File"
         ],
@@ -119,12 +119,12 @@ def test_unconnected_paths_graph() -> None:
     )
 
     assert opossum_information.resources_to_attributions == {
-        "/SPDX Lite Document/": ["SPDXRef-DOCUMENT"],
-        "/SPDX Lite Document/DESCRIBES/Example package A/": ["SPDXRef-Package-A"],
+        "/SPDX Lite Document": ["SPDXRef-DOCUMENT"],
+        "/SPDX Lite Document/DESCRIBES/Example package A": ["SPDXRef-Package-A"],
         "/SPDX Lite Document/DESCRIBES/Example package A/CONTAINS/Example file": [
             "SPDXRef-File"
         ],
-        "/SPDX Lite Document/DESCRIBES/Example package B/": ["SPDXRef-Package-B"],
+        "/SPDX Lite Document/DESCRIBES/Example package B": ["SPDXRef-Package-B"],
         "/SPDX Lite Document/DESCRIBES/Example package B/CONTAINS/Example file": [
             "SPDXRef-File"
         ],
@@ -180,10 +180,10 @@ def test_different_roots_graph() -> None:
     )
 
     assert opossum_information.resources_to_attributions == {
-        "/File-B/": ["SPDXRef-File-B"],
+        "/File-B": ["SPDXRef-File-B"],
         "/File-B/DESCRIBES/Package-B": ["SPDXRef-Package-B"],
-        "/Document/": ["SPDXRef-DOCUMENT"],
-        "/Document/DESCRIBES/Package-A/": ["SPDXRef-Package-A"],
+        "/Document": ["SPDXRef-DOCUMENT"],
+        "/Document/DESCRIBES/Package-A": ["SPDXRef-Package-A"],
         "/Document/DESCRIBES/Package-A/CONTAINS/File-A": ["SPDXRef-File-A"],
         "/Document/DESCRIBES/Package-B": ["SPDXRef-Package-B"],
     }
@@ -276,5 +276,5 @@ def _get_opossum_information_from_file(file_name: str) -> OpossumInformation:
 def _get_opossum_information_from_document(document: Document) -> OpossumInformation:
     graph = generate_graph_from_spdx(document)
     tree = generate_tree_from_graph(graph)
-    opossum_information = convert_tree_to_opossum_information(tree)
-    return opossum_information
+    opossum_information = convert_tree_to_opossum(tree)
+    return opossum_information.to_opossum_file_format().input_file

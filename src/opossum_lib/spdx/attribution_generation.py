@@ -12,7 +12,7 @@ from spdx_tools.spdx.writer.tagvalue.file_writer import write_file
 from spdx_tools.spdx.writer.tagvalue.package_writer import write_package
 from spdx_tools.spdx.writer.tagvalue.snippet_writer import write_snippet
 
-from opossum_lib.opossum.opossum_file import OpossumPackage, SourceInfo
+from opossum_lib.opossum_model import OpossumPackage, SourceInfo
 from opossum_lib.spdx.constants import (
     PURL,
     SPDX_FILE_IDENTIFIER,
@@ -37,7 +37,7 @@ def create_package_attribution(package: Package) -> OpossumPackage:
         package_name=package.name,
         url=str(package.download_location),
         package_version=package.version,
-        package_p_u_r_l_appendix=_get_purl(package),
+        package_purl_appendix=_get_purl(package),
         copyright=str(package.copyright_text),
         comment=package_data.getvalue(),
         license_name=str(package.license_concluded),
