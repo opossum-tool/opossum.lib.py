@@ -66,7 +66,7 @@ def generate(
       - ScanCode
       - Opossum
     """
-    OpossumGenerator.generate(
+    OpossumGenerator().generate(
         opossum_generation_arguments=OpossumGenerationArguments(
             spdx_files=spdx_files,
             opossum_files=opossum_files,
