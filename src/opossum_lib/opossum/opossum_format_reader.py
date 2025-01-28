@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from opossum_lib.core.input_file import FileType
 from opossum_lib.core.input_format_reader import InputFormatReader
 from opossum_lib.core.opossum_model import Opossum
