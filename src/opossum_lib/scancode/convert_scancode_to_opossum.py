@@ -9,32 +9,39 @@ import sys
 import uuid
 from pathlib import PurePath
 
-import opossum_lib.core.opossum_model as opossum_model
-from opossum_lib.opossum.opossum_file_content import OpossumFileContent
+from opossum_lib.core.opossum_model import (
+    Metadata,
+    Opossum,
+    OpossumPackage,
+    Resource,
+    ResourceType,
+    ScanResults,
+    SourceInfo,
+)
 from opossum_lib.scancode.constants import SCANCODE_SOURCE_NAME
 from opossum_lib.scancode.model import File, FileType, Header, ScanCodeData
 
 
-def convert_scancode_file_to_opossum(filename: str) -> OpossumFileContent:
+def convert_scancode_file_to_opossum(filename: str) -> Opossum:
     logging.info(f"Converting scancode to opossum {filename}")
 
     scancode_data = load_scancode_json(filename)
 
-    return convert_scancode_to_opossum(scancode_data).to_opossum_file_format()
+    return convert_scancode_to_opossum(scancode_data)
 
 
-def convert_scancode_to_opossum(scancode_data: ScanCodeData) -> opossum_model.Opossum:
+def convert_scancode_to_opossum(scancode_data: ScanCodeData) -> Opossum:
     resources = extract_opossum_resources(scancode_data)
 
     scancode_header = extract_scancode_header(scancode_data)
-    metadata = opossum_model.Metadata(
+    metadata = Metadata(
         project_id=str(uuid.uuid4()),
         file_creation_date=scancode_header.end_timestamp,
         project_title="ScanCode file",
     )
 
-    return opossum_model.Opossum(
-        scan_results=opossum_model.ScanResults(
+    return Opossum(
+        scan_results=ScanResults(
             metadata=metadata,
             resources=resources,
         )
@@ -66,10 +73,10 @@ def extract_scancode_header(scancode_data: ScanCodeData) -> Header:
 
 def extract_opossum_resources(
     scancode_data: ScanCodeData,
-) -> list[opossum_model.Resource]:
-    temp_root = opossum_model.Resource(path=PurePath(""))
+) -> list[Resource]:
+    temp_root = Resource(path=PurePath(""))
     for file in scancode_data.files:
-        resource = opossum_model.Resource(
+        resource = Resource(
             path=PurePath(file.path),
             attributions=get_attribution_info(file),
             type=convert_resource_type(file.type),
@@ -79,18 +86,18 @@ def extract_opossum_resources(
     return list(temp_root.children.values())
 
 
-def convert_resource_type(file_type: FileType) -> opossum_model.ResourceType:
+def convert_resource_type(file_type: FileType) -> ResourceType:
     if file_type == FileType.FILE:
-        return opossum_model.ResourceType.FILE
+        return ResourceType.FILE
     else:
-        return opossum_model.ResourceType.FOLDER
+        return ResourceType.FOLDER
 
 
-def get_attribution_info(file: File) -> list[opossum_model.OpossumPackage]:
+def get_attribution_info(file: File) -> list[OpossumPackage]:
     if file.type == FileType.DIRECTORY:
         return []
     copyright = "\n".join(c.copyright for c in file.copyrights)
-    source_info = opossum_model.SourceInfo(name=SCANCODE_SOURCE_NAME)
+    source_info = SourceInfo(name=SCANCODE_SOURCE_NAME)
 
     attribution_infos = []
     for license_detection in file.license_detections:
@@ -98,7 +105,7 @@ def get_attribution_info(file: File) -> list[opossum_model.OpossumPackage]:
         max_score = max(m.score for m in license_detection.matches)
         attribution_confidence = int(max_score)
 
-        package = opossum_model.OpossumPackage(
+        package = OpossumPackage(
             source=source_info,
             license_name=license_name,
             attribution_confidence=attribution_confidence,
