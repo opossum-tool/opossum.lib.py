@@ -12,17 +12,12 @@ from opossum_lib.core.input_file import FileType, InputFile
 
 
 class OpossumGenerationArguments(BaseModel):
-    spdx_files: list[str]
     scancode_json_files: list[str]
     opossum_files: list[str]
     outfile: str
 
     def validate_input_and_exit_on_error(self) -> None:
-        total_number_of_files = (
-            len(self.spdx_files)
-            + len(self.scancode_json_files)
-            + len(self.opossum_files)
-        )
+        total_number_of_files = +len(self.scancode_json_files) + len(self.opossum_files)
         if total_number_of_files == 0:
             logging.warning("No input provided. Exiting.")
             sys.exit(1)
