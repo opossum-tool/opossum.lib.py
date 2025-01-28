@@ -17,7 +17,6 @@ from opossum_lib.opossum.read_opossum_file import read_opossum_file
 from opossum_lib.scancode.convert_scancode_to_opossum import (
     convert_scancode_file_to_opossum,
 )
-from opossum_lib.spdx.convert_to_opossum import convert_spdx_to_opossum_information
 
 
 @click.group()
@@ -26,14 +25,6 @@ def opossum_file() -> None:
 
 
 @opossum_file.command()
-@click.option(
-    "--spdx",
-    "spdx_files",
-    help="Specify a path to a SPDX file that you would like to "
-    + "include in the final output. Option can be repeated.",
-    multiple=True,
-    type=click.Path(exists=True),
-)
 @click.option(
     "--opossum",
     "opossum_files",
@@ -59,7 +50,6 @@ def opossum_file() -> None:
     'If appropriate, the extension ".opossum" will be appended.',
 )
 def generate(
-    spdx_files: list[str],
     scancode_json_files: list[str],
     opossum_files: list[str],
     outfile: str,
@@ -69,14 +59,11 @@ def generate(
 
     \b
     Currently supported input formats:
-      - SPDX
       - ScanCode
       - Opossum
     """
-    validate_input_and_exit_on_error(spdx_files, scancode_json_files, opossum_files)
-    opossum_file_content = convert_after_valid_input(
-        spdx_files, scancode_json_files, opossum_files
-    )
+    validate_input_and_exit_on_error(scancode_json_files, opossum_files)
+    opossum_file_content = convert_after_valid_input(scancode_json_files, opossum_files)
 
     if not outfile.endswith(".opossum"):
         outfile += ".opossum"
@@ -90,11 +77,9 @@ def generate(
 
 
 def validate_input_and_exit_on_error(
-    spdx_files: list[str], scancode_json_files: list[str], opossum_files: list[str]
+    scancode_json_files: list[str], opossum_files: list[str]
 ) -> None:
-    total_number_of_files = (
-        len(spdx_files) + len(scancode_json_files) + len(opossum_files)
-    )
+    total_number_of_files = len(scancode_json_files) + len(opossum_files)
     if total_number_of_files == 0:
         logging.warning("No input provided. Exiting.")
         sys.exit(1)
@@ -104,12 +89,9 @@ def validate_input_and_exit_on_error(
 
 
 def convert_after_valid_input(
-    spdx_files: list[str], scancode_json_files: list[str], opossum_files: list[str]
+    scancode_json_files: list[str], opossum_files: list[str]
 ) -> OpossumFileContent:
-    if len(spdx_files) == 1:
-        spdx_input_file = spdx_files[0]
-        return convert_spdx_to_opossum_information(spdx_input_file)
-    elif len(scancode_json_files) == 1:
+    if len(scancode_json_files) == 1:
         scancode_json_input_file = scancode_json_files[0]
         return convert_scancode_file_to_opossum(scancode_json_input_file)
     else:
