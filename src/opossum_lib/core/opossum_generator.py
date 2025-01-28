@@ -14,8 +14,7 @@ class OpossumGenerator:
     def generate(
         self, opossum_generation_arguments: OpossumGenerationArguments
     ) -> None:
-        opossum_generation_arguments.validate_and_exit_on_error()
-        input_files = opossum_generation_arguments.input_files
+        input_files = opossum_generation_arguments.valid_input_files
 
         opossum = self.input_reader.read(input_files[0])
 

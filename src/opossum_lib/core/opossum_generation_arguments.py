@@ -16,17 +16,9 @@ class OpossumGenerationArguments(BaseModel):
     opossum_files: list[Path]
     outfile: Path
 
-    def validate_and_exit_on_error(self) -> None:
-        total_number_of_files = +len(self.scancode_json_files) + len(self.opossum_files)
-        if total_number_of_files == 0:
-            logging.warning("No input provided. Exiting.")
-            sys.exit(1)
-        if total_number_of_files > 1:
-            logging.error("Merging of multiple files not yet supported!")
-            sys.exit(1)
-
     @property
-    def input_files(self) -> list[InputFile]:
+    def valid_input_files(self) -> list[InputFile]:
+        self._validate_and_exit_on_error()
         result = []
         result += [
             InputFile(path=path, type=InputFileType.SCAN_CODE)
@@ -37,3 +29,12 @@ class OpossumGenerationArguments(BaseModel):
             for path in self.opossum_files
         ]
         return result
+
+    def _validate_and_exit_on_error(self) -> None:
+        total_number_of_files = +len(self.scancode_json_files) + len(self.opossum_files)
+        if total_number_of_files == 0:
+            logging.warning("No input provided. Exiting.")
+            sys.exit(1)
+        if total_number_of_files > 1:
+            logging.error("Merging of multiple files not yet supported!")
+            sys.exit(1)
