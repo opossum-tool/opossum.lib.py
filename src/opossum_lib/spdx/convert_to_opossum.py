@@ -5,6 +5,7 @@
 import logging
 import sys
 import uuid
+from pathlib import PurePath
 from typing import Any
 
 from networkx import DiGraph
@@ -74,9 +75,7 @@ def convert_spdx_to_opossum_information(filename: str) -> OpossumFileContent:
 
 def convert_tree_to_opossum(tree: DiGraph) -> Opossum:
     metadata = create_metadata(tree)
-    resources = []  # Resource(type=ResourceType.TOP_LEVEL)
-    # resources_to_attributions: dict[str, list[str]] = dict()
-    # external_attributions: dict[str, OpossumPackage] = dict()
+    resources = []
     attribution_to_id: dict[OpossumPackage, str] = {}
     attribution_breakpoints = []
     external_attribution_sources = {
@@ -98,7 +97,7 @@ def convert_tree_to_opossum(tree: DiGraph) -> Opossum:
                 "A tree should always have a node without incoming edge."
             )
         source_file_path = _get_file_path(connected_subgraph, source, source)
-        rootnode = Resource(path=source_file_path)
+        rootnode = Resource(path=PurePath(source_file_path))
         resources.append(rootnode)
         for node_label in connected_subgraph.nodes():
             node = connected_subgraph.nodes[node_label]
