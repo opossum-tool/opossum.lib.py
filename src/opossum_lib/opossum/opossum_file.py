@@ -6,7 +6,7 @@ from __future__ import annotations
 from copy import deepcopy
 from dataclasses import field
 from enum import Enum, auto
-from typing import Literal, cast
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, model_serializer
 from pydantic.alias_generators import to_camel
@@ -189,24 +189,3 @@ class ExternalAttributionSource(CamelBaseModel):
     name: str
     priority: int
     is_relevant_for_preferred: bool | None = None
-
-
-def _build_resource_tree(resource: ResourceInFile) -> Resource:
-    if isinstance(resource, int):
-        return Resource(type=ResourceType.FILE)
-    else:
-        result = Resource(type=ResourceType.FOLDER)
-        for name, child_resource in resource.items():
-            result.children[name] = _build_resource_tree(child_resource)
-        return result
-
-
-def convert_resource_in_file_to_resource(resource: ResourceInFile) -> Resource:
-    root_node = Resource(type=ResourceType.TOP_LEVEL)
-
-    if isinstance(resource, dict):
-        dict_resource = cast(dict[str, ResourceInFile], resource)
-        for name, child_resource in dict_resource.items():
-            root_node.children[name] = _build_resource_tree(child_resource)
-
-    return root_node
