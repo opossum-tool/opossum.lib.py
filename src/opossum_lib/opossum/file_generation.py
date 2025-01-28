@@ -14,9 +14,7 @@ from opossum_lib.opossum.opossum_file_content import OpossumFileContent
 
 class OpossumFileWriter:
     @staticmethod
-    def write_opossum_information_to_file(
-        opossum_file_content: OpossumFileContent, file_path: Path
-    ) -> None:
+    def write(opossum_file_content: OpossumFileContent, file_path: Path) -> None:
         with ZipFile(
             file_path, "w", compression=ZIP_DEFLATED, compresslevel=COMPRESSION_LEVEL
         ) as zip_file:

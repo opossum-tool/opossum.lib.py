@@ -177,9 +177,7 @@ def test_cli_no_output_file_provided(opossum_file_faker: OpossumFileFaker) -> No
     with runner.isolated_filesystem():
         file_path = "input.opossum"
         opossum_file = opossum_file_faker.opossum_file_content()
-        OpossumFileWriter.write_opossum_information_to_file(
-            opossum_file, Path(file_path)
-        )
+        OpossumFileWriter.write(opossum_file, Path(file_path))
         result = runner.invoke(
             generate,
             "--opossum " + file_path,
@@ -197,9 +195,7 @@ def test_cli_warning_if_outfile_already_exists(
     with runner.isolated_filesystem():
         file_path = "input.opossum"
         opossum_file = opossum_file_faker.opossum_file_content()
-        OpossumFileWriter.write_opossum_information_to_file(
-            opossum_file, Path(file_path)
-        )
+        OpossumFileWriter.write(opossum_file, Path(file_path))
         with open("output.opossum", "w") as f:
             f.write("")
         result = runner.invoke(
