@@ -20,6 +20,7 @@ def random_list[T](
     faker: BaseProvider,
     entry_generator: Callable[[], T],
     max_number_of_entries: int = 3,
+    min_number_of_entries: int = 1,
 ) -> list[T]:
-    number_of_entries = faker.random_int(1, max_number_of_entries)
+    number_of_entries = faker.random_int(min_number_of_entries, max_number_of_entries)
     return [entry_generator() for _ in range(number_of_entries)]

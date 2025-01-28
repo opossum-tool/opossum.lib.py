@@ -37,7 +37,7 @@ from opossum_lib.scancode.model import (
     SystemEnvironment,
     Url,
 )
-from tests.test_scancode.generators.helpers import entry_or_none, random_list
+from tests.util.generator_helpers import entry_or_none, random_list
 
 type TempPathTree = dict[str, TempPathTree | None]
 
