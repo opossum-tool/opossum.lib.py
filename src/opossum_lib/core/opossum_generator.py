@@ -20,7 +20,6 @@ class OpossumGenerator:
         opossum = self.input_reader.read(input_files[0])
 
         opossum_file_content = opossum.to_opossum_file_format()
-        opossum_generation_arguments.add_outfile_ending_and_warn_on_existing_outfile()
         OpossumFileWriter.write(
             opossum_file_content, opossum_generation_arguments.outfile
         )

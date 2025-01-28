@@ -15,6 +15,7 @@ from opossum_lib.input_formats.opossum.opossum_file_content import OpossumFileCo
 class OpossumFileWriter:
     @staticmethod
     def write(opossum_file_content: OpossumFileContent, file_path: Path) -> None:
+        file_path = OpossumFileWriter._ensure_outfile_suffix(file_path)
         with ZipFile(
             file_path, "w", compression=ZIP_DEFLATED, compresslevel=COMPRESSION_LEVEL
         ) as zip_file:
@@ -47,3 +48,7 @@ class OpossumFileWriter:
                 by_alias=True,
             ),
         )
+
+    @staticmethod
+    def _ensure_outfile_suffix(outfile_path: Path) -> Path:
+        return outfile_path.with_suffix(".opossum")

@@ -40,7 +40,8 @@ def opossum_file() -> None:
     default="output.opossum",
     show_default=True,
     help="The file path to write the generated opossum document to. "
-    'If appropriate, the extension ".opossum" will be appended.',
+    'If appropriate, the extension ".opossum" is appended.'
+    "If the output file already exists, it is overwritten.",
 )
 def generate(
     scancode_json_files: list[Path],

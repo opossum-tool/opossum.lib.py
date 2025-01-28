@@ -25,13 +25,6 @@ class OpossumGenerationArguments(BaseModel):
             logging.error("Merging of multiple files not yet supported!")
             sys.exit(1)
 
-    def add_outfile_ending_and_warn_on_existing_outfile(self) -> None:
-        if self.outfile.suffix != ".opossum":
-            self.outfile = self.outfile.with_suffix(".opossum")
-
-        if Path.is_file(Path(self.outfile)):
-            logging.warning(f"{self.outfile} already exists and will be overwritten.")
-
     @property
     def input_files(self) -> list[InputFile]:
         result = []

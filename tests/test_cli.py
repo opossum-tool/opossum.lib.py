@@ -190,27 +190,6 @@ def test_cli_no_output_file_provided(opossum_file_faker: OpossumFileFaker) -> No
         assert Path.is_file(Path("output.opossum"))
 
 
-def test_cli_warning_if_outfile_already_exists(
-    caplog: LogCaptureFixture, opossum_file_faker: OpossumFileFaker
-) -> None:
-    runner = CliRunner()
-
-    with runner.isolated_filesystem():
-        file_path = "input.opossum"
-        opossum_file = opossum_file_faker.opossum_file_content()
-        OpossumFileWriter.write(opossum_file, Path(file_path))
-        with open("output.opossum", "w") as f:
-            f.write("")
-        result = runner.invoke(
-            generate,
-            "--opossum " + file_path + " -o output.opossum",
-        )
-
-    assert result.exit_code == 0
-
-    assert caplog.messages == ["output.opossum already exists and will be overwritten."]
-
-
 @pytest.mark.parametrize(
     "options",
     [
