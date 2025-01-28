@@ -53,13 +53,10 @@ Usage: opossum-file generate [OPTIONS]
   Generate an Opossum file from various other file formats.
 
   Currently supported input formats:
-    - SPDX
     - ScanCode
     - Opossum
 
 Options:
-  --spdx PATH            Specify a path to a SPDX file that you would like to
-                         include in the final output. Option can be repeated.
   --opossum PATH         Specify a path to a .opossum file that you would like
                          to include in the final output. Option can be
                          repeated.

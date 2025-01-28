@@ -9,18 +9,14 @@ from zipfile import ZipFile
 import pytest
 from _pytest.logging import LogCaptureFixture
 from click.testing import CliRunner, Result
-from spdx_tools.spdx.writer.write_anything import write_file
 
 from opossum_lib.cli import generate
 from opossum_lib.opossum.constants import INPUT_JSON_NAME, OUTPUT_JSON_NAME
+from opossum_lib.opossum.file_generation import OpossumFileWriter
 from opossum_lib.opossum.opossum_file import OpossumPackage
-from tests.test_spdx.helper_methods import _create_minimal_document
+from tests.test_setup.opossum_file_faker_setup import OpossumFileFaker
 
 test_data_path = Path(__file__).resolve().parent / "data"
-
-
-def generate_valid_spdx_argument(filename: str = "SPDX.spdx") -> list[str]:
-    return ["--spdx", str(test_data_path / filename)]
 
 
 def generate_valid_scan_code_argument(
@@ -39,30 +35,6 @@ def run_with_command_line_arguments(cmd_line_arguments: list[str]) -> Result:
     runner = CliRunner()
     result = runner.invoke(generate, cmd_line_arguments)
     return result
-
-
-@pytest.mark.parametrize("options", ["--outfile", "-o"])
-def test_successful_conversion_of_spdx_file(tmp_path: Path, options: str) -> None:
-    result = run_with_command_line_arguments(
-        [
-            "--spdx",
-            str(test_data_path / "SPDX.spdx"),
-            options,
-            str(tmp_path / "output"),
-        ]
-    )
-
-    assert result.exit_code == 0
-
-    opossum_dict = read_input_json_from_opossum(str(tmp_path / "output.opossum"))
-    expected_opossum_dict = read_json_from_file("expected_opossum.json")
-
-    assert "metadata" in opossum_dict
-    # we are using randomly generated UUIDs for the project-id, therefore
-    # we need to exclude the "metadata" section from the comparison
-    opossum_dict.pop("metadata")
-    expected_opossum_dict.pop("metadata")
-    assert_expected_file_equals_generated_file(expected_opossum_dict, opossum_dict)
 
 
 def test_successful_conversion_of_input_only_opossum_file(tmp_path: Path) -> None:
@@ -199,32 +171,40 @@ def assert_expected_file_equals_generated_file(
         assert opossum_dict.get(field, None) == expected_opossum_dict.get(field, None)
 
 
-def test_cli_no_output_file_provided() -> None:
+def test_cli_no_output_file_provided(opossum_file_faker: OpossumFileFaker) -> None:
     runner = CliRunner()
 
     with runner.isolated_filesystem():
-        file_path = "input.spdx.json"
-        create_valid_spdx_document(file_path)
+        file_path = "input.opossum"
+        opossum_file = opossum_file_faker.opossum_file_content()
+        OpossumFileWriter.write_opossum_information_to_file(
+            opossum_file, Path(file_path)
+        )
         result = runner.invoke(
             generate,
-            "--spdx " + file_path,
+            "--opossum " + file_path,
         )
 
         assert result.exit_code == 0
         assert Path.is_file(Path("output.opossum"))
 
 
-def test_cli_warning_if_outfile_already_exists(caplog: LogCaptureFixture) -> None:
+def test_cli_warning_if_outfile_already_exists(
+    caplog: LogCaptureFixture, opossum_file_faker: OpossumFileFaker
+) -> None:
     runner = CliRunner()
 
     with runner.isolated_filesystem():
-        file_path = "input.spdx.json"
-        create_valid_spdx_document(file_path)
+        file_path = "input.opossum"
+        opossum_file = opossum_file_faker.opossum_file_content()
+        OpossumFileWriter.write_opossum_information_to_file(
+            opossum_file, Path(file_path)
+        )
         with open("output.opossum", "w") as f:
             f.write("")
         result = runner.invoke(
             generate,
-            "--spdx " + file_path + " -o output.opossum",
+            "--opossum " + file_path + " -o output.opossum",
         )
 
     assert result.exit_code == 0
@@ -232,27 +212,11 @@ def test_cli_warning_if_outfile_already_exists(caplog: LogCaptureFixture) -> Non
     assert caplog.messages == ["output.opossum already exists and will be overwritten."]
 
 
-def test_cli_with_invalid_document(caplog: LogCaptureFixture) -> None:
-    runner = CliRunner()
-    with runner.isolated_filesystem():
-        create_invalid_spdx_document("invalid_spdx.spdx")
-        result = runner.invoke(generate, "--spdx invalid_spdx.spdx -o invalid")
-
-    assert result.output == ""
-    assert result.exit_code == 1
-    assert caplog.messages == [
-        "The given SPDX document is not valid, this might cause issues with "
-        "the conversion."
-    ]
-
-
 @pytest.mark.parametrize(
     "options",
     [
-        generate_valid_spdx_argument() + generate_valid_spdx_argument(),
-        generate_valid_spdx_argument() + generate_valid_opossum_argument(),
         generate_valid_opossum_argument() + generate_valid_opossum_argument(),
-        generate_valid_spdx_argument() + generate_valid_scan_code_argument(),
+        generate_valid_opossum_argument() + generate_valid_scan_code_argument(),
         generate_valid_scan_code_argument() + generate_valid_scan_code_argument(),
     ],
 )
@@ -273,15 +237,3 @@ def test_cli_without_inputs(caplog: LogCaptureFixture) -> None:
     assert result.exit_code == 1
 
     assert caplog.messages == ["No input provided. Exiting."]
-
-
-def create_invalid_spdx_document(file_path: str) -> None:
-    document = _create_minimal_document()
-    document.creation_info.spdx_id = "DocumentID"
-
-    write_file(document, file_path, False)
-
-
-def create_valid_spdx_document(file_path: str) -> None:
-    document = _create_minimal_document()
-    write_file(document, file_path, False)
