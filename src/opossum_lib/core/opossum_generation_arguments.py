@@ -16,7 +16,7 @@ class OpossumGenerationArguments(BaseModel):
     opossum_files: list[str]
     outfile: str
 
-    def validate_input_and_exit_on_error(self) -> None:
+    def validate_and_exit_on_error(self) -> None:
         total_number_of_files = +len(self.scancode_json_files) + len(self.opossum_files)
         if total_number_of_files == 0:
             logging.warning("No input provided. Exiting.")
@@ -32,7 +32,7 @@ class OpossumGenerationArguments(BaseModel):
         if Path.is_file(Path(self.outfile)):
             logging.warning(f"{self.outfile} already exists and will be overwritten.")
 
-    def generate_input_file_list(self) -> list[InputFile]:
+    def input_files(self) -> list[InputFile]:
         result = []
         result += [
             InputFile(path=path, type=FileType.SCAN_CODE)
