@@ -41,4 +41,4 @@ class OpossumGenerator:
                 input_file.path
             ).to_opossum_file_format()
         else:
-            return read_opossum_file(input_file.path)
+            return read_opossum_file(input_file.path).to_opossum_file_format()
