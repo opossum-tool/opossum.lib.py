@@ -5,7 +5,7 @@
 from copy import deepcopy
 from pathlib import PurePath
 
-import opossum_lib.shared.entities.opossum_input_file as opossum_file_package
+import opossum_lib.shared.entities.opossum_input_file_model as opossum_file_package
 from opossum_lib.core.entities.opossum import (
     BaseUrlsForSources,
     ExternalAttributionSource,
@@ -20,11 +20,11 @@ from opossum_lib.core.entities.opossum import (
     SourceInfo,
     _convert_path_to_str,
 )
-from opossum_lib.shared.entities.opossum_file import OpossumFileModel
-from opossum_lib.shared.entities.opossum_input_file import (
-    ExternalAttributionSource as FileExternalAttributionSource,
+from opossum_lib.shared.entities.opossum_file_model import OpossumFileModel
+from opossum_lib.shared.entities.opossum_input_file_model import (
+    ExternalAttributionSourceModel as FileExternalAttributionSource,
 )
-from opossum_lib.shared.entities.opossum_input_file import OpossumInputFile
+from opossum_lib.shared.entities.opossum_input_file_model import OpossumInputFileModel
 
 
 class OpossumFileToOpossumConverter:
@@ -40,7 +40,7 @@ class OpossumFileToOpossumConverter:
 
     @staticmethod
     def _convert_to_opossum_scan_results(
-        opossum_information: OpossumInputFile,
+        opossum_information: OpossumInputFileModel,
     ) -> ScanResults:
         resources, used_attribution_ids = (
             OpossumFileToOpossumConverter._convert_to_opossum_model_resource_tree(
@@ -102,7 +102,7 @@ class OpossumFileToOpossumConverter:
         used_attribution_ids: set[OpossumPackageIdentifier],
         external_attributions: dict[
             opossum_file_package.OpossumPackageIdentifier,
-            opossum_file_package.OpossumPackage,
+            opossum_file_package.OpossumPackageModel,
         ],
     ) -> list[OpossumPackage] | None:
         available_attribution_ids = external_attributions.keys()
@@ -125,7 +125,7 @@ class OpossumFileToOpossumConverter:
 
     @staticmethod
     def _convert_frequent_licenses_to_model_frequent_licenses(
-        frequent_licenses_infile: list[opossum_file_package.FrequentLicense],
+        frequent_licenses_infile: list[opossum_file_package.FrequentLicenseModel],
     ) -> list[FrequentLicense]:
         frequent_licenses: list[FrequentLicense] = [
             OpossumFileToOpossumConverter._convert_frequent_license(license)
@@ -135,7 +135,7 @@ class OpossumFileToOpossumConverter:
 
     @staticmethod
     def _convert_to_opossum_model_metadata(
-        infile_metadata: opossum_file_package.Metadata,
+        infile_metadata: opossum_file_package.MetadataModel,
     ) -> Metadata:
         return Metadata(**infile_metadata.model_dump())
 
@@ -144,7 +144,7 @@ class OpossumFileToOpossumConverter:
         resources: opossum_file_package.ResourceInFile,
         external_attributions: dict[
             opossum_file_package.OpossumPackageIdentifier,
-            opossum_file_package.OpossumPackage,
+            opossum_file_package.OpossumPackageModel,
         ],
         resources_to_attributions: dict[
             opossum_file_package.ResourcePath,
@@ -215,7 +215,7 @@ class OpossumFileToOpossumConverter:
     def _convert_to_attribution_with_id(
         external_attributions: dict[
             opossum_file_package.OpossumPackageIdentifier,
-            opossum_file_package.OpossumPackage,
+            opossum_file_package.OpossumPackageModel,
         ],
     ) -> dict[OpossumPackage, str]:
         result = {}
@@ -232,7 +232,7 @@ class OpossumFileToOpossumConverter:
 
     @staticmethod
     def _convert_frequent_license(
-        infile_frequent_license: opossum_file_package.FrequentLicense,
+        infile_frequent_license: opossum_file_package.FrequentLicenseModel,
     ) -> FrequentLicense:
         return FrequentLicense(
             full_name=infile_frequent_license.full_name,
@@ -242,7 +242,7 @@ class OpossumFileToOpossumConverter:
 
     @staticmethod
     def _convert_package(
-        infile_package: opossum_file_package.OpossumPackage,
+        infile_package: opossum_file_package.OpossumPackageModel,
     ) -> OpossumPackage:
         return OpossumPackage(
             source=OpossumFileToOpossumConverter._convert_source(infile_package.source),
@@ -269,7 +269,7 @@ class OpossumFileToOpossumConverter:
 
     @staticmethod
     def _convert_source(
-        infile_source_info: opossum_file_package.SourceInfo,
+        infile_source_info: opossum_file_package.SourceInfoModel,
     ) -> SourceInfo:
         return SourceInfo(
             name=infile_source_info.name,

@@ -129,7 +129,7 @@ class ManualAttributions(CamelBaseModel):
     )
 
 
-class OpossumOutputFile(CamelBaseModel):
+class OpossumOutputFileModel(CamelBaseModel):
     model_config = ConfigDict(extra="allow")
 
     metadata: Metadata

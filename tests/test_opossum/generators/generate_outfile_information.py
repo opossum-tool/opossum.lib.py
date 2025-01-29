@@ -9,10 +9,10 @@ from faker.providers.date_time import Provider as DatetimeProvider
 from faker.providers.lorem.en_US import Provider as LoremProvider
 from faker.providers.misc import Provider as MiscProvider
 
-from opossum_lib.shared.entities.opossum_output_file import (
+from opossum_lib.shared.entities.opossum_output_file_model import (
     ManualAttributions,
     Metadata,
-    OpossumOutputFile,
+    OpossumOutputFileModel,
 )
 from tests.util.generator_helpers import entry_or_none
 
@@ -34,8 +34,8 @@ class OpossumOutputFileProvider(BaseProvider):
         manual_attributions: dict[str, ManualAttributions] | None = None,
         resources_to_attributions: dict[str, list[str]] | None = None,
         resolved_external_attributions: list[str] | None = None,
-    ) -> OpossumOutputFile:
-        return OpossumOutputFile(
+    ) -> OpossumOutputFileModel:
+        return OpossumOutputFileModel(
             metadata=metadata or self.outfile_metadata(),
             manual_attributions=manual_attributions or {},
             resources_to_attributions=resources_to_attributions or {},

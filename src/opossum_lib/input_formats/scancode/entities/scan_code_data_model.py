@@ -10,11 +10,11 @@ from typing import Any
 from pydantic import BaseModel
 
 
-class Options(BaseModel, extra="ignore"):
+class OptionsModel(BaseModel, extra="ignore"):
     input: list[str]
 
 
-class SystemEnvironment(BaseModel):
+class SystemEnvironmentModel(BaseModel):
     cpu_architecture: str
     operating_system: str
     platform: str
@@ -22,20 +22,20 @@ class SystemEnvironment(BaseModel):
     python_version: str
 
 
-class ExtraData(BaseModel):
+class ExtraDataModel(BaseModel):
     files_count: int
     spdx_license_list_version: str
-    system_environment: SystemEnvironment
+    system_environment: SystemEnvironmentModel
 
 
-class Header(BaseModel):
+class HeaderModel(BaseModel):
     duration: float
     end_timestamp: str
     errors: list
-    extra_data: ExtraData
+    extra_data: ExtraDataModel
     message: Any
     notice: str
-    options: Options
+    options: OptionsModel
     output_format_version: str
     start_timestamp: str
     tool_name: str
@@ -43,7 +43,7 @@ class Header(BaseModel):
     warnings: list
 
 
-class ReferenceMatch(BaseModel):
+class ReferenceMatchModel(BaseModel):
     end_line: int
     from_file: str
     license_expression: str
@@ -58,7 +58,7 @@ class ReferenceMatch(BaseModel):
     start_line: int
 
 
-class Match(BaseModel):
+class MatchModel(BaseModel):
     end_line: int
     from_file: str
     license_expression: str
@@ -73,64 +73,64 @@ class Match(BaseModel):
     start_line: int
 
 
-class GlobalLicenseDetection(BaseModel):
+class GlobalLicenseDetectionModel(BaseModel):
     detection_count: int
     identifier: str
     license_expression: str
     license_expression_spdx: str
-    reference_matches: list[ReferenceMatch]
+    reference_matches: list[ReferenceMatchModel]
 
 
-class FileBasedLicenseDetection(BaseModel):
+class FileBasedLicenseDetectionModel(BaseModel):
     license_expression: str
     license_expression_spdx: str
-    matches: list[Match]
+    matches: list[MatchModel]
     identifier: str
 
 
-class Copyright(BaseModel):
+class CopyrightModel(BaseModel):
     copyright: str
     end_line: int
     start_line: int
 
 
-class Holder(BaseModel):
+class HolderModel(BaseModel):
     end_line: int
     holder: str
     start_line: int
 
 
-class Url(BaseModel):
+class UrlModel(BaseModel):
     end_line: int
     start_line: int
     url: str
 
 
-class Email(BaseModel):
+class EmailModel(BaseModel):
     email: str
     end_line: int
     start_line: int
 
 
-class FileType(Enum):
+class FileTypeModel(Enum):
     FILE = "file"
     DIRECTORY = "directory"
 
 
-class File(BaseModel):
+class FileModel(BaseModel):
     authors: list
     base_name: str
-    copyrights: list[Copyright]
+    copyrights: list[CopyrightModel]
     date: str | None
     detected_license_expression: str | None
     detected_license_expression_spdx: str | None
     dirs_count: int
-    emails: list[Email]
+    emails: list[EmailModel]
     extension: str
     files_count: int
     file_type: str | None
     for_packages: list
-    holders: list[Holder]
+    holders: list[HolderModel]
     is_archive: bool
     is_binary: bool
     is_media: bool
@@ -138,7 +138,7 @@ class File(BaseModel):
     is_source: bool
     is_text: bool
     license_clues: list
-    license_detections: list[FileBasedLicenseDetection]
+    license_detections: list[FileBasedLicenseDetectionModel]
     md5: str | None
     mime_type: str | None
     name: str
@@ -151,13 +151,13 @@ class File(BaseModel):
     sha256: str | None
     size: int
     size_count: int
-    type: FileType
-    urls: list[Url]
+    type: FileTypeModel
+    urls: list[UrlModel]
 
 
-class ScanCodeDataRaw(BaseModel):
+class ScanCodeDataModel(BaseModel):
     dependencies: list
-    files: list[File]
-    license_detections: list[GlobalLicenseDetection]
-    headers: list[Header]
+    files: list[FileModel]
+    license_detections: list[GlobalLicenseDetectionModel]
+    headers: list[HeaderModel]
     packages: list

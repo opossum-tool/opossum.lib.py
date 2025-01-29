@@ -6,7 +6,7 @@ from copy import deepcopy
 from opossum_lib.input_formats.opossum.services.opossum_file_to_opossum_converter import (  # noqa: E501
     OpossumFileToOpossumConverter,
 )
-from opossum_lib.shared.entities.opossum_file import OpossumFileModel
+from opossum_lib.shared.entities.opossum_file_model import OpossumFileModel
 from tests.test_setup.opossum_file_faker_setup import OpossumFileFaker
 
 

@@ -17,17 +17,17 @@ from opossum_lib.core.entities.opossum import (
     SourceInfo,
 )
 from opossum_lib.input_formats.scancode.constants import SCANCODE_SOURCE_NAME
-from opossum_lib.input_formats.scancode.entities.scan_code_data_raw import (
-    File,
-    FileType,
-    Header,
-    ScanCodeDataRaw,
+from opossum_lib.input_formats.scancode.entities.scan_code_data_model import (
+    FileModel,
+    FileTypeModel,
+    HeaderModel,
+    ScanCodeDataModel,
 )
 
 
 class ScancodeDataToOpossumConverter:
     @staticmethod
-    def convert_scancode_to_opossum(scancode_data: ScanCodeDataRaw) -> Opossum:
+    def convert_scancode_to_opossum(scancode_data: ScanCodeDataModel) -> Opossum:
         resources = ScancodeDataToOpossumConverter.extract_opossum_resources(
             scancode_data
         )
@@ -49,7 +49,7 @@ class ScancodeDataToOpossumConverter:
         )
 
     @staticmethod
-    def extract_scancode_header(scancode_data: ScanCodeDataRaw) -> Header:
+    def extract_scancode_header(scancode_data: ScanCodeDataModel) -> HeaderModel:
         if len(scancode_data.headers) != 1:
             logging.error("Headers of ScanCode file are invalid.")
             sys.exit(1)
@@ -57,7 +57,7 @@ class ScancodeDataToOpossumConverter:
 
     @staticmethod
     def extract_opossum_resources(
-        scancode_data: ScanCodeDataRaw,
+        scancode_data: ScanCodeDataModel,
     ) -> list[Resource]:
         temp_root = Resource(path=PurePath(""))
         for file in scancode_data.files:
@@ -71,15 +71,15 @@ class ScancodeDataToOpossumConverter:
         return list(temp_root.children.values())
 
     @staticmethod
-    def convert_resource_type(file_type: FileType) -> ResourceType:
-        if file_type == FileType.FILE:
+    def convert_resource_type(file_type: FileTypeModel) -> ResourceType:
+        if file_type == FileTypeModel.FILE:
             return ResourceType.FILE
         else:
             return ResourceType.FOLDER
 
     @staticmethod
-    def get_attribution_info(file: File) -> list[OpossumPackage]:
-        if file.type == FileType.DIRECTORY:
+    def get_attribution_info(file: FileModel) -> list[OpossumPackage]:
+        if file.type == FileTypeModel.DIRECTORY:
             return []
         copyright = "\n".join(c.copyright for c in file.copyrights)
         source_info = SourceInfo(name=SCANCODE_SOURCE_NAME)

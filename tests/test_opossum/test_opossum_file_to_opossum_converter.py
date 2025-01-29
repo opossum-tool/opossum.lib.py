@@ -6,9 +6,9 @@ import pytest
 from opossum_lib.input_formats.opossum.services.opossum_file_to_opossum_converter import (  # noqa: E501
     OpossumFileToOpossumConverter,
 )
-from opossum_lib.shared.entities.opossum_input_file import (
-    OpossumPackage,
+from opossum_lib.shared.entities.opossum_input_file_model import (
     OpossumPackageIdentifier,
+    OpossumPackageModel,
 )
 from tests.test_setup.opossum_file_faker_setup import OpossumFileFaker
 
@@ -39,7 +39,7 @@ class TestOpossumFileToOpossumConverter:
     @staticmethod
     def _fake_duplicate_external_attributions(
         opossum_file_faker: OpossumFileFaker,
-    ) -> dict[OpossumPackageIdentifier, OpossumPackage]:
+    ) -> dict[OpossumPackageIdentifier, OpossumPackageModel]:
         external_attributions = opossum_file_faker.external_attributions(
             min_number_of_attributions=2
         )

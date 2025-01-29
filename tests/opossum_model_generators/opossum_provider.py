@@ -6,7 +6,7 @@ from typing import Any
 from faker.providers import BaseProvider
 
 from opossum_lib.core.entities.opossum import Opossum, ScanResults
-from opossum_lib.shared.entities.opossum_output_file import OpossumOutputFile
+from opossum_lib.shared.entities.opossum_output_file_model import OpossumOutputFileModel
 from tests.opossum_model_generators.scan_results_provider import ScanResultsProvider
 from tests.test_opossum.generators.generate_outfile_information import (
     OpossumOutputFileProvider,
@@ -25,7 +25,7 @@ class OpossumProvider(BaseProvider):
     def opossum(
         self,
         scan_results: ScanResults | None = None,
-        review_results: OpossumOutputFile | None = None,
+        review_results: OpossumOutputFileModel | None = None,
     ) -> Opossum:
         return Opossum(
             scan_results=scan_results or self.scan_results_provider.scan_results(),

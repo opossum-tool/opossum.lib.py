@@ -7,7 +7,10 @@ from opossum_lib.input_formats.scancode.constants import SCANCODE_SOURCE_NAME
 from opossum_lib.input_formats.scancode.services.scancode_data_to_opossum_converter import (  # noqa: E501
     ScancodeDataToOpossumConverter,
 )
-from opossum_lib.shared.entities.opossum_input_file import OpossumPackage, SourceInfo
+from opossum_lib.shared.entities.opossum_input_file_model import (
+    OpossumPackageModel,
+    SourceInfoModel,
+)
 from tests.test_setup.scancode_faker_setup import ScanCodeFaker
 
 
@@ -70,14 +73,14 @@ def test_get_attribution_info_file_multiple(scancode_faker: ScanCodeFaker) -> No
         opossum.to_opossum_file_format().input_file.external_attributions.values()
     )
 
-    expected1 = OpossumPackage(
-        source=SourceInfo(name=SCANCODE_SOURCE_NAME),
+    expected1 = OpossumPackageModel(
+        source=SourceInfoModel(name=SCANCODE_SOURCE_NAME),
         license_name="Apache-2.0",
         copyright="Me\nMyself\nI",
         attribution_confidence=95,
     )
-    expected2 = OpossumPackage(
-        source=SourceInfo(name=SCANCODE_SOURCE_NAME),
+    expected2 = OpossumPackageModel(
+        source=SourceInfoModel(name=SCANCODE_SOURCE_NAME),
         license_name="MIT",
         copyright="Me\nMyself\nI",
         attribution_confidence=50,

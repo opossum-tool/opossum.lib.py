@@ -16,7 +16,7 @@ from opossum_lib.shared.constants import (
     INPUT_JSON_NAME,
     OUTPUT_JSON_NAME,
 )
-from opossum_lib.shared.entities.opossum_input_file import OpossumPackage
+from opossum_lib.shared.entities.opossum_input_file_model import OpossumPackageModel
 from tests.test_setup.opossum_file_faker_setup import OpossumFileFaker
 
 test_data_path = Path(__file__).resolve().parent / "data"
@@ -129,12 +129,12 @@ def assert_output_json_matches_expectations(output_file: str) -> None:
 
 def inline_attributions_into_resources(
     *, resources_with_ids: dict[str, list[str]], all_attributions: dict[str, Any]
-) -> dict[str, set[OpossumPackage]]:
+) -> dict[str, set[OpossumPackageModel]]:
     resource_with_inlined_attributions = {}
     for path, ids in resources_with_ids.items():
         attributions = []
         for id in ids:
-            attribution = OpossumPackage(**all_attributions[id])
+            attribution = OpossumPackageModel(**all_attributions[id])
             attributions.append(attribution)
         resource_with_inlined_attributions[path] = set(attributions)
     return resource_with_inlined_attributions

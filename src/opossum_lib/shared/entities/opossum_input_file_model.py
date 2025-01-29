@@ -22,21 +22,21 @@ class CamelBaseModel(BaseModel):
     )
 
 
-class OpossumInputFile(CamelBaseModel):
-    metadata: Metadata
+class OpossumInputFileModel(CamelBaseModel):
+    metadata: MetadataModel
     resources: ResourceInFile
-    external_attributions: dict[OpossumPackageIdentifier, OpossumPackage]
+    external_attributions: dict[OpossumPackageIdentifier, OpossumPackageModel]
     resources_to_attributions: dict[ResourcePath, list[OpossumPackageIdentifier]]
     attribution_breakpoints: list[str] = field(default_factory=list)
-    external_attribution_sources: dict[str, ExternalAttributionSource] = field(
+    external_attribution_sources: dict[str, ExternalAttributionSourceModel] = field(
         default_factory=dict
     )
-    frequent_licenses: list[FrequentLicense] | None = None
+    frequent_licenses: list[FrequentLicenseModel] | None = None
     files_with_children: list[str] | None = None
-    base_urls_for_sources: BaseUrlsForSources | None = None
+    base_urls_for_sources: BaseUrlsForSourcesModel | None = None
 
 
-class BaseUrlsForSources(CamelBaseModel):
+class BaseUrlsForSourcesModel(CamelBaseModel):
     @model_serializer
     def serialize(self) -> dict:
         # hack to override not serializing keys with corresponding value none:
@@ -46,20 +46,20 @@ class BaseUrlsForSources(CamelBaseModel):
     model_config = ConfigDict(extra="allow")
 
 
-class FrequentLicense(CamelBaseModel):
+class FrequentLicenseModel(CamelBaseModel):
     full_name: str
     short_name: str
     default_text: str
 
 
-class SourceInfo(CamelBaseModel):
+class SourceInfoModel(CamelBaseModel):
     name: str
     document_confidence: int | float | None = 0
     additional_name: str | None = None
 
 
-class OpossumPackage(CamelBaseModel):
-    source: SourceInfo
+class OpossumPackageModel(CamelBaseModel):
+    source: SourceInfoModel
     attribution_confidence: int | None = None
     comment: str | None = None
     package_name: str | None = None
@@ -81,7 +81,7 @@ class OpossumPackage(CamelBaseModel):
     was_preferred: bool | None = None
 
 
-class Metadata(CamelBaseModel):
+class MetadataModel(CamelBaseModel):
     model_config = ConfigDict(extra="allow")
     project_id: str
     file_creation_date: str
@@ -91,20 +91,20 @@ class Metadata(CamelBaseModel):
     build_date: str | None = None
 
 
-class ResourceType(Enum):
+class ResourceTypeModel(Enum):
     FILE = auto()
     FOLDER = auto()
     TOP_LEVEL = auto()
     OTHER = auto()
 
 
-class Resource(CamelBaseModel):
-    type: ResourceType
-    children: dict[str, Resource] = field(default_factory=dict)
+class ResourceModel(CamelBaseModel):
+    type: ResourceTypeModel
+    children: dict[str, ResourceModel] = field(default_factory=dict)
 
     def add_path(
-        self, path_with_resource_types: list[tuple[str, ResourceType]]
-    ) -> Resource:
+        self, path_with_resource_types: list[tuple[str, ResourceTypeModel]]
+    ) -> ResourceModel:
         resource = deepcopy(self)
         if len(path_with_resource_types) == 0:
             return resource
@@ -118,21 +118,21 @@ class Resource(CamelBaseModel):
                 " the same path differ."
             )
         if first not in self.children:
-            resource.children[first] = Resource(type=resource_type)
+            resource.children[first] = ResourceModel(type=resource_type)
         resource.children[first] = resource.children[first].add_path(rest)
 
         return resource
 
     def element_exists_but_resource_type_differs(
-        self, element: str, resource_type: ResourceType
+        self, element: str, resource_type: ResourceTypeModel
     ) -> bool:
         if element in self.children:
             return self.children[element].type != resource_type
         return False
 
     def drop_element(
-        self, path_to_element_to_drop: list[tuple[str, ResourceType]]
-    ) -> Resource:
+        self, path_to_element_to_drop: list[tuple[str, ResourceTypeModel]]
+    ) -> ResourceModel:
         paths_in_resource = self.get_paths_of_all_leaf_nodes_with_types()
         if path_to_element_to_drop not in paths_in_resource:
             raise ValueError(
@@ -140,7 +140,7 @@ class Resource(CamelBaseModel):
             )
 
         else:
-            resource = Resource(type=ResourceType.TOP_LEVEL)
+            resource = ResourceModel(type=ResourceTypeModel.TOP_LEVEL)
             paths_in_resource.remove(path_to_element_to_drop)
             paths_in_resource.append(path_to_element_to_drop[:-1])
 
@@ -151,7 +151,7 @@ class Resource(CamelBaseModel):
 
     def to_dict(self) -> ResourceInFile:
         if not self.has_children():
-            if self.type == ResourceType.FOLDER:
+            if self.type == ResourceTypeModel.FOLDER:
                 return {}
             else:
                 return 1
@@ -162,7 +162,7 @@ class Resource(CamelBaseModel):
 
     def get_paths_of_all_leaf_nodes_with_types(
         self,
-    ) -> list[list[tuple[str, ResourceType]]]:
+    ) -> list[list[tuple[str, ResourceTypeModel]]]:
         paths = []
         for name, resource in self.children.items():
             path = [(name, resource.type)]
@@ -184,7 +184,7 @@ class Resource(CamelBaseModel):
         return self.to_dict()
 
 
-class ExternalAttributionSource(CamelBaseModel):
+class ExternalAttributionSourceModel(CamelBaseModel):
     model_config = ConfigDict(frozen=True)
     name: str
     priority: int

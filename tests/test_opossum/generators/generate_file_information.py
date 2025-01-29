@@ -13,17 +13,17 @@ from faker.providers.lorem.en_US import Provider as LoremProvider
 from faker.providers.misc import Provider as MiscProvider
 from faker.providers.person import Provider as PersonProvider
 
-from opossum_lib.shared.entities.opossum_input_file import (
-    BaseUrlsForSources,
-    ExternalAttributionSource,
-    FrequentLicense,
-    Metadata,
-    OpossumInputFile,
-    OpossumPackage,
+from opossum_lib.shared.entities.opossum_input_file_model import (
+    BaseUrlsForSourcesModel,
+    ExternalAttributionSourceModel,
+    FrequentLicenseModel,
+    MetadataModel,
+    OpossumInputFileModel,
     OpossumPackageIdentifier,
+    OpossumPackageModel,
     ResourceInFile,
     ResourcePath,
-    SourceInfo,
+    SourceInfoModel,
 )
 from tests.util.generator_helpers import entry_or_none, random_list
 
@@ -48,8 +48,8 @@ class MetadataProvider(BaseProvider):
         project_version: str | None = None,
         expected_release_date: str | None = None,
         build_date: str | None = None,
-    ) -> Metadata:
-        return Metadata(
+    ) -> MetadataModel:
+        return MetadataModel(
             project_id=project_id or "project-id-" + self.lorem_provider.word(),
             file_creation_date=file_creation_date
             or self.date_time_provider.date_time().isoformat(),
@@ -87,24 +87,24 @@ class FileInformationProvider(BaseProvider):
     def opossum_file_information(
         self,
         *,
-        metadata: Metadata | None = None,
+        metadata: MetadataModel | None = None,
         resources: ResourceInFile | None = None,
-        external_attributions: dict[OpossumPackageIdentifier, OpossumPackage]
+        external_attributions: dict[OpossumPackageIdentifier, OpossumPackageModel]
         | None = None,
         resources_to_attributions: dict[ResourcePath, list[OpossumPackageIdentifier]]
         | None = None,
         attribution_breakpoints: list[str] | None = None,
-        external_attribution_sources: dict[str, ExternalAttributionSource]
+        external_attribution_sources: dict[str, ExternalAttributionSourceModel]
         | None = None,
-        frequent_licenses: list[FrequentLicense] | None = None,
+        frequent_licenses: list[FrequentLicenseModel] | None = None,
         files_with_children: list[str] | None = None,
-        base_urls_for_sources: BaseUrlsForSources | None = None,
-    ) -> OpossumInputFile:
+        base_urls_for_sources: BaseUrlsForSourcesModel | None = None,
+    ) -> OpossumInputFileModel:
         generated_resources = resources or self.resource_in_file()
         attributions = external_attributions or self.external_attributions(
             min_number_of_attributions=25
         )
-        return OpossumInputFile(
+        return OpossumInputFileModel(
             metadata=metadata or self.metadata_provider.opossum_input_metadata(),
             resources=generated_resources,
             external_attributions=attributions,
@@ -153,8 +153,8 @@ class FileInformationProvider(BaseProvider):
         name: str | None = None,
         document_confidence: int | float | None = None,
         additional_name: str | None = None,
-    ) -> SourceInfo:
-        return SourceInfo(
+    ) -> SourceInfoModel:
+        return SourceInfoModel(
             name=name or self.person_provider.name(),
             document_confidence=document_confidence
             or entry_or_none(self.misc_provider, self.random_int(0, 100)),
@@ -164,7 +164,7 @@ class FileInformationProvider(BaseProvider):
 
     def opossum_package(
         self,
-        source: SourceInfo | None = None,
+        source: SourceInfoModel | None = None,
         attribution_confidence: int | None = None,
         comment: str | None = None,
         package_name: str | None = None,
@@ -184,8 +184,8 @@ class FileInformationProvider(BaseProvider):
         origin_ids: list[str] | None = None,
         criticality: Literal["high"] | Literal["medium"] | None = None,
         was_preferred: bool | None = None,
-    ) -> OpossumPackage:
-        return OpossumPackage(
+    ) -> OpossumPackageModel:
+        return OpossumPackageModel(
             source=source or self.source_info(),
             attribution_confidence=attribution_confidence
             or entry_or_none(self.misc_provider, self.random_int()),
@@ -242,7 +242,7 @@ class FileInformationProvider(BaseProvider):
 
     def external_attributions(
         self, max_number_of_attributions: int = 50, min_number_of_attributions: int = 5
-    ) -> dict[OpossumPackageIdentifier, OpossumPackage]:
+    ) -> dict[OpossumPackageIdentifier, OpossumPackageModel]:
         number_of_attributions = self.random_int(
             min_number_of_attributions, max_number_of_attributions
         )
@@ -254,7 +254,7 @@ class FileInformationProvider(BaseProvider):
     def resources_to_attributions(
         self,
         resources: ResourceInFile,
-        external_attributions: dict[OpossumPackageIdentifier, OpossumPackage],
+        external_attributions: dict[OpossumPackageIdentifier, OpossumPackageModel],
     ) -> dict[ResourcePath, list[OpossumPackageIdentifier]]:
         def get_file_paths(resource: ResourceInFile, current_path: str) -> list[str]:
             if isinstance(resource, int):
@@ -294,8 +294,8 @@ class FileInformationProvider(BaseProvider):
         name: str | None = None,
         priority: int | None = None,
         is_relevant_for_preferred: bool | None = None,
-    ) -> ExternalAttributionSource:
-        return ExternalAttributionSource(
+    ) -> ExternalAttributionSourceModel:
+        return ExternalAttributionSourceModel(
             name=name or self.person_provider.name(),
             priority=priority or self.random_int(1, 100),
             is_relevant_for_preferred=is_relevant_for_preferred
@@ -304,7 +304,7 @@ class FileInformationProvider(BaseProvider):
 
     def external_attribution_sources(
         self, max_nb_of_external_attributions: int = 5
-    ) -> dict[str, ExternalAttributionSource]:
+    ) -> dict[str, ExternalAttributionSourceModel]:
         nb_of_external_attributions = self.random_int(
             1, max_nb_of_external_attributions
         )

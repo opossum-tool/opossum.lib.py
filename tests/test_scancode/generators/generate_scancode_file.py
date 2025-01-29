@@ -20,22 +20,22 @@ from faker.providers.internet import Provider as InternetProvider
 from faker.providers.lorem.en_US import Provider as LoremProvider
 from faker.providers.misc import Provider as MiscProvider
 
-from opossum_lib.input_formats.scancode.entities.scan_code_data_raw import (
-    Copyright,
-    Email,
-    ExtraData,
-    File,
-    FileBasedLicenseDetection,
-    FileType,
-    GlobalLicenseDetection,
-    Header,
-    Holder,
-    Match,
-    Options,
-    ReferenceMatch,
-    ScanCodeDataRaw,
-    SystemEnvironment,
-    Url,
+from opossum_lib.input_formats.scancode.entities.scan_code_data_model import (
+    CopyrightModel,
+    EmailModel,
+    ExtraDataModel,
+    FileBasedLicenseDetectionModel,
+    FileModel,
+    FileTypeModel,
+    GlobalLicenseDetectionModel,
+    HeaderModel,
+    HolderModel,
+    MatchModel,
+    OptionsModel,
+    ReferenceMatchModel,
+    ScanCodeDataModel,
+    SystemEnvironmentModel,
+    UrlModel,
 )
 from tests.util.generator_helpers import entry_or_none, random_list
 
@@ -63,12 +63,12 @@ class ScanCodeDataProvider(BaseProvider):
         self,
         *,
         dependencies: list | None = None,
-        files: list[File] | None = None,
-        license_detections: list[GlobalLicenseDetection] | None = None,
-        headers: list[Header] | None = None,
+        files: list[FileModel] | None = None,
+        license_detections: list[GlobalLicenseDetectionModel] | None = None,
+        headers: list[HeaderModel] | None = None,
         packages: list | None = None,
-        options: Options | None = None,
-    ) -> ScanCodeDataRaw:
+        options: OptionsModel | None = None,
+    ) -> ScanCodeDataModel:
         # TODO: #184 depending on which options are passed in additional_options
         # we need to generate different fields, e.g. --licenses
         # out of scope for now
@@ -76,7 +76,7 @@ class ScanCodeDataProvider(BaseProvider):
         license_detections = license_detections or self.global_license_detections(files)
         if headers is None:
             headers = [self.header(options=options)]
-        return ScanCodeDataRaw(
+        return ScanCodeDataModel(
             dependencies=dependencies or [],
             files=files,
             license_detections=license_detections,
@@ -90,17 +90,17 @@ class ScanCodeDataProvider(BaseProvider):
         duration: float | None = None,
         end_timestamp: str | None = None,
         errors: list | None = None,
-        extra_data: ExtraData | None = None,
+        extra_data: ExtraDataModel | None = None,
         message: Any | None = None,
         notice: str | None = None,
-        options: Options | None = None,
+        options: OptionsModel | None = None,
         output_format_version: str | None = None,
         start_timestamp: str | None = None,
         tool_name: str | None = None,
         tool_version: str | None = None,
         warnings: list | None = None,
-    ) -> Header:
-        return Header(
+    ) -> HeaderModel:
+        return HeaderModel(
             duration=duration or self.random_int(max=9999999) / 1e3,
             end_timestamp=end_timestamp or self.date_provider.iso8601(),
             errors=errors or [],
@@ -117,8 +117,8 @@ class ScanCodeDataProvider(BaseProvider):
 
     def options(
         self, *, input: list[str] | None = None, **additional_options: Any
-    ) -> Options:
-        return Options(
+    ) -> OptionsModel:
+        return OptionsModel(
             input=input
             or [
                 self.file_provider.file_path(
@@ -133,9 +133,9 @@ class ScanCodeDataProvider(BaseProvider):
         *,
         files_count: int | None = None,
         spdx_license_list_version: str | None = None,
-        system_environment: SystemEnvironment | None = None,
-    ) -> ExtraData:
-        return ExtraData(
+        system_environment: SystemEnvironmentModel | None = None,
+    ) -> ExtraDataModel:
+        return ExtraDataModel(
             files_count=files_count or self.random_int(),
             spdx_license_list_version=spdx_license_list_version
             or self.numerify("#.##"),
@@ -150,11 +150,11 @@ class ScanCodeDataProvider(BaseProvider):
         platform: str | None = None,
         platform_version: str | None = None,
         python_version: str | None = None,
-    ) -> SystemEnvironment:
+    ) -> SystemEnvironmentModel:
         operating_system = operating_system or self.random_element(
             ["linux", "windows", "macos"]
         )
-        return SystemEnvironment(
+        return SystemEnvironmentModel(
             cpu_architecture=cpu_architecture or self.random_element(["32", "64"]),
             operating_system=operating_system,
             platform=platform
@@ -164,10 +164,10 @@ class ScanCodeDataProvider(BaseProvider):
         )
 
     def global_license_detections(
-        self, files: list[File]
-    ) -> list[GlobalLicenseDetection]:
+        self, files: list[FileModel]
+    ) -> list[GlobalLicenseDetectionModel]:
         license_counter: dict[str, int] = defaultdict(int)
-        id_to_license_detection: dict[str, FileBasedLicenseDetection] = {}
+        id_to_license_detection: dict[str, FileBasedLicenseDetectionModel] = {}
         for file in files:
             for ld in file.license_detections:
                 license_counter[ld.identifier] += 1
@@ -176,13 +176,13 @@ class ScanCodeDataProvider(BaseProvider):
         global_license_detections = []
         for id, count in license_counter.items():
             ld = id_to_license_detection[id]
-            gld = GlobalLicenseDetection(
+            gld = GlobalLicenseDetectionModel(
                 detection_count=count,
                 license_expression=ld.license_expression,
                 license_expression_spdx=ld.license_expression_spdx,
                 identifier=ld.identifier,
                 reference_matches=[
-                    ReferenceMatch(
+                    ReferenceMatchModel(
                         end_line=match.end_line,
                         from_file=match.from_file,
                         license_expression=match.license_expression,
@@ -228,11 +228,11 @@ class ScanCodeDataProvider(BaseProvider):
                 folders[folder_name] = children
             return {**files, **folders}
 
-    def files(self, path_tree: TempPathTree | None = None) -> list[File]:
+    def files(self, path_tree: TempPathTree | None = None) -> list[FileModel]:
         path_tree = path_tree or self.generate_path_structure()
 
-        def process_path(current_path: str, path_tree: TempPathTree) -> list[File]:
-            files: list[File] = []
+        def process_path(current_path: str, path_tree: TempPathTree) -> list[FileModel]:
+            files: list[FileModel] = []
             for name, data in path_tree.items():
                 path = current_path + name
                 if data:
@@ -240,8 +240,8 @@ class ScanCodeDataProvider(BaseProvider):
                     child_types = [c.type for c in child_files]
                     folder = self.single_folder(
                         path=path,
-                        dirs_count=child_types.count(FileType.DIRECTORY),
-                        files_count=child_types.count(FileType.FILE),
+                        dirs_count=child_types.count(FileTypeModel.DIRECTORY),
+                        files_count=child_types.count(FileTypeModel.FILE),
                         size_count=sum(c.size for c in child_files),
                     )
                     files.append(folder)
@@ -261,17 +261,17 @@ class ScanCodeDataProvider(BaseProvider):
         path: str,
         authors: list | None = None,
         base_name: str | None = None,
-        copyrights: list[Copyright] | None = None,
+        copyrights: list[CopyrightModel] | None = None,
         date: str | None = None,
         detected_license_expression: str | None = None,
         detected_license_expression_spdx: str | None = None,
         dirs_count: int = 0,
-        emails: list[Email] | None = None,
+        emails: list[EmailModel] | None = None,
         extension: str = "",
         files_count: int = 0,
         file_type: str | None = None,
         for_packages: list | None = None,
-        holders: list[Holder] | None = None,
+        holders: list[HolderModel] | None = None,
         is_archive: bool = False,
         is_binary: bool = False,
         is_media: bool = False,
@@ -279,7 +279,7 @@ class ScanCodeDataProvider(BaseProvider):
         is_source: bool = False,
         is_text: bool = False,
         license_clues: list | None = None,
-        license_detections: list[FileBasedLicenseDetection] | None = None,
+        license_detections: list[FileBasedLicenseDetectionModel] | None = None,
         md5: str | None = None,
         mime_type: str | None = None,
         name: str | None = None,
@@ -291,9 +291,9 @@ class ScanCodeDataProvider(BaseProvider):
         sha256: str | None = None,
         size: int = 0,
         size_count: int = 0,
-        urls: list[Url] | None = None,
-    ) -> File:
-        return File(
+        urls: list[UrlModel] | None = None,
+    ) -> FileModel:
+        return FileModel(
             authors=authors or [],
             base_name=base_name or PurePath(PurePath(path).name).stem,
             copyrights=copyrights or [],
@@ -327,7 +327,7 @@ class ScanCodeDataProvider(BaseProvider):
             sha256=sha256,
             size=size,
             size_count=size_count,
-            type=FileType.DIRECTORY,
+            type=FileTypeModel.DIRECTORY,
             urls=urls or [],
         )
 
@@ -337,17 +337,17 @@ class ScanCodeDataProvider(BaseProvider):
         path: str,
         authors: list | None = None,
         base_name: str | None = None,
-        copyrights: list[Copyright] | None = None,
+        copyrights: list[CopyrightModel] | None = None,
         date: str | None = None,
         detected_license_expression: str | None = None,
         detected_license_expression_spdx: str | None = None,
         dirs_count: int = 0,
-        emails: list[Email] | None = None,
+        emails: list[EmailModel] | None = None,
         extension: str | None = None,
         files_count: int = 0,
         file_type: str | None = None,
         for_packages: list | None = None,
-        holders: list[Holder] | None = None,
+        holders: list[HolderModel] | None = None,
         is_archive: bool | None = None,
         is_binary: bool | None = None,
         is_media: bool | None = None,
@@ -355,7 +355,7 @@ class ScanCodeDataProvider(BaseProvider):
         is_source: bool | None = None,
         is_text: bool | None = None,
         license_clues: list | None = None,
-        license_detections: list[FileBasedLicenseDetection] | None = None,
+        license_detections: list[FileBasedLicenseDetectionModel] | None = None,
         md5: str | None = None,
         mime_type: str | None = None,
         name: str | None = None,
@@ -367,14 +367,14 @@ class ScanCodeDataProvider(BaseProvider):
         sha256: str | None = None,
         size: int | None = None,
         size_count: int = 0,
-        urls: list[Url] | None = None,
-    ) -> File:
+        urls: list[UrlModel] | None = None,
+    ) -> FileModel:
         if copyrights is None and holders is None:
             holders = []
             for _ in range(self.random_int(max=3)):
                 start_line = self.random_int()
                 end_line = start_line + self.random_int(max=2)
-                holder = Holder(
+                holder = HolderModel(
                     holder=self.company_provider.company(),
                     start_line=start_line,
                     end_line=end_line,
@@ -383,7 +383,7 @@ class ScanCodeDataProvider(BaseProvider):
         if copyrights is None:
             assert holders is not None  # can never trigger but makes mypy happy
             copyrights = [
-                Copyright(
+                CopyrightModel(
                     copyright="Copyright " + h.holder,
                     start_line=h.start_line,
                     end_line=h.end_line,
@@ -392,7 +392,7 @@ class ScanCodeDataProvider(BaseProvider):
             ]
         if holders is None:
             holders = [
-                Holder(
+                HolderModel(
                     holder=cr.copyright,
                     start_line=cr.start_line,
                     end_line=cr.end_line,
@@ -435,7 +435,7 @@ class ScanCodeDataProvider(BaseProvider):
                 self.misc_provider,
                 self.random_element(["Java", "Typescript", "HTML", "Python"]),
             )
-        return File(
+        return FileModel(
             authors=authors or [],
             base_name=base_name or PurePath(PurePath(path).name).stem,
             copyrights=copyrights,
@@ -469,7 +469,7 @@ class ScanCodeDataProvider(BaseProvider):
             sha256=sha256 if sha256 is not None else self.misc_provider.sha256(),
             size=size if size is not None else self.random_int(max=10**9),
             size_count=size_count,
-            type=FileType.FILE,
+            type=FileTypeModel.FILE,
             urls=urls if urls is not None else random_list(self, self.url),
         )
 
@@ -478,10 +478,10 @@ class ScanCodeDataProvider(BaseProvider):
         copyright: str | None = None,
         end_line: int | None = None,
         start_line: int | None = None,
-    ) -> Copyright:
+    ) -> CopyrightModel:
         start_line = start_line or self.random_int()
         end_line = start_line + self.random_int(max=50)
-        return Copyright(
+        return CopyrightModel(
             copyright=copyright or "Copyright " + self.company_provider.company(),
             end_line=end_line,
             start_line=start_line,
@@ -492,10 +492,10 @@ class ScanCodeDataProvider(BaseProvider):
         email: str | None = None,
         end_line: int | None = None,
         start_line: int | None = None,
-    ) -> Email:
+    ) -> EmailModel:
         start_line = start_line or self.random_int()
         end_line = start_line + self.random_int(max=2)
-        return Email(
+        return EmailModel(
             email=email or self.internet_provider.email(),
             end_line=end_line,
             start_line=start_line,
@@ -506,10 +506,10 @@ class ScanCodeDataProvider(BaseProvider):
         url: str | None = None,
         end_line: int | None = None,
         start_line: int | None = None,
-    ) -> Url:
+    ) -> UrlModel:
         start_line = start_line or self.random_int()
         end_line = start_line + self.random_int(max=2)
-        return Url(
+        return UrlModel(
             url=url or self.internet_provider.url(),
             end_line=end_line,
             start_line=start_line,
@@ -519,10 +519,10 @@ class ScanCodeDataProvider(BaseProvider):
         self,
         license_expression: str | None = None,
         license_expression_spdx: str | None = None,
-        matches: list[Match] | None = None,
+        matches: list[MatchModel] | None = None,
         identifier: str | None = None,
         path: str | None = None,
-    ) -> FileBasedLicenseDetection:
+    ) -> FileBasedLicenseDetectionModel:
         if path is None and matches is None:
             raise RuntimeError(
                 "Neither path nor matches given which is likely a user error. "
@@ -546,7 +546,7 @@ class ScanCodeDataProvider(BaseProvider):
             ),
             min_number_of_entries=1,
         )
-        return FileBasedLicenseDetection(
+        return FileBasedLicenseDetectionModel(
             license_expression=license_expression,
             license_expression_spdx=license_expression_spdx,
             matches=matches,
@@ -568,12 +568,12 @@ class ScanCodeDataProvider(BaseProvider):
         rule_url: Any | None = None,
         score: float | None = None,
         start_line: int | None = None,
-    ) -> Match:
+    ) -> MatchModel:
         start_line = start_line or self.random_int()
         end_line = start_line + self.random_int()
         if license_expression_spdx is None:
             license_expression_spdx = self.lexify("???? License")
-        return Match(
+        return MatchModel(
             end_line=end_line,
             from_file=from_file,
             license_expression=license_expression or "",

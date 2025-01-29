@@ -5,29 +5,29 @@
 
 from pathlib import PurePath
 
-from opossum_lib.input_formats.scancode.entities.scan_code_data_raw import (
-    Copyright,
-    File,
-    FileBasedLicenseDetection,
-    FileType,
-    Holder,
-    Url,
+from opossum_lib.input_formats.scancode.entities.scan_code_data_model import (
+    CopyrightModel,
+    FileBasedLicenseDetectionModel,
+    FileModel,
+    FileTypeModel,
+    HolderModel,
+    UrlModel,
 )
 
 
-def _create_reference_scancode_files() -> list[File]:
+def _create_reference_scancode_files() -> list[FileModel]:
     return [
-        _create_file("A", FileType.DIRECTORY),
-        _create_file("A/B", FileType.DIRECTORY),
-        _create_file("A/file1", FileType.FILE),
-        _create_file("A/file2.txt", FileType.FILE),
-        _create_file("A/B/file3", FileType.FILE),
+        _create_file("A", FileTypeModel.DIRECTORY),
+        _create_file("A/B", FileTypeModel.DIRECTORY),
+        _create_file("A/file1", FileTypeModel.FILE),
+        _create_file("A/file2.txt", FileTypeModel.FILE),
+        _create_file("A/B/file3", FileTypeModel.FILE),
     ]
 
 
 def _create_file(
     path: str,
-    type: FileType,
+    type: FileTypeModel,
     *,
     name: str | None = None,
     base_name: str | None = None,
@@ -50,19 +50,19 @@ def _create_file(
     for_packages: list | None = None,
     detected_license_expression: str | None = None,
     detected_license_expression_spdx: str | None = None,
-    license_detections: list[FileBasedLicenseDetection] | None = None,
+    license_detections: list[FileBasedLicenseDetectionModel] | None = None,
     license_clues: list | None = None,
     percentage_of_license_text: float = 0.0,
-    copyrights: list[Copyright] | None = None,
-    holders: list[Holder] | None = None,
+    copyrights: list[CopyrightModel] | None = None,
+    holders: list[HolderModel] | None = None,
     authors: list | None = None,
     emails: list | None = None,
-    urls: list[Url] | None = None,
+    urls: list[UrlModel] | None = None,
     files_count: int = 0,
     dirs_count: int = 0,
     size_count: int = 0,
     scan_errors: list | None = None,
-) -> File:
+) -> FileModel:
     if package_data is None:
         package_data = []
     if for_packages is None:
@@ -89,7 +89,7 @@ def _create_file(
         base_name = PurePath(PurePath(path).name).stem
     if extension is None:
         extension = PurePath(path).suffix
-    return File(
+    return FileModel(
         authors=authors,
         base_name=base_name,
         copyrights=copyrights,

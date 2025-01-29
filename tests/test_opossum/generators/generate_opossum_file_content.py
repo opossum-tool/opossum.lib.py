@@ -5,9 +5,9 @@ from typing import Any
 
 from faker.providers import BaseProvider
 
-from opossum_lib.shared.entities.opossum_file import OpossumFileModel
-from opossum_lib.shared.entities.opossum_input_file import OpossumInputFile
-from opossum_lib.shared.entities.opossum_output_file import OpossumOutputFile
+from opossum_lib.shared.entities.opossum_file_model import OpossumFileModel
+from opossum_lib.shared.entities.opossum_input_file_model import OpossumInputFileModel
+from opossum_lib.shared.entities.opossum_output_file_model import OpossumOutputFileModel
 from tests.test_opossum.generators.generate_file_information import (
     FileInformationProvider,
 )
@@ -27,8 +27,8 @@ class OpossumFileContentProvider(BaseProvider):
 
     def opossum_file_content(
         self,
-        in_file: OpossumInputFile | None = None,
-        out_file: OpossumOutputFile | None = None,
+        in_file: OpossumInputFileModel | None = None,
+        out_file: OpossumOutputFileModel | None = None,
     ) -> OpossumFileModel:
         return OpossumFileModel(
             input_file=in_file or self.infile_provider.opossum_file_information(),
