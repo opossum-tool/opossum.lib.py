@@ -5,9 +5,9 @@ from typing import Any
 
 from faker.providers import BaseProvider
 
-from opossum_lib.input_formats.opossum.opossum_file import OpossumInformation
-from opossum_lib.input_formats.opossum.opossum_file_content import OpossumFileContent
-from opossum_lib.input_formats.opossum.output_model import OpossumOutputFile
+from opossum_lib.opossum_file_model.opossum_file import OpossumInformation
+from opossum_lib.opossum_file_model.opossum_file_content import OpossumFileContent
+from opossum_lib.opossum_file_model.output_model import OpossumOutputFile
 from tests.test_opossum.generators.generate_file_information import (
     FileInformationProvider,
 )

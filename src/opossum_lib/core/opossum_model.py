@@ -15,9 +15,9 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-import opossum_lib.input_formats.opossum.opossum_file as opossum_file
-from opossum_lib.input_formats.opossum.opossum_file_content import OpossumFileContent
-from opossum_lib.input_formats.opossum.output_model import OpossumOutputFile
+import opossum_lib.opossum_file_model.opossum_file as opossum_file
+from opossum_lib.opossum_file_model.opossum_file_content import OpossumFileContent
+from opossum_lib.opossum_file_model.output_model import OpossumOutputFile
 
 type OpossumPackageIdentifier = str
 type ResourcePath = str

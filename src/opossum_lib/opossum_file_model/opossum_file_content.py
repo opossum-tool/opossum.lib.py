@@ -15,8 +15,8 @@ from opossum_lib.input_formats.opossum.constants import (
     INPUT_JSON_NAME,
     OUTPUT_JSON_NAME,
 )
-from opossum_lib.input_formats.opossum.opossum_file import OpossumInformation
-from opossum_lib.input_formats.opossum.output_model import OpossumOutputFile
+from opossum_lib.opossum_file_model.opossum_file import OpossumInformation
+from opossum_lib.opossum_file_model.output_model import OpossumOutputFile
 
 
 class OpossumFileContent(BaseModel):
