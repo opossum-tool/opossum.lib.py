@@ -5,13 +5,13 @@ from pathlib import Path
 
 from opossum_lib.core.input_format_reader import InputFormatReader
 from opossum_lib.core.opossum_model import Opossum
+from opossum_lib.input_formats.opossum.opossum_file_reader import OpossumFileReader
 from opossum_lib.input_formats.opossum.opossum_file_to_opossum_converter import (
     OpossumFileToOpossumConverter,
 )
-from opossum_lib.opossum_file_model.opossum_file_content import OpossumFileContent
 
 
 class OpossumFormatReader(InputFormatReader):
     def read(self, path: Path) -> Opossum:
-        opossum_input_file = OpossumFileContent.from_file(path=path)
+        opossum_input_file = OpossumFileReader.from_file(path=path)
         return OpossumFileToOpossumConverter.convert_to_opossum(opossum_input_file)

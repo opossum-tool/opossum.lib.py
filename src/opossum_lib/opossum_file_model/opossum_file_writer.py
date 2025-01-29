@@ -4,7 +4,7 @@
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from opossum_lib.input_formats.opossum.constants import (
+from opossum_lib.opossum_file_model.constants import (
     COMPRESSION_LEVEL,
     INPUT_JSON_NAME,
     OUTPUT_JSON_NAME,
