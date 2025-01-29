@@ -244,7 +244,6 @@ class OpossumFileToOpossumConverter:
     def _convert_package(
         infile_package: opossum_file_package.OpossumPackage,
     ) -> OpossumPackage:
-        pass
         return OpossumPackage(
             source=OpossumFileToOpossumConverter._convert_source(infile_package.source),
             attribution_confidence=infile_package.attribution_confidence,
