@@ -5,7 +5,6 @@
 from copy import deepcopy
 from pathlib import PurePath
 
-import opossum_lib.shared.entities.opossum_input_file_model as opossum_file_package
 from opossum_lib.core.entities.opossum import (
     BaseUrlsForSources,
     ExternalAttributionSource,
@@ -13,7 +12,7 @@ from opossum_lib.core.entities.opossum import (
     Metadata,
     Opossum,
     OpossumPackage,
-    OpossumPackageIdentifier,
+    OpossumPackageIdentifierModel,
     Resource,
     ResourceType,
     ScanResults,
@@ -24,91 +23,102 @@ from opossum_lib.shared.entities.opossum_file_model import OpossumFileModel
 from opossum_lib.shared.entities.opossum_input_file_model import (
     ExternalAttributionSourceModel as FileExternalAttributionSource,
 )
-from opossum_lib.shared.entities.opossum_input_file_model import OpossumInputFileModel
+from opossum_lib.shared.entities.opossum_input_file_model import (
+    FrequentLicenseModel,
+    MetadataModel,
+    OpossumInputFileModel,
+    OpossumPackageModel,
+    ResourceInFileModel,
+    ResourcePathModel,
+    SourceInfoModel,
+)
 
 
-class OpossumFileToOpossumConverter:
+class OpossumFileModelToOpossumConverter:
     @staticmethod
-    def convert_to_opossum(opossum_file: OpossumFileModel) -> Opossum:
+    def convert_to_opossum(opossum_file_model: OpossumFileModel) -> Opossum:
         opossum = Opossum(
-            scan_results=OpossumFileToOpossumConverter._convert_to_opossum_scan_results(
-                opossum_file.input_file
+            scan_results=OpossumFileModelToOpossumConverter._convert_to_scan_results(
+                opossum_file_model.input_file
             ),
-            review_results=opossum_file.output_file,
+            review_results=opossum_file_model.output_file,
         )
         return opossum
 
     @staticmethod
-    def _convert_to_opossum_scan_results(
-        opossum_information: OpossumInputFileModel,
+    def _convert_to_scan_results(
+        opossum_input_file_model: OpossumInputFileModel,
     ) -> ScanResults:
         resources, used_attribution_ids = (
-            OpossumFileToOpossumConverter._convert_to_opossum_model_resource_tree(
-                resources=opossum_information.resources,
-                external_attributions=opossum_information.external_attributions,
-                resources_to_attributions=opossum_information.resources_to_attributions,
+            OpossumFileModelToOpossumConverter._convert_to_resource_tree(
+                resources=opossum_input_file_model.resources,
+                external_attributions=opossum_input_file_model.external_attributions,
+                resources_to_attributions=opossum_input_file_model.resources_to_attributions,
             )
         )
         # fmt: off
         frequent_licenses = (
-            opossum_information.frequent_licenses
-            and OpossumFileToOpossumConverter
-            ._convert_frequent_licenses_to_model_frequent_licenses(
-                opossum_information.frequent_licenses
+                opossum_input_file_model.frequent_licenses
+                and OpossumFileModelToOpossumConverter
+                ._convert_frequent_licenses(
+                opossum_input_file_model.frequent_licenses
             )
         )
         # fmt: on
 
         base_urls_for_sources = (
-            opossum_information.base_urls_for_sources
+            opossum_input_file_model.base_urls_for_sources
             and BaseUrlsForSources(
-                **(opossum_information.base_urls_for_sources.model_dump())
+                **(opossum_input_file_model.base_urls_for_sources.model_dump())
             )
         )
 
-        file_attribution_sources = opossum_information.external_attribution_sources
+        file_attribution_sources = opossum_input_file_model.external_attribution_sources
         external_attribution_sources = {
-            name: OpossumFileToOpossumConverter._convert_external_attribution_source(
+            # noqa required due to clash between linter and formatter
+            name: OpossumFileModelToOpossumConverter._convert_external_attribution_source(  # noqa: E501
                 attribution_source
             )
             for name, attribution_source in file_attribution_sources.items()
         }
 
         attribution_with_id = (
-            OpossumFileToOpossumConverter._convert_to_attribution_with_id(
-                opossum_information.external_attributions
+            OpossumFileModelToOpossumConverter._convert_to_attribution_with_id(
+                opossum_input_file_model.external_attributions
             )
         )
         return ScanResults(
-            metadata=OpossumFileToOpossumConverter._convert_to_opossum_model_metadata(
-                opossum_information.metadata
+            metadata=OpossumFileModelToOpossumConverter._convert_to_metadata(
+                opossum_input_file_model.metadata
             ),
             resources=resources,
             attribution_breakpoints=deepcopy(
-                opossum_information.attribution_breakpoints
+                opossum_input_file_model.attribution_breakpoints
             ),
             external_attribution_sources=external_attribution_sources,
             frequent_licenses=frequent_licenses,
-            files_with_children=deepcopy(opossum_information.files_with_children),
+            files_with_children=deepcopy(opossum_input_file_model.files_with_children),
             base_urls_for_sources=base_urls_for_sources,
             attribution_to_id=attribution_with_id,
-            unassigned_attributions=OpossumFileToOpossumConverter._get_unassigned_attributions(
-                used_attribution_ids, opossum_information.external_attributions
+            unassigned_attributions=OpossumFileModelToOpossumConverter._get_unassigned_attributions(
+                used_attribution_ids, opossum_input_file_model.external_attributions
             ),
         )
 
     @staticmethod
     def _get_unassigned_attributions(
-        used_attribution_ids: set[OpossumPackageIdentifier],
+        used_attribution_ids: set[OpossumPackageIdentifierModel],
         external_attributions: dict[
-            opossum_file_package.OpossumPackageIdentifier,
-            opossum_file_package.OpossumPackageModel,
+            OpossumPackageIdentifierModel,
+            OpossumPackageModel,
         ],
     ) -> list[OpossumPackage] | None:
         available_attribution_ids = external_attributions.keys()
         unused_attributions_ids = set(available_attribution_ids) - used_attribution_ids
         unused_attributions = [
-            OpossumFileToOpossumConverter._convert_package(external_attributions[id])
+            OpossumFileModelToOpossumConverter._convert_package(
+                external_attributions[id]
+            )
             for id in unused_attributions_ids
         ]
         return unused_attributions
@@ -124,38 +134,38 @@ class OpossumFileToOpossumConverter:
         )
 
     @staticmethod
-    def _convert_frequent_licenses_to_model_frequent_licenses(
-        frequent_licenses_infile: list[opossum_file_package.FrequentLicenseModel],
+    def _convert_frequent_licenses(
+        frequent_licenses_infile: list[FrequentLicenseModel],
     ) -> list[FrequentLicense]:
         frequent_licenses: list[FrequentLicense] = [
-            OpossumFileToOpossumConverter._convert_frequent_license(license)
+            OpossumFileModelToOpossumConverter._convert_frequent_license(license)
             for license in frequent_licenses_infile
         ]
         return frequent_licenses
 
     @staticmethod
-    def _convert_to_opossum_model_metadata(
-        infile_metadata: opossum_file_package.MetadataModel,
+    def _convert_to_metadata(
+        infile_metadata: MetadataModel,
     ) -> Metadata:
         return Metadata(**infile_metadata.model_dump())
 
     @staticmethod
-    def _convert_to_opossum_model_resource_tree(
-        resources: opossum_file_package.ResourceInFile,
+    def _convert_to_resource_tree(
+        resources: ResourceInFileModel,
         external_attributions: dict[
-            opossum_file_package.OpossumPackageIdentifier,
-            opossum_file_package.OpossumPackageModel,
+            OpossumPackageIdentifierModel,
+            OpossumPackageModel,
         ],
         resources_to_attributions: dict[
-            opossum_file_package.ResourcePath,
-            list[opossum_file_package.OpossumPackageIdentifier],
+            ResourcePathModel,
+            list[OpossumPackageIdentifierModel],
         ],
-    ) -> tuple[list[Resource], set[OpossumPackageIdentifier]]:
+    ) -> tuple[list[Resource], set[OpossumPackageIdentifierModel]]:
         used_attribution_ids = set()
 
         def generate_child_resource(
             current_path: PurePath,
-            to_insert: opossum_file_package.ResourceInFile,
+            to_insert: ResourceInFileModel,
         ) -> Resource:
             path = current_path
             current_path_as_string = _convert_path_to_str(current_path)
@@ -188,13 +198,13 @@ class OpossumFileToOpossumConverter:
 
         def _get_applicable_attributions(
             current_path_as_string: str,
-        ) -> tuple[list[OpossumPackage], set[OpossumPackageIdentifier]]:
+        ) -> tuple[list[OpossumPackage], set[OpossumPackageIdentifierModel]]:
             attributions = []
             attribution_ids: list[str] = []
             if current_path_as_string in resources_to_attributions:
                 attribution_ids = resources_to_attributions[current_path_as_string]
                 attributions = [
-                    OpossumFileToOpossumConverter._convert_package(
+                    OpossumFileModelToOpossumConverter._convert_package(
                         external_attributions[id]
                     )
                     for id in attribution_ids
@@ -214,13 +224,15 @@ class OpossumFileToOpossumConverter:
     @staticmethod
     def _convert_to_attribution_with_id(
         external_attributions: dict[
-            opossum_file_package.OpossumPackageIdentifier,
-            opossum_file_package.OpossumPackageModel,
+            OpossumPackageIdentifierModel,
+            OpossumPackageModel,
         ],
     ) -> dict[OpossumPackage, str]:
         result = {}
         for package_identifier, package in external_attributions.items():
-            converted_package = OpossumFileToOpossumConverter._convert_package(package)
+            converted_package = OpossumFileModelToOpossumConverter._convert_package(
+                package
+            )
             if converted_package not in result:
                 result[converted_package] = package_identifier
             else:
@@ -232,7 +244,7 @@ class OpossumFileToOpossumConverter:
 
     @staticmethod
     def _convert_frequent_license(
-        infile_frequent_license: opossum_file_package.FrequentLicenseModel,
+        infile_frequent_license: FrequentLicenseModel,
     ) -> FrequentLicense:
         return FrequentLicense(
             full_name=infile_frequent_license.full_name,
@@ -242,10 +254,12 @@ class OpossumFileToOpossumConverter:
 
     @staticmethod
     def _convert_package(
-        infile_package: opossum_file_package.OpossumPackageModel,
+        infile_package: OpossumPackageModel,
     ) -> OpossumPackage:
         return OpossumPackage(
-            source=OpossumFileToOpossumConverter._convert_source(infile_package.source),
+            source=OpossumFileModelToOpossumConverter._convert_source(
+                infile_package.source
+            ),
             attribution_confidence=infile_package.attribution_confidence,
             comment=infile_package.comment,
             package_name=infile_package.package_name,
@@ -269,7 +283,7 @@ class OpossumFileToOpossumConverter:
 
     @staticmethod
     def _convert_source(
-        infile_source_info: opossum_file_package.SourceInfoModel,
+        infile_source_info: SourceInfoModel,
     ) -> SourceInfo:
         return SourceInfo(
             name=infile_source_info.name,

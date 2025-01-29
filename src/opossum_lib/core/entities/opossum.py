@@ -15,8 +15,19 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-import opossum_lib.shared.entities.opossum_input_file_model as opossum_file
 from opossum_lib.shared.entities.opossum_file_model import OpossumFileModel
+from opossum_lib.shared.entities.opossum_input_file_model import (
+    BaseUrlsForSourcesModel,
+    ExternalAttributionSourceModel,
+    FrequentLicenseModel,
+    MetadataModel,
+    OpossumInputFileModel,
+    OpossumPackageIdentifierModel,
+    OpossumPackageModel,
+    ResourceInFileModel,
+    ResourcePathModel,
+    SourceInfoModel,
+)
 from opossum_lib.shared.entities.opossum_output_file_model import OpossumOutputFileModel
 
 type OpossumPackageIdentifier = str
@@ -36,9 +47,9 @@ class Opossum(BaseModel):
     scan_results: ScanResults
     review_results: OpossumOutputFileModel | None = None
 
-    def to_opossum_file_format(self) -> OpossumFileModel:
+    def to_opossum_model(self) -> OpossumFileModel:
         return OpossumFileModel(
-            input_file=self.scan_results.to_opossum_file_format(),
+            input_file=self.scan_results.to_opossum_model(),
             output_file=self.review_results,
         )
 
@@ -57,7 +68,7 @@ class ScanResults(BaseModel):
     )
     unassigned_attributions: list[OpossumPackage] = []
 
-    def to_opossum_file_format(self) -> opossum_file.OpossumInputFileModel:
+    def to_opossum_model(self) -> OpossumInputFileModel:
         external_attributions, resources_to_attributions = (
             self.create_attribution_mapping(self.resources)
         )
@@ -66,22 +77,21 @@ class ScanResults(BaseModel):
         frequent_licenses = None
         if self.frequent_licenses:
             frequent_licenses = [
-                license.to_opossum_file_format() for license in self.frequent_licenses
+                license.to_opossum_model() for license in self.frequent_licenses
             ]
         base_urls_for_sources = (
-            self.base_urls_for_sources
-            and self.base_urls_for_sources.to_opossum_file_format()
+            self.base_urls_for_sources and self.base_urls_for_sources.to_opossum_model()
         )
 
         external_attribution_sources = {
-            key: val.to_opossum_file_format()
+            key: val.to_opossum_model()
             for (key, val) in self.external_attribution_sources.items()
         }
 
-        return opossum_file.OpossumInputFileModel(
-            metadata=self.metadata.to_opossum_file_format(),
+        return OpossumInputFileModel(
+            metadata=self.metadata.to_opossum_model(),
             resources={
-                str(resource.path): resource.to_opossum_file_format()
+                str(resource.path): resource.to_opossum_model()
                 for resource in self.resources
             },
             external_attributions=external_attributions,
@@ -95,20 +105,20 @@ class ScanResults(BaseModel):
 
     def _get_unassigned_attributions(
         self,
-    ) -> dict[opossum_file.OpossumPackageIdentifier, opossum_file.OpossumPackageModel]:
+    ) -> dict[OpossumPackageIdentifierModel, OpossumPackageModel]:
         if self.unassigned_attributions:
             result = {}
             for unassigned_attribution in self.unassigned_attributions:
                 if unassigned_attribution in self.attribution_to_id:
                     package_identifier = self.attribution_to_id[unassigned_attribution]
                     result[package_identifier] = (
-                        unassigned_attribution.to_opossum_file_format()
+                        unassigned_attribution.to_opossum_model()
                     )
                 else:
                     package_identifier = str(uuid.uuid4())
                     self.attribution_to_id[unassigned_attribution] = package_identifier
                     result[package_identifier] = (
-                        unassigned_attribution.to_opossum_file_format()
+                        unassigned_attribution.to_opossum_model()
                     )
             return result
         else:
@@ -118,14 +128,14 @@ class ScanResults(BaseModel):
         self,
         root_nodes: list[Resource],
     ) -> tuple[
-        dict[opossum_file.OpossumPackageIdentifier, opossum_file.OpossumPackageModel],
-        dict[opossum_file.ResourcePath, list[opossum_file.OpossumPackageIdentifier]],
+        dict[OpossumPackageIdentifierModel, OpossumPackageModel],
+        dict[ResourcePathModel, list[OpossumPackageIdentifierModel]],
     ]:
         external_attributions: dict[
-            opossum_file.OpossumPackageIdentifier, opossum_file.OpossumPackageModel
+            OpossumPackageIdentifierModel, OpossumPackageModel
         ] = {}
         resources_to_attributions: dict[
-            opossum_file.ResourcePath, list[opossum_file.OpossumPackageIdentifier]
+            ResourcePathModel, list[OpossumPackageIdentifierModel]
         ] = {}
 
         def process_node(node: Resource) -> None:
@@ -135,7 +145,7 @@ class ScanResults(BaseModel):
                 path = "/" + path
 
             node_attributions_by_id = {
-                self.get_attribution_key(a): a.to_opossum_file_format()
+                self.get_attribution_key(a): a.to_opossum_model()
                 for a in node.attributions
             }
             external_attributions.update(node_attributions_by_id)
@@ -171,12 +181,12 @@ class Resource(BaseModel):
     attributions: list[OpossumPackage] = []
     children: dict[str, Resource] = {}
 
-    def to_opossum_file_format(self) -> opossum_file.ResourceInFile:
+    def to_opossum_model(self) -> ResourceInFileModel:
         if self.children or self.type == ResourceType.FOLDER:
             return {
                 _convert_path_to_str(
                     child.path.relative_to(self.path)
-                ): child.to_opossum_file_format()
+                ): child.to_opossum_model()
                 for child in self.children.values()
             }
         else:
@@ -227,8 +237,8 @@ class Resource(BaseModel):
 class BaseUrlsForSources(BaseModel):
     model_config = ConfigDict(frozen=True, extra="allow")
 
-    def to_opossum_file_format(self) -> opossum_file.BaseUrlsForSourcesModel:
-        return opossum_file.BaseUrlsForSourcesModel(**self.model_dump())
+    def to_opossum_model(self) -> BaseUrlsForSourcesModel:
+        return BaseUrlsForSourcesModel(**self.model_dump())
 
 
 class FrequentLicense(BaseModel):
@@ -237,8 +247,8 @@ class FrequentLicense(BaseModel):
     short_name: str
     default_text: str
 
-    def to_opossum_file_format(self) -> opossum_file.FrequentLicenseModel:
-        return opossum_file.FrequentLicenseModel(
+    def to_opossum_model(self) -> FrequentLicenseModel:
+        return FrequentLicenseModel(
             full_name=self.full_name,
             short_name=self.short_name,
             default_text=self.default_text,
@@ -251,8 +261,8 @@ class SourceInfo(BaseModel):
     document_confidence: int | float | None = 0
     additional_name: str | None = None
 
-    def to_opossum_file_format(self) -> opossum_file.SourceInfoModel:
-        return opossum_file.SourceInfoModel(
+    def to_opossum_model(self) -> SourceInfoModel:
+        return SourceInfoModel(
             name=self.name,
             document_confidence=self.document_confidence,
             additional_name=self.additional_name,
@@ -282,9 +292,9 @@ class OpossumPackage(BaseModel):
     criticality: Literal["high"] | Literal["medium"] | None = None
     was_preferred: bool | None = None
 
-    def to_opossum_file_format(self) -> opossum_file.OpossumPackageModel:
-        return opossum_file.OpossumPackageModel(
-            source=self.source.to_opossum_file_format(),
+    def to_opossum_model(self) -> OpossumPackageModel:
+        return OpossumPackageModel(
+            source=self.source.to_opossum_model(),
             attribution_confidence=self.attribution_confidence,
             comment=self.comment,
             package_name=self.package_name,
@@ -316,8 +326,8 @@ class Metadata(BaseModel):
     expected_release_date: str | None = None
     build_date: str | None = None
 
-    def to_opossum_file_format(self) -> opossum_file.MetadataModel:
-        return opossum_file.MetadataModel(**self.model_dump())
+    def to_opossum_model(self) -> MetadataModel:
+        return MetadataModel(**self.model_dump())
 
 
 class ExternalAttributionSource(BaseModel):
@@ -326,8 +336,8 @@ class ExternalAttributionSource(BaseModel):
     priority: int
     is_relevant_for_preferred: bool | None = None
 
-    def to_opossum_file_format(self) -> opossum_file.ExternalAttributionSourceModel:
-        return opossum_file.ExternalAttributionSourceModel(
+    def to_opossum_model(self) -> ExternalAttributionSourceModel:
+        return ExternalAttributionSourceModel(
             name=self.name,
             priority=self.priority,
             is_relevant_for_preferred=self.is_relevant_for_preferred,

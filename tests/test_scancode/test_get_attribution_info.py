@@ -69,9 +69,7 @@ def test_get_attribution_info_file_multiple(scancode_faker: ScanCodeFaker) -> No
     )
     scancode_data = scancode_faker.scancode_data(files=[file])
     opossum = ScancodeDataToOpossumConverter.convert_scancode_to_opossum(scancode_data)
-    attributions = (
-        opossum.to_opossum_file_format().input_file.external_attributions.values()
-    )
+    attributions = opossum.to_opossum_model().input_file.external_attributions.values()
 
     expected1 = OpossumPackageModel(
         source=SourceInfoModel(name=SCANCODE_SOURCE_NAME),

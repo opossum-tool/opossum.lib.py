@@ -56,7 +56,7 @@ class OpossumGenerator:
         # for the future a merge step is planned after reading the files
         opossum = self.input_reader.read(input_files[0])
 
-        opossum_file_content = opossum.to_opossum_file_format()
+        opossum_file_content = opossum.to_opossum_model()
         OpossumFileWriter.write(
             opossum_file_content, opossum_generation_arguments.outfile
         )

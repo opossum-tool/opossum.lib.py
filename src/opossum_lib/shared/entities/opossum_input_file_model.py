@@ -11,9 +11,9 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, model_serializer
 from pydantic.alias_generators import to_camel
 
-type OpossumPackageIdentifier = str
-type ResourcePath = str
-type ResourceInFile = dict[str, ResourceInFile] | int
+type OpossumPackageIdentifierModel = str
+type ResourcePathModel = str
+type ResourceInFileModel = dict[str, ResourceInFileModel] | int
 
 
 class CamelBaseModel(BaseModel):
@@ -24,9 +24,11 @@ class CamelBaseModel(BaseModel):
 
 class OpossumInputFileModel(CamelBaseModel):
     metadata: MetadataModel
-    resources: ResourceInFile
-    external_attributions: dict[OpossumPackageIdentifier, OpossumPackageModel]
-    resources_to_attributions: dict[ResourcePath, list[OpossumPackageIdentifier]]
+    resources: ResourceInFileModel
+    external_attributions: dict[OpossumPackageIdentifierModel, OpossumPackageModel]
+    resources_to_attributions: dict[
+        ResourcePathModel, list[OpossumPackageIdentifierModel]
+    ]
     attribution_breakpoints: list[str] = field(default_factory=list)
     external_attribution_sources: dict[str, ExternalAttributionSourceModel] = field(
         default_factory=dict
@@ -149,7 +151,7 @@ class ResourceModel(CamelBaseModel):
 
             return resource
 
-    def to_dict(self) -> ResourceInFile:
+    def to_dict(self) -> ResourceInFileModel:
         if not self.has_children():
             if self.type == ResourceTypeModel.FOLDER:
                 return {}
@@ -180,7 +182,7 @@ class ResourceModel(CamelBaseModel):
     def has_children(self) -> bool:
         return len(self.children) > 0
 
-    def convert_to_file_resource(self) -> ResourceInFile:
+    def convert_to_file_resource(self) -> ResourceInFileModel:
         return self.to_dict()
 
 

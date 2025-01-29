@@ -19,10 +19,10 @@ from opossum_lib.shared.entities.opossum_input_file_model import (
     FrequentLicenseModel,
     MetadataModel,
     OpossumInputFileModel,
-    OpossumPackageIdentifier,
+    OpossumPackageIdentifierModel,
     OpossumPackageModel,
-    ResourceInFile,
-    ResourcePath,
+    ResourceInFileModel,
+    ResourcePathModel,
     SourceInfoModel,
 )
 from tests.util.generator_helpers import entry_or_none, random_list
@@ -88,10 +88,12 @@ class FileInformationProvider(BaseProvider):
         self,
         *,
         metadata: MetadataModel | None = None,
-        resources: ResourceInFile | None = None,
-        external_attributions: dict[OpossumPackageIdentifier, OpossumPackageModel]
+        resources: ResourceInFileModel | None = None,
+        external_attributions: dict[OpossumPackageIdentifierModel, OpossumPackageModel]
         | None = None,
-        resources_to_attributions: dict[ResourcePath, list[OpossumPackageIdentifier]]
+        resources_to_attributions: dict[
+            ResourcePathModel, list[OpossumPackageIdentifierModel]
+        ]
         | None = None,
         attribution_breakpoints: list[str] | None = None,
         external_attribution_sources: dict[str, ExternalAttributionSourceModel]
@@ -126,7 +128,7 @@ class FileInformationProvider(BaseProvider):
         depth: int = 3,
         max_folders_per_level: int = 3,
         max_files_per_level: int = 3,
-    ) -> ResourceInFile:
+    ) -> ResourceInFileModel:
         if depth == 0:
             files = self.random_int(0, max_files_per_level)
             return {
@@ -242,7 +244,7 @@ class FileInformationProvider(BaseProvider):
 
     def external_attributions(
         self, max_number_of_attributions: int = 50, min_number_of_attributions: int = 5
-    ) -> dict[OpossumPackageIdentifier, OpossumPackageModel]:
+    ) -> dict[OpossumPackageIdentifierModel, OpossumPackageModel]:
         number_of_attributions = self.random_int(
             min_number_of_attributions, max_number_of_attributions
         )
@@ -253,10 +255,12 @@ class FileInformationProvider(BaseProvider):
 
     def resources_to_attributions(
         self,
-        resources: ResourceInFile,
-        external_attributions: dict[OpossumPackageIdentifier, OpossumPackageModel],
-    ) -> dict[ResourcePath, list[OpossumPackageIdentifier]]:
-        def get_file_paths(resource: ResourceInFile, current_path: str) -> list[str]:
+        resources: ResourceInFileModel,
+        external_attributions: dict[OpossumPackageIdentifierModel, OpossumPackageModel],
+    ) -> dict[ResourcePathModel, list[OpossumPackageIdentifierModel]]:
+        def get_file_paths(
+            resource: ResourceInFileModel, current_path: str
+        ) -> list[str]:
             if isinstance(resource, int):
                 return []
             resulting_file_paths = []

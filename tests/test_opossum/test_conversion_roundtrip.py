@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 from copy import deepcopy
 
-from opossum_lib.input_formats.opossum.services.opossum_file_to_opossum_converter import (  # noqa: E501
-    OpossumFileToOpossumConverter,
+from opossum_lib.input_formats.opossum.services.opossum_file_model_to_opossum_converter import (  # noqa: E501
+    OpossumFileModelToOpossumConverter,
 )
 from opossum_lib.shared.entities.opossum_file_model import OpossumFileModel
 from tests.test_setup.opossum_file_faker_setup import OpossumFileFaker
@@ -31,7 +31,7 @@ class TestConversionRoundtrip:
     @staticmethod
     def _check_round_trip(start_file_content: OpossumFileModel) -> None:
         expected_file_content = deepcopy(start_file_content)
-        result = OpossumFileToOpossumConverter.convert_to_opossum(
+        result = OpossumFileModelToOpossumConverter.convert_to_opossum(
             start_file_content
-        ).to_opossum_file_format()
+        ).to_opossum_model()
         assert result == expected_file_content
