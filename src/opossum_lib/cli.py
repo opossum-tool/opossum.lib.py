@@ -6,9 +6,14 @@ from pathlib import Path
 # SPDX-License-Identifier: Apache-2.0
 import click
 
+from opossum_lib.core.input_file import InputFileType
 from opossum_lib.core.opossum_generator import (
     OpossumGenerationArguments,
     OpossumGenerator,
+)
+from opossum_lib.input_formats.opossum.opossum_format_reader import OpossumFormatReader
+from opossum_lib.input_formats.scancode.scancode_format_reader import (
+    ScancodeFormatReader,
 )
 
 
@@ -56,11 +61,18 @@ def generate(
       - ScanCode
       - Opossum
     """
-    OpossumGenerator().generate(
-        opossum_generation_arguments=OpossumGenerationArguments(
-            opossum_files=opossum_files,
-            scancode_json_files=scancode_json_files,
-            outfile=outfile,
+    (
+        OpossumGenerator(
+            input_format_readers={
+                InputFileType.OPOSSUM: OpossumFormatReader(),
+                InputFileType.SCAN_CODE: ScancodeFormatReader(),
+            }
+        ).generate(
+            opossum_generation_arguments=OpossumGenerationArguments(
+                opossum_files=opossum_files,
+                scancode_json_files=scancode_json_files,
+                outfile=outfile,
+            )
         )
     )
 

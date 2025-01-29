@@ -15,3 +15,12 @@ modules =
     opossum_lib.input_formats.*
 ignore_imports =
     ** -> opossum_lib.core.opossum_model
+
+
+[importlinter:contract:core-should-not-depend -on-input-files]
+name = Core should not depend on input files
+type = forbidden
+source_modules =
+    opossum_lib.core
+forbidden_modules =
+    opossum_lib.input_formats
