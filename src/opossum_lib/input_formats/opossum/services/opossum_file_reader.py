@@ -13,14 +13,14 @@ from opossum_lib.shared.constants import (
     INPUT_JSON_NAME,
     OUTPUT_JSON_NAME,
 )
-from opossum_lib.shared.entities.opossum_file_content import OpossumFileContent
-from opossum_lib.shared.entities.opossum_information import OpossumInformation
+from opossum_lib.shared.entities.opossum_file import OpossumFileModel
+from opossum_lib.shared.entities.opossum_input_file import OpossumInputFile
 from opossum_lib.shared.entities.opossum_output_file import OpossumOutputFile
 
 
 class OpossumFileReader:
     @staticmethod
-    def from_file(path: Path) -> OpossumFileContent:
+    def from_file(path: Path) -> OpossumFileModel:
         logging.info(f"Converting opossum to opossum {path}")
 
         try:
@@ -31,7 +31,7 @@ class OpossumFileReader:
                 input_file = OpossumFileReader._read_input_json_from_zip_file(
                     input_zip_file
                 )
-                return OpossumFileContent(
+                return OpossumFileModel(
                     input_file=input_file,
                     output_file=OpossumFileReader._read_output_json_if_exists(
                         input_zip_file
@@ -42,10 +42,10 @@ class OpossumFileReader:
             sys.exit(1)
 
     @staticmethod
-    def _read_input_json_from_zip_file(input_zip_file: ZipFile) -> OpossumInformation:
+    def _read_input_json_from_zip_file(input_zip_file: ZipFile) -> OpossumInputFile:
         with input_zip_file.open(INPUT_JSON_NAME) as input_json_file:
             input_json = json.load(input_json_file)
-            input_file = OpossumInformation.model_validate(input_json)
+            input_file = OpossumInputFile.model_validate(input_json)
         return input_file
 
     @staticmethod

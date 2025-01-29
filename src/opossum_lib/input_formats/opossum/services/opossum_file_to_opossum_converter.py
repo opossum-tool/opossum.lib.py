@@ -5,7 +5,7 @@
 from copy import deepcopy
 from pathlib import PurePath
 
-import opossum_lib.shared.entities.opossum_information as opossum_file_package
+import opossum_lib.shared.entities.opossum_input_file as opossum_file_package
 from opossum_lib.core.entities.opossum import (
     BaseUrlsForSources,
     ExternalAttributionSource,
@@ -20,16 +20,16 @@ from opossum_lib.core.entities.opossum import (
     SourceInfo,
     _convert_path_to_str,
 )
-from opossum_lib.shared.entities.opossum_file_content import OpossumFileContent
-from opossum_lib.shared.entities.opossum_information import (
+from opossum_lib.shared.entities.opossum_file import OpossumFileModel
+from opossum_lib.shared.entities.opossum_input_file import (
     ExternalAttributionSource as FileExternalAttributionSource,
 )
-from opossum_lib.shared.entities.opossum_information import OpossumInformation
+from opossum_lib.shared.entities.opossum_input_file import OpossumInputFile
 
 
 class OpossumFileToOpossumConverter:
     @staticmethod
-    def convert_to_opossum(opossum_file: OpossumFileContent) -> Opossum:
+    def convert_to_opossum(opossum_file: OpossumFileModel) -> Opossum:
         opossum = Opossum(
             scan_results=OpossumFileToOpossumConverter._convert_to_opossum_scan_results(
                 opossum_file.input_file
@@ -40,7 +40,7 @@ class OpossumFileToOpossumConverter:
 
     @staticmethod
     def _convert_to_opossum_scan_results(
-        opossum_information: OpossumInformation,
+        opossum_information: OpossumInputFile,
     ) -> ScanResults:
         resources, used_attribution_ids = (
             OpossumFileToOpossumConverter._convert_to_opossum_model_resource_tree(

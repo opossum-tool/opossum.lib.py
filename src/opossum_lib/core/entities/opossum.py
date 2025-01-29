@@ -15,8 +15,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-import opossum_lib.shared.entities.opossum_information as opossum_file
-from opossum_lib.shared.entities.opossum_file_content import OpossumFileContent
+import opossum_lib.shared.entities.opossum_input_file as opossum_file
+from opossum_lib.shared.entities.opossum_file import OpossumFileModel
 from opossum_lib.shared.entities.opossum_output_file import OpossumOutputFile
 
 type OpossumPackageIdentifier = str
@@ -36,8 +36,8 @@ class Opossum(BaseModel):
     scan_results: ScanResults
     review_results: OpossumOutputFile | None = None
 
-    def to_opossum_file_format(self) -> OpossumFileContent:
-        return OpossumFileContent(
+    def to_opossum_file_format(self) -> OpossumFileModel:
+        return OpossumFileModel(
             input_file=self.scan_results.to_opossum_file_format(),
             output_file=self.review_results,
         )
@@ -57,7 +57,7 @@ class ScanResults(BaseModel):
     )
     unassigned_attributions: list[OpossumPackage] = []
 
-    def to_opossum_file_format(self) -> opossum_file.OpossumInformation:
+    def to_opossum_file_format(self) -> opossum_file.OpossumInputFile:
         external_attributions, resources_to_attributions = (
             self.create_attribution_mapping(self.resources)
         )
@@ -78,7 +78,7 @@ class ScanResults(BaseModel):
             for (key, val) in self.external_attribution_sources.items()
         }
 
-        return opossum_file.OpossumInformation(
+        return opossum_file.OpossumInputFile(
             metadata=self.metadata.to_opossum_file_format(),
             resources={
                 str(resource.path): resource.to_opossum_file_format()

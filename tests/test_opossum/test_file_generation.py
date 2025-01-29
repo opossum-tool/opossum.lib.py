@@ -10,14 +10,14 @@ from opossum_lib.shared.constants import (
     INPUT_JSON_NAME,
     OUTPUT_JSON_NAME,
 )
-from opossum_lib.shared.entities.opossum_file_content import OpossumFileContent
+from opossum_lib.shared.entities.opossum_file import OpossumFileModel
 from tests.test_setup.opossum_file_faker_setup import OpossumFileFaker
 
 
 def test_only_input_information_available_writes_only_input_information(
     tmp_path: Path, opossum_file_faker: OpossumFileFaker
 ) -> None:
-    opossum_file_content = OpossumFileContent(
+    opossum_file_content = OpossumFileModel(
         input_file=opossum_file_faker.opossum_file_information()
     )
     output_path = tmp_path / "output.opossum"

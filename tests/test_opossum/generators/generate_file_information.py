@@ -13,12 +13,12 @@ from faker.providers.lorem.en_US import Provider as LoremProvider
 from faker.providers.misc import Provider as MiscProvider
 from faker.providers.person import Provider as PersonProvider
 
-from opossum_lib.shared.entities.opossum_information import (
+from opossum_lib.shared.entities.opossum_input_file import (
     BaseUrlsForSources,
     ExternalAttributionSource,
     FrequentLicense,
     Metadata,
-    OpossumInformation,
+    OpossumInputFile,
     OpossumPackage,
     OpossumPackageIdentifier,
     ResourceInFile,
@@ -99,12 +99,12 @@ class FileInformationProvider(BaseProvider):
         frequent_licenses: list[FrequentLicense] | None = None,
         files_with_children: list[str] | None = None,
         base_urls_for_sources: BaseUrlsForSources | None = None,
-    ) -> OpossumInformation:
+    ) -> OpossumInputFile:
         generated_resources = resources or self.resource_in_file()
         attributions = external_attributions or self.external_attributions(
             min_number_of_attributions=25
         )
-        return OpossumInformation(
+        return OpossumInputFile(
             metadata=metadata or self.metadata_provider.opossum_input_metadata(),
             resources=generated_resources,
             external_attributions=attributions,

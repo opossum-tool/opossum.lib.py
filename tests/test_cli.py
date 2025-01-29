@@ -16,7 +16,7 @@ from opossum_lib.shared.constants import (
     INPUT_JSON_NAME,
     OUTPUT_JSON_NAME,
 )
-from opossum_lib.shared.entities.opossum_information import OpossumPackage
+from opossum_lib.shared.entities.opossum_input_file import OpossumPackage
 from tests.test_setup.opossum_file_faker_setup import OpossumFileFaker
 
 test_data_path = Path(__file__).resolve().parent / "data"

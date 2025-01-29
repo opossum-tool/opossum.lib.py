@@ -22,7 +22,7 @@ class CamelBaseModel(BaseModel):
     )
 
 
-class OpossumInformation(CamelBaseModel):
+class OpossumInputFile(CamelBaseModel):
     metadata: Metadata
     resources: ResourceInFile
     external_attributions: dict[OpossumPackageIdentifier, OpossumPackage]

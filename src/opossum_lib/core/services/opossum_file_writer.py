@@ -9,24 +9,24 @@ from opossum_lib.shared.constants import (
     INPUT_JSON_NAME,
     OUTPUT_JSON_NAME,
 )
-from opossum_lib.shared.entities.opossum_file_content import OpossumFileContent
+from opossum_lib.shared.entities.opossum_file import OpossumFileModel
 
 
 class OpossumFileWriter:
     @staticmethod
-    def write(opossum_file_content: OpossumFileContent, file_path: Path) -> None:
+    def write(opossum_file_model: OpossumFileModel, file_path: Path) -> None:
         file_path = OpossumFileWriter._ensure_outfile_suffix(file_path)
         with ZipFile(
             file_path, "w", compression=ZIP_DEFLATED, compresslevel=COMPRESSION_LEVEL
         ) as zip_file:
-            OpossumFileWriter._write_input_json(opossum_file_content, zip_file)
+            OpossumFileWriter._write_input_json(opossum_file_model, zip_file)
             OpossumFileWriter._write_output_json_if_existing(
-                opossum_file_content, zip_file
+                opossum_file_model, zip_file
             )
 
     @staticmethod
     def _write_output_json_if_existing(
-        opossum_file_content: OpossumFileContent, zip_file: ZipFile
+        opossum_file_content: OpossumFileModel, zip_file: ZipFile
     ) -> None:
         if opossum_file_content.output_file:
             zip_file.writestr(
@@ -38,11 +38,11 @@ class OpossumFileWriter:
 
     @staticmethod
     def _write_input_json(
-        opossum_file_content: OpossumFileContent, zip_file: ZipFile
+        opossum_file_model: OpossumFileModel, zip_file: ZipFile
     ) -> None:
         zip_file.writestr(
             INPUT_JSON_NAME,
-            opossum_file_content.input_file.model_dump_json(
+            opossum_file_model.input_file.model_dump_json(
                 indent=4,
                 exclude_none=True,
                 by_alias=True,
