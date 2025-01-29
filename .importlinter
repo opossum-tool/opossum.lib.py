@@ -24,3 +24,11 @@ source_modules =
     opossum_lib.core
 forbidden_modules =
     opossum_lib.input_formats
+
+[importlinter:contract:opossum_file_format_should_not_depend_on_input_formats]
+name = Opossum file format should not depend on input formats
+type = forbidden
+source_modules =
+    opossum_lib.opossum_file_model
+forbidden_modules =
+    opossum_lib.input_formats
