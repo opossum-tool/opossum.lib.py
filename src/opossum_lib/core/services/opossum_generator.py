@@ -18,7 +18,7 @@ class OpossumGenerationArguments(BaseModel):
     outfile: Path
 
     @property
-    def valid_input_files(self) -> list[InputFile]:
+    def input_files(self) -> list[InputFile]:
         self._validate_and_exit_on_error()
         result = []
         result += [
@@ -32,7 +32,7 @@ class OpossumGenerationArguments(BaseModel):
         return result
 
     def _validate_and_exit_on_error(self) -> None:
-        total_number_of_files = +len(self.scancode_json_files) + len(self.opossum_files)
+        total_number_of_files = len(self.scancode_json_files) + len(self.opossum_files)
         if total_number_of_files == 0:
             logging.warning("No input provided. Exiting.")
             sys.exit(1)
@@ -50,8 +50,10 @@ class OpossumGenerator:
     def generate(
         self, opossum_generation_arguments: OpossumGenerationArguments
     ) -> None:
-        input_files = opossum_generation_arguments.valid_input_files
+        input_files = opossum_generation_arguments.input_files
 
+        # currently this converts only one file (validated in the arguments)
+        # for the future a merge step is planned after reading the files
         opossum = self.input_reader.read(input_files[0])
 
         opossum_file_content = opossum.to_opossum_file_format()
