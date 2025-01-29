@@ -6,7 +6,7 @@ from abc import abstractmethod
 from pathlib import Path
 from typing import Protocol
 
-from opossum_lib.core.entities.opossum_model import Opossum
+from opossum_lib.core.entities.opossum import Opossum
 
 
 class InputFormatReader(Protocol):

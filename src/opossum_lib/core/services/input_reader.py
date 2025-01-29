@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from opossum_lib.core.entities.input_file import InputFile, InputFileType
-from opossum_lib.core.entities.opossum_model import Opossum
+from opossum_lib.core.entities.opossum import Opossum
 from opossum_lib.core.services.input_format_reader import InputFormatReader
 
 

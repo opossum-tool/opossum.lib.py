@@ -6,7 +6,7 @@
 import pytest
 from _pytest.logging import LogCaptureFixture
 
-from opossum_lib.core.entities.opossum_model import Resource
+from opossum_lib.core.entities.opossum import Resource
 from opossum_lib.input_formats.scancode.services.scancode_data_to_opossum_converter import (  # noqa: E501
     ScancodeDataToOpossumConverter,
 )

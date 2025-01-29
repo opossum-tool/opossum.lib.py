@@ -5,8 +5,8 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-from opossum_lib.shared.entities.opossum_file import OpossumInformation
-from opossum_lib.shared.entities.output_model import OpossumOutputFile
+from opossum_lib.shared.entities.opossum_information import OpossumInformation
+from opossum_lib.shared.entities.opossum_output_file import OpossumOutputFile
 
 
 class OpossumFileContent(BaseModel):

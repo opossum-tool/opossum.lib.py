@@ -13,9 +13,9 @@ from opossum_lib.shared.constants import (
     INPUT_JSON_NAME,
     OUTPUT_JSON_NAME,
 )
-from opossum_lib.shared.entities.opossum_file import OpossumInformation
 from opossum_lib.shared.entities.opossum_file_content import OpossumFileContent
-from opossum_lib.shared.entities.output_model import OpossumOutputFile
+from opossum_lib.shared.entities.opossum_information import OpossumInformation
+from opossum_lib.shared.entities.opossum_output_file import OpossumOutputFile
 
 
 class OpossumFileReader:

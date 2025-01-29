@@ -5,8 +5,8 @@
 from copy import deepcopy
 from pathlib import PurePath
 
-import opossum_lib.shared.entities.opossum_file as opossum_file_package
-from opossum_lib.core.entities.opossum_model import (
+import opossum_lib.shared.entities.opossum_information as opossum_file_package
+from opossum_lib.core.entities.opossum import (
     BaseUrlsForSources,
     ExternalAttributionSource,
     FrequentLicense,
@@ -20,11 +20,11 @@ from opossum_lib.core.entities.opossum_model import (
     SourceInfo,
     _convert_path_to_str,
 )
-from opossum_lib.shared.entities.opossum_file import (
+from opossum_lib.shared.entities.opossum_file_content import OpossumFileContent
+from opossum_lib.shared.entities.opossum_information import (
     ExternalAttributionSource as FileExternalAttributionSource,
 )
-from opossum_lib.shared.entities.opossum_file import OpossumInformation
-from opossum_lib.shared.entities.opossum_file_content import OpossumFileContent
+from opossum_lib.shared.entities.opossum_information import OpossumInformation
 
 
 class OpossumFileToOpossumConverter:

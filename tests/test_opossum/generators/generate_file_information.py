@@ -13,7 +13,7 @@ from faker.providers.lorem.en_US import Provider as LoremProvider
 from faker.providers.misc import Provider as MiscProvider
 from faker.providers.person import Provider as PersonProvider
 
-from opossum_lib.shared.entities.opossum_file import (
+from opossum_lib.shared.entities.opossum_information import (
     BaseUrlsForSources,
     ExternalAttributionSource,
     FrequentLicense,

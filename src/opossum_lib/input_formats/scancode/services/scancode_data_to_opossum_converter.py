@@ -7,7 +7,7 @@ import sys
 import uuid
 from pathlib import PurePath
 
-from opossum_lib.core.entities.opossum_model import (
+from opossum_lib.core.entities.opossum import (
     Metadata,
     Opossum,
     OpossumPackage,
@@ -17,17 +17,17 @@ from opossum_lib.core.entities.opossum_model import (
     SourceInfo,
 )
 from opossum_lib.input_formats.scancode.constants import SCANCODE_SOURCE_NAME
-from opossum_lib.input_formats.scancode.entities.model import (
+from opossum_lib.input_formats.scancode.entities.scan_code_data_raw import (
     File,
     FileType,
     Header,
-    ScanCodeData,
+    ScanCodeDataRaw,
 )
 
 
 class ScancodeDataToOpossumConverter:
     @staticmethod
-    def convert_scancode_to_opossum(scancode_data: ScanCodeData) -> Opossum:
+    def convert_scancode_to_opossum(scancode_data: ScanCodeDataRaw) -> Opossum:
         resources = ScancodeDataToOpossumConverter.extract_opossum_resources(
             scancode_data
         )
@@ -49,7 +49,7 @@ class ScancodeDataToOpossumConverter:
         )
 
     @staticmethod
-    def extract_scancode_header(scancode_data: ScanCodeData) -> Header:
+    def extract_scancode_header(scancode_data: ScanCodeDataRaw) -> Header:
         if len(scancode_data.headers) != 1:
             logging.error("Headers of ScanCode file are invalid.")
             sys.exit(1)
@@ -57,7 +57,7 @@ class ScancodeDataToOpossumConverter:
 
     @staticmethod
     def extract_opossum_resources(
-        scancode_data: ScanCodeData,
+        scancode_data: ScanCodeDataRaw,
     ) -> list[Resource]:
         temp_root = Resource(path=PurePath(""))
         for file in scancode_data.files:

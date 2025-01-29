@@ -20,7 +20,7 @@ from faker.providers.internet import Provider as InternetProvider
 from faker.providers.lorem.en_US import Provider as LoremProvider
 from faker.providers.misc import Provider as MiscProvider
 
-from opossum_lib.input_formats.scancode.entities.model import (
+from opossum_lib.input_formats.scancode.entities.scan_code_data_raw import (
     Copyright,
     Email,
     ExtraData,
@@ -33,7 +33,7 @@ from opossum_lib.input_formats.scancode.entities.model import (
     Match,
     Options,
     ReferenceMatch,
-    ScanCodeData,
+    ScanCodeDataRaw,
     SystemEnvironment,
     Url,
 )
@@ -68,7 +68,7 @@ class ScanCodeDataProvider(BaseProvider):
         headers: list[Header] | None = None,
         packages: list | None = None,
         options: Options | None = None,
-    ) -> ScanCodeData:
+    ) -> ScanCodeDataRaw:
         # TODO: #184 depending on which options are passed in additional_options
         # we need to generate different fields, e.g. --licenses
         # out of scope for now
@@ -76,7 +76,7 @@ class ScanCodeDataProvider(BaseProvider):
         license_detections = license_detections or self.global_license_detections(files)
         if headers is None:
             headers = [self.header(options=options)]
-        return ScanCodeData(
+        return ScanCodeDataRaw(
             dependencies=dependencies or [],
             files=files,
             license_detections=license_detections,

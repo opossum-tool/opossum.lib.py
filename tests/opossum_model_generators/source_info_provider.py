@@ -7,7 +7,7 @@ from faker.providers import BaseProvider
 from faker.providers.misc import Provider as MiscProvider
 from faker.providers.person.en_US import Provider as PersonProvider
 
-from opossum_lib.core.entities.opossum_model import SourceInfo
+from opossum_lib.core.entities.opossum import SourceInfo
 from tests.util.generator_helpers import entry_or_none
 
 

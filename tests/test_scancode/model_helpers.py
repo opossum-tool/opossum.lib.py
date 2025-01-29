@@ -5,7 +5,7 @@
 
 from pathlib import PurePath
 
-from opossum_lib.input_formats.scancode.entities.model import (
+from opossum_lib.input_formats.scancode.entities.scan_code_data_raw import (
     Copyright,
     File,
     FileBasedLicenseDetection,

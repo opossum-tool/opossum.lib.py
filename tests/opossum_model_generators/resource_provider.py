@@ -8,7 +8,7 @@ from faker.providers import BaseProvider
 from faker.providers.file import Provider as FileProvider
 from faker.providers.misc import Provider as MiscProvider
 
-from opossum_lib.core.entities.opossum_model import (
+from opossum_lib.core.entities.opossum import (
     OpossumPackage,
     Resource,
     ResourceType,

@@ -7,11 +7,13 @@ import logging
 import sys
 from pathlib import Path
 
-from opossum_lib.core.entities.opossum_model import (
+from opossum_lib.core.entities.opossum import (
     Opossum,
 )
 from opossum_lib.core.services.input_format_reader import InputFormatReader
-from opossum_lib.input_formats.scancode.entities.model import ScanCodeData
+from opossum_lib.input_formats.scancode.entities.scan_code_data_raw import (
+    ScanCodeDataRaw,
+)
 from opossum_lib.input_formats.scancode.services.scancode_data_to_opossum_converter import (  # noqa: E501
     ScancodeDataToOpossumConverter,
 )
@@ -26,7 +28,7 @@ class ScancodeFormatReader(InputFormatReader):
         return ScancodeDataToOpossumConverter.convert_scancode_to_opossum(scancode_data)
 
     @staticmethod
-    def load_scancode_json(path: Path) -> ScanCodeData:
+    def load_scancode_json(path: Path) -> ScanCodeDataRaw:
         try:
             with open(path) as inp:
                 json_data = json.load(inp)
@@ -37,6 +39,6 @@ class ScancodeFormatReader(InputFormatReader):
             logging.error(f"Error decoding json for file {path}.")
             sys.exit(1)
 
-        scancode_data = ScanCodeData.model_validate(json_data)
+        scancode_data = ScanCodeDataRaw.model_validate(json_data)
 
         return scancode_data

@@ -15,7 +15,7 @@ from opossum_lib.shared.constants import (
     INPUT_JSON_NAME,
     OUTPUT_JSON_NAME,
 )
-from opossum_lib.shared.entities.opossum_file import OpossumPackage
+from opossum_lib.shared.entities.opossum_information import OpossumPackage
 from opossum_lib.shared.services.opossum_file_writer import OpossumFileWriter
 from tests.test_setup.opossum_file_faker_setup import OpossumFileFaker
 

@@ -6,7 +6,7 @@ import pytest
 from opossum_lib.input_formats.opossum.services.opossum_file_to_opossum_converter import (  # noqa: E501
     OpossumFileToOpossumConverter,
 )
-from opossum_lib.shared.entities.opossum_file import (
+from opossum_lib.shared.entities.opossum_information import (
     OpossumPackage,
     OpossumPackageIdentifier,
 )
