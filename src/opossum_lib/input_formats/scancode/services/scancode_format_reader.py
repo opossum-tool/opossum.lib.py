@@ -10,7 +10,7 @@ from pathlib import Path
 from opossum_lib.core.entities.opossum import (
     Opossum,
 )
-from opossum_lib.core.services.input_format_reader import InputFormatReader
+from opossum_lib.core.services.input_reader import InputFormatReader
 from opossum_lib.input_formats.scancode.entities.scan_code_data_raw import (
     ScanCodeDataRaw,
 )

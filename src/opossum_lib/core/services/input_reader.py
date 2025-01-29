@@ -1,10 +1,17 @@
 # SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
+from abc import abstractmethod
+from asyncio import Protocol
+from pathlib import Path
 
 from opossum_lib.core.entities.input_file import InputFile, InputFileType
 from opossum_lib.core.entities.opossum import Opossum
-from opossum_lib.core.services.input_format_reader import InputFormatReader
+
+
+class InputFormatReader(Protocol):
+    @abstractmethod
+    def read(self, path: Path) -> Opossum: ...
 
 
 class InputReader:

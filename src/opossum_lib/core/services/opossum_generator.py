@@ -1,13 +1,44 @@
 # SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
-from opossum_lib.core.entities.input_file import InputFileType
-from opossum_lib.core.entities.opossum_generation_arguments import (
-    OpossumGenerationArguments,
-)
-from opossum_lib.core.services.input_format_reader import InputFormatReader
-from opossum_lib.core.services.input_reader import InputReader
+import logging
+import sys
+from pathlib import Path
+
+from pydantic import BaseModel
+
+from opossum_lib.core.entities.input_file import InputFile, InputFileType
+from opossum_lib.core.services.input_reader import InputFormatReader, InputReader
 from opossum_lib.core.services.opossum_file_writer import OpossumFileWriter
+
+
+class OpossumGenerationArguments(BaseModel):
+    scancode_json_files: list[Path]
+    opossum_files: list[Path]
+    outfile: Path
+
+    @property
+    def valid_input_files(self) -> list[InputFile]:
+        self._validate_and_exit_on_error()
+        result = []
+        result += [
+            InputFile(path=path, type=InputFileType.SCAN_CODE)
+            for path in self.scancode_json_files
+        ]
+        result += [
+            InputFile(path=path, type=InputFileType.OPOSSUM)
+            for path in self.opossum_files
+        ]
+        return result
+
+    def _validate_and_exit_on_error(self) -> None:
+        total_number_of_files = +len(self.scancode_json_files) + len(self.opossum_files)
+        if total_number_of_files == 0:
+            logging.warning("No input provided. Exiting.")
+            sys.exit(1)
+        if total_number_of_files > 1:
+            logging.error("Merging of multiple files not yet supported!")
+            sys.exit(1)
 
 
 class OpossumGenerator:
