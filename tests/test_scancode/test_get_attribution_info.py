@@ -4,10 +4,10 @@
 
 
 from opossum_lib.input_formats.scancode.constants import SCANCODE_SOURCE_NAME
-from opossum_lib.input_formats.scancode.scancode_data_to_opossum_converter import (
+from opossum_lib.input_formats.scancode.services.scancode_data_to_opossum_converter import (  # noqa: E501
     ScancodeDataToOpossumConverter,
 )
-from opossum_lib.opossum_file_model.opossum_file import OpossumPackage, SourceInfo
+from opossum_lib.shared.entities.opossum_file import OpossumPackage, SourceInfo
 from tests.test_setup.scancode_faker_setup import ScanCodeFaker
 
 

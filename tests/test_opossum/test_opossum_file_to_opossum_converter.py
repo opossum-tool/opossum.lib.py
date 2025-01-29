@@ -3,10 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 import pytest
 
-from opossum_lib.input_formats.opossum.opossum_file_to_opossum_converter import (
+from opossum_lib.input_formats.opossum.services.opossum_file_to_opossum_converter import (  # noqa: E501
     OpossumFileToOpossumConverter,
 )
-from opossum_lib.opossum_file_model.opossum_file import (
+from opossum_lib.shared.entities.opossum_file import (
     OpossumPackage,
     OpossumPackageIdentifier,
 )

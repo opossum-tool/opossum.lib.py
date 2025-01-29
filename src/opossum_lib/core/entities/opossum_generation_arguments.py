@@ -8,7 +8,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from opossum_lib.core.input_file import InputFile, InputFileType
+from opossum_lib.core.entities.input_file import InputFile, InputFileType
 
 
 class OpossumGenerationArguments(BaseModel):

@@ -13,8 +13,6 @@ name = The different file formats should be independent
 type = independence
 modules =
     opossum_lib.input_formats.*
-ignore_imports =
-    ** -> opossum_lib.core.opossum_model
 
 
 [importlinter:contract:core-should-not-depend -on-input-files]
@@ -25,10 +23,10 @@ source_modules =
 forbidden_modules =
     opossum_lib.input_formats
 
-[importlinter:contract:opossum_file_format_should_not_depend_on_input_formats]
-name = Opossum file format should not depend on input formats
+[importlinter:contract:shared_objects_not_depend_on_input_formats]
+name = Shared package not depend on input formats
 type = forbidden
 source_modules =
-    opossum_lib.opossum_file_model
+    opossum_lib.shared
 forbidden_modules =
     opossum_lib.input_formats

@@ -7,12 +7,12 @@ import logging
 import sys
 from pathlib import Path
 
-from opossum_lib.core.input_format_reader import InputFormatReader
-from opossum_lib.core.opossum_model import (
+from opossum_lib.core.entities.opossum_model import (
     Opossum,
 )
-from opossum_lib.input_formats.scancode.model import ScanCodeData
-from opossum_lib.input_formats.scancode.scancode_data_to_opossum_converter import (
+from opossum_lib.core.services.input_format_reader import InputFormatReader
+from opossum_lib.input_formats.scancode.entities.model import ScanCodeData
+from opossum_lib.input_formats.scancode.services.scancode_data_to_opossum_converter import (  # noqa: E501
     ScancodeDataToOpossumConverter,
 )
 

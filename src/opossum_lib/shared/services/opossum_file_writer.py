@@ -4,12 +4,12 @@
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from opossum_lib.opossum_file_model.constants import (
+from opossum_lib.shared.constants import (
     COMPRESSION_LEVEL,
     INPUT_JSON_NAME,
     OUTPUT_JSON_NAME,
 )
-from opossum_lib.opossum_file_model.opossum_file_content import OpossumFileContent
+from opossum_lib.shared.entities.opossum_file_content import OpossumFileContent
 
 
 class OpossumFileWriter:

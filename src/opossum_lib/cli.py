@@ -6,13 +6,15 @@ from pathlib import Path
 # SPDX-License-Identifier: Apache-2.0
 import click
 
-from opossum_lib.core.input_file import InputFileType
-from opossum_lib.core.opossum_generator import (
+from opossum_lib.core.entities.input_file import InputFileType
+from opossum_lib.core.services.opossum_generator import (
     OpossumGenerationArguments,
     OpossumGenerator,
 )
-from opossum_lib.input_formats.opossum.opossum_format_reader import OpossumFormatReader
-from opossum_lib.input_formats.scancode.scancode_format_reader import (
+from opossum_lib.input_formats.opossum.services.opossum_format_reader import (
+    OpossumFormatReader,
+)
+from opossum_lib.input_formats.scancode.services.scancode_format_reader import (
     ScancodeFormatReader,
 )
 

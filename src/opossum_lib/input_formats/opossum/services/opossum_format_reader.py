@@ -3,10 +3,12 @@
 # SPDX-License-Identifier: Apache-2.0
 from pathlib import Path
 
-from opossum_lib.core.input_format_reader import InputFormatReader
-from opossum_lib.core.opossum_model import Opossum
-from opossum_lib.input_formats.opossum.opossum_file_reader import OpossumFileReader
-from opossum_lib.input_formats.opossum.opossum_file_to_opossum_converter import (
+from opossum_lib.core.entities.opossum_model import Opossum
+from opossum_lib.core.services.input_format_reader import InputFormatReader
+from opossum_lib.input_formats.opossum.services.opossum_file_reader import (
+    OpossumFileReader,
+)
+from opossum_lib.input_formats.opossum.services.opossum_file_to_opossum_converter import (  # noqa: E501
     OpossumFileToOpossumConverter,
 )
 
