@@ -65,7 +65,7 @@ Options:
                          Option can be repeated.
   -o, --outfile TEXT     The file path to write the generated opossum document
                          to. If appropriate, the extension ".opossum" is
-                         appended.If the output file already exists, it is
+                         appended. If the output file already exists, it is
                          overwritten.  [default: output.opossum]
   --help                 Show this message and exit.
 
