@@ -3,24 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 from abc import abstractmethod
 from asyncio import Protocol
-from pathlib import Path
 
-from opossum_lib.core.entities.input_file import InputFile, InputFileType
 from opossum_lib.core.entities.opossum import Opossum
 
 
-class InputFormatReader(Protocol):
+class InputReader(Protocol):
     @abstractmethod
-    def read(self, path: Path) -> Opossum: ...
-
-
-class InputReader:
-    input_format_readers: dict[InputFileType, InputFormatReader]
-
-    def __init__(self, input_format_readers: dict[InputFileType, InputFormatReader]):
-        self.input_format_readers = input_format_readers
-
-    def read(self, input_file: InputFile) -> Opossum:
-        if input_file.type in self.input_format_readers:
-            return self.input_format_readers[input_file.type].read(input_file.path)
-        raise NotImplementedError(f"Unsupported file type: {input_file.type}")
+    def read(self) -> Opossum: ...

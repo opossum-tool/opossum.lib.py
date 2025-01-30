@@ -9,14 +9,9 @@ from __future__ import annotations
 from enum import Enum
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field
-from pydantic.alias_generators import to_camel
+from pydantic import ConfigDict, Field
 
-
-class CamelBaseModel(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=to_camel, populate_by_name=True, extra="forbid", frozen=True
-    )
+from opossum_lib.shared.entities.camel_base_model import CamelBaseModel
 
 
 class Metadata(CamelBaseModel):

@@ -4,7 +4,7 @@
 
 
 from opossum_lib.input_formats.scancode.constants import SCANCODE_SOURCE_NAME
-from opossum_lib.input_formats.scancode.services.scancode_data_to_opossum_converter import (  # noqa: E501
+from opossum_lib.input_formats.scancode.services.convert_scancode_to_opossum import (  # noqa: E501
     ScancodeDataToOpossumConverter,
 )
 from opossum_lib.shared.entities.opossum_input_file_model import (

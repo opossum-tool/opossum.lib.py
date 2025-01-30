@@ -1,21 +1,20 @@
 #!/usr/bin/env python3
-from pathlib import Path
 
 # SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
+import logging
+import sys
+from pathlib import Path
+
 import click
 
-from opossum_lib.core.entities.input_file import InputFileType
-from opossum_lib.core.services.opossum_generator import (
-    OpossumGenerationArguments,
-    OpossumGenerator,
-)
+from opossum_lib.core.services.opossum_generator import generate_impl
 from opossum_lib.input_formats.opossum.services.opossum_format_reader import (
     OpossumFormatReader,
 )
 from opossum_lib.input_formats.scancode.services.scancode_format_reader import (
-    ScancodeFormatReader,
+    ScancodeFileReader,
 )
 
 
@@ -63,20 +62,19 @@ def generate(
       - ScanCode
       - Opossum
     """
-    (
-        OpossumGenerator(
-            input_format_readers={
-                InputFileType.OPOSSUM: OpossumFormatReader(),
-                InputFileType.SCAN_CODE: ScancodeFormatReader(),
-            }
-        ).generate(
-            opossum_generation_arguments=OpossumGenerationArguments(
-                opossum_files=opossum_files,
-                scancode_json_files=scancode_json_files,
-                outfile=outfile,
-            )
-        )
-    )
+    total_number_of_files = len(scancode_json_files) + len(opossum_files)
+    if total_number_of_files == 0:
+        logging.warning("No input provided. Exiting.")
+        sys.exit(1)
+    if total_number_of_files > 1:
+        logging.error("Merging of multiple files not yet supported!")
+        sys.exit(1)
+
+    readers = []
+    readers += [ScancodeFileReader(path=path) for path in scancode_json_files]
+    readers += [OpossumFormatReader(path=path) for path in opossum_files]
+
+    generate_impl(readers, outfile)
 
 
 if __name__ == "__main__":

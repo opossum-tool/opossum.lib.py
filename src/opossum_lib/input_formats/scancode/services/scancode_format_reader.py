@@ -10,33 +10,35 @@ from pathlib import Path
 from opossum_lib.core.entities.opossum import (
     Opossum,
 )
-from opossum_lib.core.services.input_reader import InputFormatReader
+from opossum_lib.core.services.input_reader import InputReader
 from opossum_lib.input_formats.scancode.entities.scan_code_data_model import (
     ScanCodeDataModel,
 )
-from opossum_lib.input_formats.scancode.services.scancode_data_to_opossum_converter import (  # noqa: E501
-    ScancodeDataToOpossumConverter,
+from opossum_lib.input_formats.scancode.services.convert_scancode_to_opossum import (
+    convert_scancode_to_opossum,
 )
 
 
-class ScancodeFormatReader(InputFormatReader):
-    def read(self, path: Path) -> Opossum:
-        logging.info(f"Converting scancode to opossum {path}")
+class ScancodeFileReader(InputReader):
+    def __init__(self, path: Path):
+        self.path = path
 
-        scancode_data = ScancodeFormatReader.load_scancode_json(path)
+    def read(self) -> Opossum:
+        logging.info(f"Converting scancode to opossum {self.path}")
 
-        return ScancodeDataToOpossumConverter.convert_scancode_to_opossum(scancode_data)
+        scancode_data = self._load_scancode_json()
 
-    @staticmethod
-    def load_scancode_json(path: Path) -> ScanCodeDataModel:
+        return convert_scancode_to_opossum(scancode_data)
+
+    def _load_scancode_json(self) -> ScanCodeDataModel:
         try:
-            with open(path) as inp:
+            with open(self.path) as inp:
                 json_data = json.load(inp)
         except json.JSONDecodeError as e:
-            logging.error(f"Error decoding json for file {path}. Message: {e.msg}")
+            logging.error(f"Error decoding json for file {self.path}. Message: {e.msg}")
             sys.exit(1)
         except UnicodeDecodeError:
-            logging.error(f"Error decoding json for file {path}.")
+            logging.error(f"Error decoding json for file {self.path}.")
             sys.exit(1)
 
         scancode_data = ScanCodeDataModel.model_validate(json_data)
