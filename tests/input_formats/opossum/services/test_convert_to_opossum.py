@@ -13,7 +13,7 @@ from opossum_lib.shared.entities.opossum_input_file_model import (
 from tests.setup.opossum_file_faker_setup import OpossumFileFaker
 
 
-class TestOpossumFileModelToOpossumConverter:
+class TestConvertToOpossum:
     def test_output_file_moved(self, opossum_file_faker: OpossumFileFaker) -> None:
         output_file = opossum_file_faker.output_file()
         input_file = opossum_file_faker.opossum_file_content(out_file=output_file)
