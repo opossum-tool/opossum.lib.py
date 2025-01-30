@@ -8,16 +8,15 @@ from faker.providers import BaseProvider
 from faker.providers.file.en_US import Provider as FileProvider
 from faker.providers.misc.en_US import Provider as MiscProvider
 
-from opossum_lib.core.entities.opossum import (
-    BaseUrlsForSources,
+from opossum_lib.core.entities.base_url_for_sources import BaseUrlsForSources
+from opossum_lib.core.entities.external_attribution_source import (
     ExternalAttributionSource,
-    FrequentLicense,
-    Metadata,
-    OpossumPackage,
-    Resource,
-    ResourceType,
-    ScanResults,
 )
+from opossum_lib.core.entities.frequent_license import FrequentLicense
+from opossum_lib.core.entities.metadata import Metadata
+from opossum_lib.core.entities.opossum_package import OpossumPackage
+from opossum_lib.core.entities.resource import Resource, ResourceType
+from opossum_lib.core.entities.scan_results import ScanResults
 from tests.core.entities.generators.external_attribution_source_provider import (
     ExternalAttributionSourceProvider,
 )

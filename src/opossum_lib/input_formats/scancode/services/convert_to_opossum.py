@@ -7,15 +7,14 @@ import sys
 import uuid
 from pathlib import PurePath
 
+from opossum_lib.core.entities.metadata import Metadata
 from opossum_lib.core.entities.opossum import (
-    Metadata,
     Opossum,
-    OpossumPackage,
-    Resource,
-    ResourceType,
-    ScanResults,
-    SourceInfo,
 )
+from opossum_lib.core.entities.opossum_package import OpossumPackage
+from opossum_lib.core.entities.resource import Resource, ResourceType
+from opossum_lib.core.entities.scan_results import ScanResults
+from opossum_lib.core.entities.source_info import SourceInfo
 from opossum_lib.input_formats.scancode.constants import SCANCODE_SOURCE_NAME
 from opossum_lib.input_formats.scancode.entities.scan_code_data_model import (
     FileModel,

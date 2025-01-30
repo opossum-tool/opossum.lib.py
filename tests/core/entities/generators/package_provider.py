@@ -10,7 +10,8 @@ from faker.providers.lorem.en_US import Provider as LoremProvider
 from faker.providers.misc.en_US import Provider as MiscProvider
 from faker.providers.person.en_US import Provider as PersonProvider
 
-from opossum_lib.core.entities.opossum import OpossumPackage, SourceInfo
+from opossum_lib.core.entities.opossum_package import OpossumPackage
+from opossum_lib.core.entities.source_info import SourceInfo
 from tests.core.entities.generators.source_info_provider import SourceInfoProvider
 from tests.shared.generator_helpers import entry_or_none, random_list
 

@@ -8,11 +8,8 @@ from faker.providers import BaseProvider
 from faker.providers.file import Provider as FileProvider
 from faker.providers.misc import Provider as MiscProvider
 
-from opossum_lib.core.entities.opossum import (
-    OpossumPackage,
-    Resource,
-    ResourceType,
-)
+from opossum_lib.core.entities.opossum_package import OpossumPackage
+from opossum_lib.core.entities.resource import Resource, ResourceType
 from tests.core.entities.generators.package_provider import PackageProvider
 from tests.shared.generator_helpers import random_list
 

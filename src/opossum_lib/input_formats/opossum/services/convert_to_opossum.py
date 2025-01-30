@@ -5,20 +5,23 @@
 from copy import deepcopy
 from pathlib import PurePath
 
-from opossum_lib.core.entities.opossum import (
-    BaseUrlsForSources,
+from opossum_lib.core.entities.base_url_for_sources import BaseUrlsForSources
+from opossum_lib.core.entities.external_attribution_source import (
     ExternalAttributionSource,
-    FrequentLicense,
-    Metadata,
+)
+from opossum_lib.core.entities.frequent_license import FrequentLicense
+from opossum_lib.core.entities.metadata import Metadata
+from opossum_lib.core.entities.opossum import (
     Opossum,
-    OpossumPackage,
-    OpossumPackageIdentifierModel,
+)
+from opossum_lib.core.entities.opossum_package import OpossumPackage
+from opossum_lib.core.entities.resource import (
     Resource,
     ResourceType,
-    ScanResults,
-    SourceInfo,
     _convert_path_to_str,
 )
+from opossum_lib.core.entities.scan_results import ScanResults
+from opossum_lib.core.entities.source_info import SourceInfo
 from opossum_lib.shared.entities.opossum_file_model import OpossumFileModel
 from opossum_lib.shared.entities.opossum_input_file_model import (
     ExternalAttributionSourceModel as FileExternalAttributionSource,
@@ -27,6 +30,7 @@ from opossum_lib.shared.entities.opossum_input_file_model import (
     FrequentLicenseModel,
     MetadataModel,
     OpossumInputFileModel,
+    OpossumPackageIdentifierModel,
     OpossumPackageModel,
     ResourceInFileModel,
     ResourcePathModel,
