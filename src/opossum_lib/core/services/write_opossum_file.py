@@ -4,6 +4,8 @@
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
+from pydantic import BaseModel
+
 from opossum_lib.shared.constants import (
     COMPRESSION_LEVEL,
     INPUT_JSON_NAME,
@@ -25,18 +27,17 @@ def _write_output_json_if_existing(
     opossum_file_model: OpossumFileModel, zip_file: ZipFile
 ) -> None:
     if opossum_file_model.output_file:
-        zip_file.writestr(
-            OUTPUT_JSON_NAME,
-            opossum_file_model.output_file.model_dump_json(
-                exclude_none=True, indent=4, by_alias=True
-            ),
-        )
+        _write_json_to_zip(zip_file, OUTPUT_JSON_NAME, opossum_file_model.output_file)
 
 
 def _write_input_json(opossum_file_model: OpossumFileModel, zip_file: ZipFile) -> None:
+    _write_json_to_zip(zip_file, INPUT_JSON_NAME, opossum_file_model.input_file)
+
+
+def _write_json_to_zip(zip_file: ZipFile, sub_file_name: str, model: BaseModel) -> None:
     zip_file.writestr(
-        INPUT_JSON_NAME,
-        opossum_file_model.input_file.model_dump_json(
+        sub_file_name,
+        model.model_dump_json(
             indent=4,
             exclude_none=True,
             by_alias=True,

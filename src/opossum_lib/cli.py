@@ -9,10 +9,10 @@ from pathlib import Path
 
 import click
 
-from opossum_lib.core.services.input_reader import InputReader
-from opossum_lib.core.services.opossum_generator import (
+from opossum_lib.core.services.generate_impl import (
     generate_impl,
 )
+from opossum_lib.core.services.input_reader import InputReader
 from opossum_lib.input_formats.opossum.services.opossum_file_reader import (
     OpossumFileReader,
 )

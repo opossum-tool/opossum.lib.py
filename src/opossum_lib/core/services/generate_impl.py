@@ -4,7 +4,7 @@
 from pathlib import Path
 
 from opossum_lib.core.services.input_reader import InputReader
-from opossum_lib.core.services.opossum_file_writer import write_opossum_file
+from opossum_lib.core.services.write_opossum_file import write_opossum_file
 
 
 def generate_impl(input_readers: list[InputReader], output_file: Path) -> None:

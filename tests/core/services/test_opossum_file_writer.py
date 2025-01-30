@@ -5,7 +5,7 @@
 from pathlib import Path
 from zipfile import ZipFile
 
-from opossum_lib.core.services.opossum_file_writer import write_opossum_file
+from opossum_lib.core.services.write_opossum_file import write_opossum_file
 from opossum_lib.shared.constants import (
     INPUT_JSON_NAME,
     OUTPUT_JSON_NAME,
