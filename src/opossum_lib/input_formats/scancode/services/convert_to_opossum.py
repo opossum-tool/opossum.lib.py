@@ -16,15 +16,15 @@ from opossum_lib.core.entities.resource import Resource, ResourceType
 from opossum_lib.core.entities.scan_results import ScanResults
 from opossum_lib.core.entities.source_info import SourceInfo
 from opossum_lib.input_formats.scancode.constants import SCANCODE_SOURCE_NAME
-from opossum_lib.input_formats.scancode.entities.scan_code_data_model import (
+from opossum_lib.input_formats.scancode.entities.scancode_model import (
     FileModel,
     FileTypeModel,
     HeaderModel,
-    ScanCodeDataModel,
+    ScancodeModel,
 )
 
 
-def convert_to_opossum(scancode_data: ScanCodeDataModel) -> Opossum:
+def convert_to_opossum(scancode_data: ScancodeModel) -> Opossum:
     resources = _extract_opossum_resources(scancode_data)
 
     scancode_header = _extract_scancode_header(scancode_data)
@@ -42,7 +42,7 @@ def convert_to_opossum(scancode_data: ScanCodeDataModel) -> Opossum:
     )
 
 
-def _extract_scancode_header(scancode_data: ScanCodeDataModel) -> HeaderModel:
+def _extract_scancode_header(scancode_data: ScancodeModel) -> HeaderModel:
     if len(scancode_data.headers) != 1:
         logging.error("Headers of ScanCode file are invalid.")
         sys.exit(1)
@@ -50,7 +50,7 @@ def _extract_scancode_header(scancode_data: ScanCodeDataModel) -> HeaderModel:
 
 
 def _extract_opossum_resources(
-    scancode_data: ScanCodeDataModel,
+    scancode_data: ScancodeModel,
 ) -> list[Resource]:
     temp_root = Resource(path=PurePath(""))
     for file in scancode_data.files:

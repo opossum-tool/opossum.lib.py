@@ -155,7 +155,7 @@ class FileModel(BaseModel):
     urls: list[UrlModel]
 
 
-class ScanCodeDataModel(BaseModel):
+class ScancodeModel(BaseModel):
     dependencies: list
     files: list[FileModel]
     license_detections: list[GlobalLicenseDetectionModel]
