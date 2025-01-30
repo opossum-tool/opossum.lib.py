@@ -10,7 +10,7 @@ from pathlib import Path
 from opossum_lib.core.entities.opossum import (
     Opossum,
 )
-from opossum_lib.core.services.input_reader import InputFormatReader
+from opossum_lib.core.services.input_reader import InputReader
 from opossum_lib.input_formats.scancode.entities.scan_code_data_model import (
     ScanCodeDataModel,
 )
@@ -19,11 +19,16 @@ from opossum_lib.input_formats.scancode.services.scancode_data_to_opossum_conver
 )
 
 
-class ScancodeFormatReader(InputFormatReader):
-    def read(self, path: Path) -> Opossum:
-        logging.info(f"Converting scancode to opossum {path}")
+class ScancodeFormatReader(InputReader):
+    path: Path
 
-        scancode_data = ScancodeFormatReader.load_scancode_json(path)
+    def __init__(self, path: Path):
+        self.path = path
+
+    def read(self) -> Opossum:
+        logging.info(f"Converting scancode to opossum {self.path}")
+
+        scancode_data = ScancodeFormatReader.load_scancode_json(self.path)
 
         return ScancodeDataToOpossumConverter.convert_scancode_to_opossum(scancode_data)
 
