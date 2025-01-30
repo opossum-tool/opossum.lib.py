@@ -11,7 +11,7 @@ from _pytest.logging import LogCaptureFixture
 from click.testing import CliRunner, Result
 
 from opossum_lib.cli import generate
-from opossum_lib.core.services.opossum_file_writer import OpossumFileWriter
+from opossum_lib.core.services.opossum_file_writer import write_opossum_file
 from opossum_lib.shared.constants import (
     INPUT_JSON_NAME,
     OUTPUT_JSON_NAME,
@@ -180,7 +180,7 @@ def test_cli_no_output_file_provided(opossum_file_faker: OpossumFileFaker) -> No
     with runner.isolated_filesystem():
         file_path = "input.opossum"
         opossum_file = opossum_file_faker.opossum_file_content()
-        OpossumFileWriter.write(opossum_file, Path(file_path))
+        write_opossum_file(opossum_file, Path(file_path))
         result = runner.invoke(
             generate,
             "--opossum " + file_path,

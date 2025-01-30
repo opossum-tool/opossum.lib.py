@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
-import logging
-import sys
-from pathlib import Path
 
 # SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
 #
 # SPDX-License-Identifier: Apache-2.0
+import logging
+import sys
+from pathlib import Path
+
 import click
 
 from opossum_lib.core.services.input_reader import InputReader
 from opossum_lib.core.services.opossum_generator import (
     generate_impl,
 )
-from opossum_lib.input_formats.opossum.services.opossum_format_reader import (
-    OpossumFormatReader,
+from opossum_lib.input_formats.opossum.services.opossum_file_reader import (
+    OpossumFileReader,
 )
 from opossum_lib.input_formats.scancode.services.scancode_format_reader import (
     ScancodeFormatReader,
@@ -74,7 +75,7 @@ def generate(
         sys.exit(1)
     input_readers: list[InputReader] = []
     input_readers += [ScancodeFormatReader(path=path) for path in scancode_json_files]
-    input_readers += [OpossumFormatReader(path=path) for path in opossum_files]
+    input_readers += [OpossumFileReader(path=path) for path in opossum_files]
 
     generate_impl(input_readers=input_readers, output_file=Path(outfile))
 

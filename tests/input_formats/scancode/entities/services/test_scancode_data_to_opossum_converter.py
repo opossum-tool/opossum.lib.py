@@ -7,8 +7,8 @@ import pytest
 from _pytest.logging import LogCaptureFixture
 
 from opossum_lib.core.entities.opossum import Resource
-from opossum_lib.input_formats.scancode.services.scancode_data_to_opossum_converter import (  # noqa: E501
-    ScancodeDataToOpossumConverter,
+from opossum_lib.input_formats.scancode.services.convert_to_opossum import (  # noqa: E501
+    convert_to_opossum,
 )
 from tests.setup.scancode_faker_setup import ScanCodeFaker
 
@@ -17,7 +17,7 @@ def test_extract_scancode_header_produces_expected_result(
     scancode_faker: ScanCodeFaker,
 ) -> None:
     scancode_data = scancode_faker.scancode_data()
-    opossum = ScancodeDataToOpossumConverter.convert_scancode_to_opossum(
+    opossum = convert_to_opossum(
         scancode_data,
     )
     metadata = opossum.scan_results.metadata
@@ -32,7 +32,7 @@ def test_extract_scancode_header_errors_with_missing_header(
     scancode_data = scancode_faker.scancode_data(headers=[])
 
     with pytest.raises(SystemExit):
-        ScancodeDataToOpossumConverter.convert_scancode_to_opossum(scancode_data)
+        convert_to_opossum(scancode_data)
 
     assert "header" in caplog.messages[0].lower()
 
@@ -45,7 +45,7 @@ def test_extract_scancode_header_error_with_multiple_headers(
     scancode_data = scancode_faker.scancode_data(headers=[header1, header2])
 
     with pytest.raises(SystemExit):
-        ScancodeDataToOpossumConverter.convert_scancode_to_opossum(scancode_data)
+        convert_to_opossum(scancode_data)
 
     assert "header" in caplog.messages[0].lower()
 
@@ -64,9 +64,7 @@ def test_convert_scancode_produces_expected_result(
     scancode_faker: ScanCodeFaker,
 ) -> None:
     scancode_data = scancode_faker.scancode_data()
-    opossum_data = ScancodeDataToOpossumConverter.convert_scancode_to_opossum(
-        scancode_data
-    )
+    opossum_data = convert_to_opossum(scancode_data)
 
     assert opossum_data.review_results is None
     scan_results = opossum_data.scan_results

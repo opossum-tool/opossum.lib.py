@@ -14,8 +14,8 @@ from opossum_lib.core.services.input_reader import InputReader
 from opossum_lib.input_formats.scancode.entities.scan_code_data_model import (
     ScanCodeDataModel,
 )
-from opossum_lib.input_formats.scancode.services.scancode_data_to_opossum_converter import (  # noqa: E501
-    ScancodeDataToOpossumConverter,
+from opossum_lib.input_formats.scancode.services.convert_to_opossum import (  # noqa: E501
+    convert_to_opossum,
 )
 
 
@@ -30,7 +30,7 @@ class ScancodeFormatReader(InputReader):
 
         scancode_data = ScancodeFormatReader.load_scancode_json(self.path)
 
-        return ScancodeDataToOpossumConverter.convert_scancode_to_opossum(scancode_data)
+        return convert_to_opossum(scancode_data)
 
     @staticmethod
     def load_scancode_json(path: Path) -> ScanCodeDataModel:

@@ -4,8 +4,8 @@
 
 
 from opossum_lib.input_formats.scancode.constants import SCANCODE_SOURCE_NAME
-from opossum_lib.input_formats.scancode.services.scancode_data_to_opossum_converter import (  # noqa: E501
-    ScancodeDataToOpossumConverter,
+from opossum_lib.input_formats.scancode.services.convert_to_opossum import (  # noqa: E501
+    convert_to_opossum,
 )
 from opossum_lib.shared.entities.opossum_input_file_model import (
     OpossumPackageModel,
@@ -17,7 +17,7 @@ from tests.setup.scancode_faker_setup import ScanCodeFaker
 def test_get_attribution_info_directory(scancode_faker: ScanCodeFaker) -> None:
     folder = scancode_faker.single_folder(path="some/single/folder")
     scancode_data = scancode_faker.scancode_data(files=[folder])
-    opossum = ScancodeDataToOpossumConverter.convert_scancode_to_opossum(scancode_data)
+    opossum = convert_to_opossum(scancode_data)
     assert len(opossum.scan_results.resources) == 1
     assert opossum.scan_results.resources[0].attributions == []
 
@@ -27,7 +27,7 @@ def test_get_attribution_info_from_file_without_detections(
 ) -> None:
     file = scancode_faker.single_file(path="some/single/file", license_detections=[])
     scancode_data = scancode_faker.scancode_data(files=[file])
-    opossum = ScancodeDataToOpossumConverter.convert_scancode_to_opossum(scancode_data)
+    opossum = convert_to_opossum(scancode_data)
     assert len(opossum.scan_results.resources) == 1
     assert opossum.scan_results.resources[0].attributions == []
 
@@ -68,7 +68,7 @@ def test_get_attribution_info_file_multiple(scancode_faker: ScanCodeFaker) -> No
         copyrights=[copyright1, copyright2, copyright3],
     )
     scancode_data = scancode_faker.scancode_data(files=[file])
-    opossum = ScancodeDataToOpossumConverter.convert_scancode_to_opossum(scancode_data)
+    opossum = convert_to_opossum(scancode_data)
     attributions = opossum.to_opossum_model().input_file.external_attributions.values()
 
     expected1 = OpossumPackageModel(

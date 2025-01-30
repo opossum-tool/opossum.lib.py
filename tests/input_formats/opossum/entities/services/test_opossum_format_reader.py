@@ -6,8 +6,8 @@ from pathlib import Path
 import pytest
 from _pytest.logging import LogCaptureFixture
 
-from opossum_lib.input_formats.opossum.services.opossum_format_reader import (
-    OpossumFormatReader,
+from opossum_lib.input_formats.opossum.services.opossum_file_reader import (
+    OpossumFileReader,
 )
 
 TEST_DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent / "data"
@@ -15,7 +15,7 @@ TEST_DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent / "d
 
 def test_read_opossum_file_corrupted_file_exits_1(caplog: LogCaptureFixture) -> None:
     input_path = TEST_DATA_DIR / "opossum_input_corrupt.opossum"
-    opossum_format_reader = OpossumFormatReader(input_path)
+    opossum_format_reader = OpossumFileReader(input_path)
 
     with pytest.raises(SystemExit) as system_exit:
         opossum_format_reader.read()
@@ -25,7 +25,7 @@ def test_read_opossum_file_corrupted_file_exits_1(caplog: LogCaptureFixture) -> 
 
 def test_read_opossum_file_containing_output_json() -> None:
     input_path = TEST_DATA_DIR / "opossum_input_with_result.opossum"
-    opossum_format_reader = OpossumFormatReader(input_path)
+    opossum_format_reader = OpossumFileReader(input_path)
 
     result = opossum_format_reader.read()
 

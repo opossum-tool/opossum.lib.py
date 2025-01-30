@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 import pytest
 
-from opossum_lib.input_formats.opossum.services.opossum_file_model_to_opossum_converter import (  # noqa: E501
-    OpossumFileModelToOpossumConverter,
+from opossum_lib.input_formats.opossum.services.convert_to_opossum import (  # noqa: E501
+    convert_to_opossum,
 )
 from opossum_lib.shared.entities.opossum_input_file_model import (
     OpossumPackageIdentifierModel,
@@ -18,7 +18,7 @@ class TestOpossumFileModelToOpossumConverter:
         output_file = opossum_file_faker.output_file()
         input_file = opossum_file_faker.opossum_file_content(out_file=output_file)
 
-        result = OpossumFileModelToOpossumConverter.convert_to_opossum(input_file)
+        result = convert_to_opossum(input_file)
 
         assert result.review_results == output_file
 
@@ -34,7 +34,7 @@ class TestOpossumFileModelToOpossumConverter:
         input_file = opossum_file_faker.opossum_file_content(in_file=file_information)
 
         with pytest.raises(RuntimeError, match=r".*attribution was duplicated.*"):
-            OpossumFileModelToOpossumConverter.convert_to_opossum(input_file)
+            convert_to_opossum(input_file)
 
     @staticmethod
     def _fake_duplicate_external_attributions(

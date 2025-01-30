@@ -4,8 +4,8 @@
 import json
 from copy import deepcopy
 
-from opossum_lib.input_formats.opossum.services.opossum_file_model_to_opossum_converter import (  # noqa: E501
-    OpossumFileModelToOpossumConverter,
+from opossum_lib.input_formats.opossum.services.convert_to_opossum import (  # noqa: E501
+    convert_to_opossum,
 )
 from tests.setup.opossum_faker_setup import OpossumFaker
 
@@ -24,7 +24,7 @@ class TestOpossumToOpossumModelConversion:
 
         opossum_file = opossum.to_opossum_model()
 
-        result = OpossumFileModelToOpossumConverter.convert_to_opossum(opossum_file)
+        result = convert_to_opossum(opossum_file)
 
         ## this can change due to the generation of new ids
         result_json = result.model_dump_json()
@@ -53,6 +53,6 @@ class TestOpossumToOpossumModelConversion:
 
         opossum_file = opossum.to_opossum_model()
 
-        result = OpossumFileModelToOpossumConverter.convert_to_opossum(opossum_file)
+        result = convert_to_opossum(opossum_file)
 
         assert result == expected_result
