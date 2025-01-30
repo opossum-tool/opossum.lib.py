@@ -16,8 +16,8 @@ from opossum_lib.core.services.input_reader import InputReader
 from opossum_lib.input_formats.opossum.services.opossum_file_reader import (
     OpossumFileReader,
 )
-from opossum_lib.input_formats.scancode.services.scancode_format_reader import (
-    ScancodeFormatReader,
+from opossum_lib.input_formats.scancode.services.scancode_file_reader import (
+    ScancodeFileReader,
 )
 
 
@@ -74,7 +74,7 @@ def generate(
         logging.error("Merging of multiple files not yet supported!")
         sys.exit(1)
     input_readers: list[InputReader] = []
-    input_readers += [ScancodeFormatReader(path=path) for path in scancode_json_files]
+    input_readers += [ScancodeFileReader(path=path) for path in scancode_json_files]
     input_readers += [OpossumFileReader(path=path) for path in opossum_files]
 
     generate_impl(input_readers=input_readers, output_file=Path(outfile))

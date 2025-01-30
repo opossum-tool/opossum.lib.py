@@ -1,4 +1,6 @@
-# SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
+#  SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
+#  #
+#  SPDX-License-Identifier: Apache-2.0
 #
 # SPDX-License-Identifier: Apache-2.0
 from pathlib import Path
@@ -10,7 +12,7 @@ from opossum_lib.input_formats.opossum.services.opossum_file_reader import (
     OpossumFileReader,
 )
 
-TEST_DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent / "data"
+TEST_DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
 
 
 def test_read_opossum_file_corrupted_file_exits_1(caplog: LogCaptureFixture) -> None:
