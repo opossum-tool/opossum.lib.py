@@ -8,18 +8,13 @@ from dataclasses import field
 from enum import Enum, auto
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, model_serializer
-from pydantic.alias_generators import to_camel
+from pydantic import ConfigDict, model_serializer
+
+from opossum_lib.shared.entities.camel_base_model import CamelBaseModel
 
 type OpossumPackageIdentifierModel = str
 type ResourcePathModel = str
 type ResourceInFileModel = dict[str, ResourceInFileModel] | int
-
-
-class CamelBaseModel(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=to_camel, populate_by_name=True, extra="forbid", frozen=True
-    )
 
 
 class OpossumInputFileModel(CamelBaseModel):
