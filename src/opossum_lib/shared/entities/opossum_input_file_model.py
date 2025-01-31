@@ -3,9 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
-from copy import deepcopy
 from dataclasses import field
-from enum import Enum, auto
 from typing import Literal
 
 from pydantic import ConfigDict, model_serializer
@@ -86,99 +84,6 @@ class MetadataModel(CamelBaseModel):
     project_version: str | None = None
     expected_release_date: str | None = None
     build_date: str | None = None
-
-
-class ResourceTypeModel(Enum):
-    FILE = auto()
-    FOLDER = auto()
-    TOP_LEVEL = auto()
-    OTHER = auto()
-
-
-class ResourceModel(CamelBaseModel):
-    type: ResourceTypeModel
-    children: dict[str, ResourceModel] = field(default_factory=dict)
-
-    def add_path(
-        self, path_with_resource_types: list[tuple[str, ResourceTypeModel]]
-    ) -> ResourceModel:
-        resource = deepcopy(self)
-        if len(path_with_resource_types) == 0:
-            return resource
-        (first, resource_type), rest = (
-            path_with_resource_types[0],
-            path_with_resource_types[1:],
-        )
-        if self.element_exists_but_resource_type_differs(first, resource_type):
-            raise TypeError(
-                "Couldn't add path to resource: ResourceType of elements with"
-                " the same path differ."
-            )
-        if first not in self.children:
-            resource.children[first] = ResourceModel(type=resource_type)
-        resource.children[first] = resource.children[first].add_path(rest)
-
-        return resource
-
-    def element_exists_but_resource_type_differs(
-        self, element: str, resource_type: ResourceTypeModel
-    ) -> bool:
-        if element in self.children:
-            return self.children[element].type != resource_type
-        return False
-
-    def drop_element(
-        self, path_to_element_to_drop: list[tuple[str, ResourceTypeModel]]
-    ) -> ResourceModel:
-        paths_in_resource = self.get_paths_of_all_leaf_nodes_with_types()
-        if path_to_element_to_drop not in paths_in_resource:
-            raise ValueError(
-                f"Element {path_to_element_to_drop} doesn't exist in resource!"
-            )
-
-        else:
-            resource = ResourceModel(type=ResourceTypeModel.TOP_LEVEL)
-            paths_in_resource.remove(path_to_element_to_drop)
-            paths_in_resource.append(path_to_element_to_drop[:-1])
-
-            for path_to_element_to_drop in paths_in_resource:
-                resource = resource.add_path(path_to_element_to_drop)
-
-            return resource
-
-    def to_dict(self) -> ResourceInFileModel:
-        if not self.has_children():
-            if self.type == ResourceTypeModel.FOLDER:
-                return {}
-            else:
-                return 1
-        else:
-            return {
-                name: resource.to_dict() for name, resource in self.children.items()
-            }
-
-    def get_paths_of_all_leaf_nodes_with_types(
-        self,
-    ) -> list[list[tuple[str, ResourceTypeModel]]]:
-        paths = []
-        for name, resource in self.children.items():
-            path = [(name, resource.type)]
-            if resource.has_children():
-                paths.extend(
-                    [
-                        path + element
-                        for element in resource.get_paths_of_all_leaf_nodes_with_types()
-                    ]
-                )
-            else:
-                paths.extend([path])
-        return paths
-
-    def has_children(self) -> bool:
-        return len(self.children) > 0
-
-    def convert_to_file_resource(self) -> ResourceInFileModel:
-        return self.to_dict()
 
 
 class ExternalAttributionSourceModel(CamelBaseModel):
