@@ -5,9 +5,7 @@
 from __future__ import annotations
 
 import uuid
-from collections import defaultdict
 from copy import deepcopy
-from dataclasses import field
 
 from pydantic import BaseModel, ConfigDict
 
@@ -27,10 +25,6 @@ from opossum_lib.shared.entities.opossum_input_file_model import (
 )
 
 
-def _default_attribution_id_mapper() -> dict[OpossumPackage, str]:
-    return defaultdict(lambda: str(uuid.uuid4()))
-
-
 class ScanResults(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     metadata: Metadata
@@ -40,9 +34,7 @@ class ScanResults(BaseModel):
     frequent_licenses: list[FrequentLicense] | None = None
     files_with_children: list[str] | None = None
     base_urls_for_sources: BaseUrlsForSources | None = None
-    attribution_to_id: dict[OpossumPackage, str] = field(
-        default_factory=_default_attribution_id_mapper
-    )
+    attribution_to_id: dict[OpossumPackage, str] = {}
     unassigned_attributions: list[OpossumPackage] = []
 
     def to_opossum_file_model(self) -> OpossumInputFileModel:
@@ -87,17 +79,8 @@ class ScanResults(BaseModel):
         if self.unassigned_attributions:
             result = {}
             for unassigned_attribution in self.unassigned_attributions:
-                if unassigned_attribution in self.attribution_to_id:
-                    package_identifier = self.attribution_to_id[unassigned_attribution]
-                    result[package_identifier] = (
-                        unassigned_attribution.to_opossum_file_model()
-                    )
-                else:
-                    package_identifier = str(uuid.uuid4())
-                    self.attribution_to_id[unassigned_attribution] = package_identifier
-                    result[package_identifier] = (
-                        unassigned_attribution.to_opossum_file_model()
-                    )
+                key = self.get_attribution_key(unassigned_attribution)
+                result[key] = unassigned_attribution.to_opossum_file_model()
             return result
         else:
             return {}
@@ -142,6 +125,9 @@ class ScanResults(BaseModel):
     def get_attribution_key(
         self, attribution: OpossumPackage
     ) -> OpossumPackageIdentifierModel:
-        id = self.attribution_to_id[attribution]
+        if attribution in self.attribution_to_id:
+            id = self.attribution_to_id[attribution]
+        else:
+            id = str(uuid.uuid4())
         self.attribution_to_id[attribution] = id
         return id

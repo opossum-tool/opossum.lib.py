@@ -23,7 +23,7 @@ from tests.core.entities.generators.external_attribution_source_provider import 
 from tests.core.entities.generators.metadata_provider import MetadataProvider
 from tests.core.entities.generators.package_provider import PackageProvider
 from tests.core.entities.generators.resource_provider import ResourceProvider
-from tests.shared.generator_helpers import entry_or_none, random_list
+from tests.shared.generator_helpers import random_list
 
 
 class ScanResultsProvider(BaseProvider):
@@ -59,9 +59,10 @@ class ScanResultsProvider(BaseProvider):
         unassigned_attributions: list[OpossumPackage] | None = None,
     ) -> ScanResults:
         generated_resources = resources or [self.resource_provider.resource_tree()]
-        generated_unassigned_attributions = unassigned_attributions or entry_or_none(
-            self.misc_provider,
-            random_list(self, entry_generator=lambda: self.package_provider.package()),
+        generated_unassigned_attributions = unassigned_attributions or random_list(
+            self,
+            entry_generator=self.package_provider.package,
+            min_number_of_entries=0,
         )
         if generate_attribution_to_id:
             attribution_to_id = self._attribution_to_id(
