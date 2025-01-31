@@ -25,35 +25,34 @@ class OpossumFileReader(InputReader):
         self.path = path
 
     def read(self) -> Opossum:
-        opossum_input_file = self.read_opossum_file()
+        opossum_input_file = self._read_opossum_file()
         return convert_to_opossum(opossum_input_file)
 
-    def read_opossum_file(self) -> OpossumFileModel:
+    def _read_opossum_file(self) -> OpossumFileModel:
         logging.info(f"Converting opossum to opossum {self.path}")
 
         try:
             with (
                 ZipFile(self.path, "r") as zip_file,
             ):
-                OpossumFileReader._validate_zip_file_contents(zip_file)
-                input_file = OpossumFileReader._read_input_json_from_zip_file(zip_file)
+                self._validate_zip_file_contents(zip_file)
+                input_file = self._read_input_json(zip_file)
                 return OpossumFileModel(
                     input_file=input_file,
-                    output_file=OpossumFileReader._read_output_json_if_exists(zip_file),
+                    output_file=self._read_output_json_if_exists(zip_file),
                 )
         except Exception as e:
             print(f"Error reading file {self.path}: {e}")
             sys.exit(1)
 
-    @staticmethod
-    def _read_input_json_from_zip_file(zip_file: ZipFile) -> OpossumInputFileModel:
+    def _read_input_json(self, zip_file: ZipFile) -> OpossumInputFileModel:
         with zip_file.open(INPUT_JSON_NAME) as input_json_file:
             input_json = json.load(input_json_file)
             input_file = OpossumInputFileModel.model_validate(input_json)
         return input_file
 
-    @staticmethod
     def _read_output_json_if_exists(
+        self,
         input_zip_file: ZipFile,
     ) -> OpossumOutputFileModel | None:
         if OUTPUT_JSON_NAME in input_zip_file.namelist():
@@ -64,8 +63,7 @@ class OpossumFileReader(InputReader):
             output_file = None
         return output_file
 
-    @staticmethod
-    def _validate_zip_file_contents(input_zip_file: ZipFile) -> None:
+    def _validate_zip_file_contents(self, input_zip_file: ZipFile) -> None:
         if INPUT_JSON_NAME not in input_zip_file.namelist():
             logging.error(
                 f"Opossum file {input_zip_file.filename} is corrupt"
