@@ -54,12 +54,10 @@ def _convert_to_scan_results(
         external_attributions=opossum_input_file_model.external_attributions,
         resources_to_attributions=opossum_input_file_model.resources_to_attributions,
     )
-    # fmt: off
     frequent_licenses = (
-            opossum_input_file_model.frequent_licenses
-            and _convert_frequent_licenses(opossum_input_file_model.frequent_licenses)
+        opossum_input_file_model.frequent_licenses
+        and _convert_frequent_licenses(opossum_input_file_model.frequent_licenses)
     )
-    # fmt: on
 
     base_urls_for_sources = (
         opossum_input_file_model.base_urls_for_sources
@@ -70,10 +68,7 @@ def _convert_to_scan_results(
 
     file_attribution_sources = opossum_input_file_model.external_attribution_sources
     external_attribution_sources = {
-        # noqa required due to clash between linter and formatter
-        name: _convert_external_attribution_source(  # noqa: E501
-            attribution_source
-        )
+        name: _convert_external_attribution_source(attribution_source)
         for name, attribution_source in file_attribution_sources.items()
     }
 

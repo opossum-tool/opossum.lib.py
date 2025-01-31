@@ -14,7 +14,7 @@ from opossum_lib.core.services.input_reader import InputReader
 from opossum_lib.input_formats.scancode.entities.scancode_model import (
     ScancodeModel,
 )
-from opossum_lib.input_formats.scancode.services.convert_to_opossum import (  # noqa: E501
+from opossum_lib.input_formats.scancode.services.convert_to_opossum import (
     convert_to_opossum,
 )
 
