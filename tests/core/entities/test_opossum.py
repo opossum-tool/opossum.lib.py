@@ -14,7 +14,7 @@ class TestOpossumToOpossumModelConversion:
     def test_moves_outfile(self, opossum_faker: OpossumFaker) -> None:
         opossum = opossum_faker.opossum()
 
-        result = opossum.to_opossum_model()
+        result = opossum.to_opossum_file_model()
 
         assert result.output_file == opossum.review_results
 
@@ -22,18 +22,19 @@ class TestOpossumToOpossumModelConversion:
         opossum = opossum_faker.opossum()
         expected_result = deepcopy(opossum)
 
-        opossum_file = opossum.to_opossum_model()
+        opossum_file = opossum.to_opossum_file_model()
 
         result = convert_to_opossum(opossum_file)
 
-        ## this can change due to the generation of new ids
+        # this workaround is necessary as model_dump fails
         result_json = result.model_dump_json()
         expected_result_json = expected_result.model_dump_json()
         result_dict = json.loads(result_json)
         expected_result_dict = json.loads(expected_result_json)
+        # this can change due to the generation of new ids
         expected_result_dict["scan_results"]["attribution_to_id"] = None
         result_dict["scan_results"]["attribution_to_id"] = None
-        # sort the lists again for comperability
+        # sort the lists again for comparability
         expected_result_dict["scan_results"]["unassigned_attributions"] = sorted(
             expected_result_dict["scan_results"]["unassigned_attributions"],
             key=lambda x: x["source"]["name"],
@@ -51,7 +52,7 @@ class TestOpossumToOpossumModelConversion:
         )
         expected_result = deepcopy(opossum)
 
-        opossum_file = opossum.to_opossum_model()
+        opossum_file = opossum.to_opossum_file_model()
 
         result = convert_to_opossum(opossum_file)
 

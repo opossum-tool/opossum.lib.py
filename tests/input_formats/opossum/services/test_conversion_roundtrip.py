@@ -31,5 +31,5 @@ class TestConversionRoundtrip:
     @staticmethod
     def _check_round_trip(start_file_content: OpossumFileModel) -> None:
         expected_file_content = deepcopy(start_file_content)
-        result = convert_to_opossum(start_file_content).to_opossum_model()
+        result = convert_to_opossum(start_file_content).to_opossum_file_model()
         assert result == expected_file_content

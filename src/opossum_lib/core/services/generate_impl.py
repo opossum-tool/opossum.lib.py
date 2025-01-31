@@ -12,5 +12,5 @@ def generate_impl(input_readers: list[InputReader], output_file: Path) -> None:
     # for the future a merge step is planned after reading the files
     opossum = input_readers[0].read()
 
-    opossum_file_content = opossum.to_opossum_model()
+    opossum_file_content = opossum.to_opossum_file_model()
     write_opossum_file(opossum_file_content, output_file)

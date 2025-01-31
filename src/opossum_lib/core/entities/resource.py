@@ -31,12 +31,12 @@ class Resource(BaseModel):
     attributions: list[OpossumPackage] = []
     children: dict[str, Resource] = {}
 
-    def to_opossum_model(self) -> ResourceInFileModel:
+    def to_opossum_file_model(self) -> ResourceInFileModel:
         if self.children or self.type == ResourceType.FOLDER:
             return {
                 _convert_path_to_str(
                     child.path.relative_to(self.path)
-                ): child.to_opossum_model()
+                ): child.to_opossum_file_model()
                 for child in self.children.values()
             }
         else:

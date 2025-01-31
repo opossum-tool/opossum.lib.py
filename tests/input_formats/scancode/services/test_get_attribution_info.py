@@ -78,7 +78,7 @@ class TestGetAttributionInfo:
         scancode_data = scancode_faker.scancode_data(files=[file])
         opossum = convert_to_opossum(scancode_data)
         attributions = (
-            opossum.to_opossum_model().input_file.external_attributions.values()
+            opossum.to_opossum_file_model().input_file.external_attributions.values()
         )
 
         expected1 = OpossumPackageModel(

@@ -12,5 +12,5 @@ from opossum_lib.shared.entities.opossum_input_file_model import BaseUrlsForSour
 class BaseUrlsForSources(BaseModel):
     model_config = ConfigDict(frozen=True, extra="allow")
 
-    def to_opossum_model(self) -> BaseUrlsForSourcesModel:
+    def to_opossum_file_model(self) -> BaseUrlsForSourcesModel:
         return BaseUrlsForSourcesModel(**self.model_dump())

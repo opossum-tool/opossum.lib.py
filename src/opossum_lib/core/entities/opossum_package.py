@@ -35,9 +35,9 @@ class OpossumPackage(BaseModel):
     criticality: Literal["high"] | Literal["medium"] | None = None
     was_preferred: bool | None = None
 
-    def to_opossum_model(self) -> OpossumPackageModel:
+    def to_opossum_file_model(self) -> OpossumPackageModel:
         return OpossumPackageModel(
-            source=self.source.to_opossum_model(),
+            source=self.source.to_opossum_file_model(),
             attribution_confidence=self.attribution_confidence,
             comment=self.comment,
             package_name=self.package_name,

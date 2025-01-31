@@ -18,5 +18,5 @@ class Metadata(BaseModel):
     expected_release_date: str | None = None
     build_date: str | None = None
 
-    def to_opossum_model(self) -> MetadataModel:
+    def to_opossum_file_model(self) -> MetadataModel:
         return MetadataModel(**self.model_dump())

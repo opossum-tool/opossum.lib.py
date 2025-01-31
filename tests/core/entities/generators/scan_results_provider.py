@@ -64,7 +64,7 @@ class ScanResultsProvider(BaseProvider):
             random_list(self, entry_generator=lambda: self.package_provider.package()),
         )
         if generate_attribution_to_id:
-            attribution_to_id = ScanResultsProvider._attribution_to_id(
+            attribution_to_id = self._attribution_to_id(
                 generated_resources, generated_unassigned_attributions
             )
             # fmt: off
@@ -100,8 +100,8 @@ class ScanResultsProvider(BaseProvider):
             )
         # fmt: on
 
-    @staticmethod
     def _attribution_to_id(
+        self,
         resources: list[Resource] | None,
         unassigned_attributions: list[OpossumPackage] | None,
     ) -> dict[OpossumPackage, str] | None:

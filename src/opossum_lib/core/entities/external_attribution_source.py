@@ -17,7 +17,7 @@ class ExternalAttributionSource(BaseModel):
     priority: int
     is_relevant_for_preferred: bool | None = None
 
-    def to_opossum_model(self) -> ExternalAttributionSourceModel:
+    def to_opossum_file_model(self) -> ExternalAttributionSourceModel:
         return ExternalAttributionSourceModel(
             name=self.name,
             priority=self.priority,

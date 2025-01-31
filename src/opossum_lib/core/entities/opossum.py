@@ -19,8 +19,8 @@ class Opossum(BaseModel):
     scan_results: ScanResults
     review_results: OpossumOutputFileModel | None = None
 
-    def to_opossum_model(self) -> OpossumFileModel:
+    def to_opossum_file_model(self) -> OpossumFileModel:
         return OpossumFileModel(
-            input_file=self.scan_results.to_opossum_model(),
+            input_file=self.scan_results.to_opossum_file_model(),
             output_file=self.review_results,
         )

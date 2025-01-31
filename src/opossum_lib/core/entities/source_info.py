@@ -15,7 +15,7 @@ class SourceInfo(BaseModel):
     document_confidence: int | float | None = 0
     additional_name: str | None = None
 
-    def to_opossum_model(self) -> SourceInfoModel:
+    def to_opossum_file_model(self) -> SourceInfoModel:
         return SourceInfoModel(
             name=self.name,
             document_confidence=self.document_confidence,

@@ -45,7 +45,7 @@ class ScanResults(BaseModel):
     )
     unassigned_attributions: list[OpossumPackage] = []
 
-    def to_opossum_model(self) -> OpossumInputFileModel:
+    def to_opossum_file_model(self) -> OpossumInputFileModel:
         external_attributions, resources_to_attributions = (
             self.create_attribution_mapping(self.resources)
         )
@@ -54,21 +54,22 @@ class ScanResults(BaseModel):
         frequent_licenses = None
         if self.frequent_licenses:
             frequent_licenses = [
-                license.to_opossum_model() for license in self.frequent_licenses
+                license.to_opossum_file_model() for license in self.frequent_licenses
             ]
         base_urls_for_sources = (
-            self.base_urls_for_sources and self.base_urls_for_sources.to_opossum_model()
+            self.base_urls_for_sources
+            and self.base_urls_for_sources.to_opossum_file_model()
         )
 
         external_attribution_sources = {
-            key: val.to_opossum_model()
+            key: val.to_opossum_file_model()
             for (key, val) in self.external_attribution_sources.items()
         }
 
         return OpossumInputFileModel(
-            metadata=self.metadata.to_opossum_model(),
+            metadata=self.metadata.to_opossum_file_model(),
             resources={
-                str(resource.path): resource.to_opossum_model()
+                str(resource.path): resource.to_opossum_file_model()
                 for resource in self.resources
             },
             external_attributions=external_attributions,
@@ -89,13 +90,13 @@ class ScanResults(BaseModel):
                 if unassigned_attribution in self.attribution_to_id:
                     package_identifier = self.attribution_to_id[unassigned_attribution]
                     result[package_identifier] = (
-                        unassigned_attribution.to_opossum_model()
+                        unassigned_attribution.to_opossum_file_model()
                     )
                 else:
                     package_identifier = str(uuid.uuid4())
                     self.attribution_to_id[unassigned_attribution] = package_identifier
                     result[package_identifier] = (
-                        unassigned_attribution.to_opossum_model()
+                        unassigned_attribution.to_opossum_file_model()
                     )
             return result
         else:
@@ -122,7 +123,7 @@ class ScanResults(BaseModel):
                 path = "/" + path
 
             node_attributions_by_id = {
-                self.get_attribution_key(a): a.to_opossum_model()
+                self.get_attribution_key(a): a.to_opossum_file_model()
                 for a in node.attributions
             }
             external_attributions.update(node_attributions_by_id)

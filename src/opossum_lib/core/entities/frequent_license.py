@@ -15,7 +15,7 @@ class FrequentLicense(BaseModel):
     short_name: str
     default_text: str
 
-    def to_opossum_model(self) -> FrequentLicenseModel:
+    def to_opossum_file_model(self) -> FrequentLicenseModel:
         return FrequentLicenseModel(
             full_name=self.full_name,
             short_name=self.short_name,
