@@ -30,7 +30,8 @@ class OpossumProvider(BaseProvider):
         generate_review_results: bool = False,
     ) -> Opossum:
         return Opossum(
-            scan_results=scan_results or self.scan_results_provider.scan_results(),
+            scan_results=scan_results
+            or self.scan_results_provider.scan_results(attribution_to_id={}),
             review_results=review_results
             or (generate_review_results and self.review_result_provider.output_file())
             or None,

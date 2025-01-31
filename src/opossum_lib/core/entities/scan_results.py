@@ -31,9 +31,9 @@ class ScanResults(BaseModel):
     resources: list[Resource]
     attribution_breakpoints: list[str] = []
     external_attribution_sources: dict[str, ExternalAttributionSource] = {}
-    frequent_licenses: list[FrequentLicense] | None = None
-    files_with_children: list[str] | None = None
-    base_urls_for_sources: BaseUrlsForSources | None = None
+    frequent_licenses: list[FrequentLicense] = []
+    files_with_children: list[str] = []
+    base_urls_for_sources: BaseUrlsForSources = BaseUrlsForSources()
     attribution_to_id: dict[OpossumPackage, str] = {}
     unassigned_attributions: list[OpossumPackage] = []
 
