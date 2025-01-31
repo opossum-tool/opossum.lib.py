@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 from copy import deepcopy
 
-from opossum_lib.input_formats.opossum.services.convert_to_opossum import (  # noqa: E501
+from opossum_lib.input_formats.opossum.services.convert_to_opossum import (
     convert_to_opossum,
 )
 from opossum_lib.shared.entities.opossum_file_model import OpossumFileModel

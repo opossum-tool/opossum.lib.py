@@ -404,7 +404,7 @@ class ScanCodeDataProvider(BaseProvider):
             if license_detections is not None
             else random_list(
                 self,
-                lambda: self.license_detection(path=path),  # noqa: B023
+                lambda: self.license_detection(path=path),
             )
         )
         detected_license_expression = detected_license_expression or " and ".join(

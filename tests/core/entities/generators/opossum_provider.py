@@ -9,7 +9,7 @@ from opossum_lib.core.entities.opossum import Opossum
 from opossum_lib.core.entities.scan_results import ScanResults
 from opossum_lib.shared.entities.opossum_output_file_model import OpossumOutputFileModel
 from tests.core.entities.generators.scan_results_provider import ScanResultsProvider
-from tests.input_formats.opossum.entities.generators.generate_outfile_information import (  # noqa: E501
+from tests.input_formats.opossum.entities.generators.generate_outfile_information import (  # noqa
     OpossumOutputFileProvider,
 )
 
