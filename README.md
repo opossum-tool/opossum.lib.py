@@ -64,8 +64,9 @@ Options:
                          that you would like to include in the final output.
                          Option can be repeated.
   -o, --outfile TEXT     The file path to write the generated opossum document
-                         to. If appropriate, the extension ".opossum" will be
-                         appended.  [default: output.opossum]
+                         to. If appropriate, the extension ".opossum" is
+                         appended. If the output file already exists, it is
+                         overwritten.  [default: output.opossum]
   --help                 Show this message and exit.
 
 
@@ -80,6 +81,7 @@ uv run ruff check
 uv run ruff format --check
 uv run python -m mypy src/ tests/
 uv run pytest
+uv run lint-imports
 ```
 
 # Build

@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: TNG Technology Consulting GmbH <https://www.tngtech.com>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[importlinter]
+root_package = opossum_lib
+# Optional:
+include_external_packages = True
+exclude_type_checking_imports = True
+
+[importlinter:contract:file-formats-independent]
+name = The different file formats should be independent
+type = independence
+modules =
+    opossum_lib.input_formats.*
+
+
+[importlinter:contract:core-should-not-depend -on-input-files]
+name = Core should not depend on input files
+type = forbidden
+source_modules =
+    opossum_lib.core
+forbidden_modules =
+    opossum_lib.input_formats
+
+[importlinter:contract:shared_objects_not_depend_on_input_formats]
+name = Shared package not depend on input formats
+type = forbidden
+source_modules =
+    opossum_lib.shared
+forbidden_modules =
+    opossum_lib.input_formats

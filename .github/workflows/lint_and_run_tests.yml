@@ -48,6 +48,9 @@ jobs:
       - name: Run mypy
         run: uv run python -m mypy src/ tests/
 
+      - name: Run import linter
+        run: uv run lint-imports
+
   test:
     runs-on: ${{ matrix.os }}
     if: |

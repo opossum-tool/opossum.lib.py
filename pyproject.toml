@@ -12,7 +12,6 @@ dependencies = [
     "click>=8.1.8,<9",
     "pydantic>=2.10.6",
     "pyinstaller>=6.11.1",
-    "faker>=35.0.0",
 ]
 
 [project.urls]
@@ -22,11 +21,12 @@ Repository = "https://github.com/opossum-tool/opossum-file"
 opossum-file = "opossum_lib.cli:opossum_file"
 
 [dependency-groups]
-test = ["pytest>=8.3.4,<9"]
+test = ["pytest>=8.3.4,<9", "faker>=35.0.0",]
 dev = [
     "mypy>=1.14.1,<2",
     "pre-commit>=4.1.0,<5",
     "ruff>=0.9.3",
+    "import-linter>=2.1",
 ]
 
 [tool.uv]
