@@ -14,6 +14,23 @@ from pydantic import ConfigDict, Field
 from opossum_lib.shared.entities.camel_base_model import CamelBaseModel
 
 
+class OpossumOutputFileModel(CamelBaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    metadata: Metadata
+    manual_attributions: dict[str, ManualAttributions]
+    resources_to_attributions: dict[str, list[str]] = Field(
+        ...,
+        description="Map from a path in the resource tree "
+        "(e.g. `/folder/subfolder/`, `/folder/file`, "
+        "note the mandatory slashes at the beginning and end) "
+        "to a list of attribution IDs.",
+    )
+    resolved_external_attributions: list[str] | None = Field(
+        None, description="List of attribution IDs for input signals that are resolved."
+    )
+
+
 class Metadata(CamelBaseModel):
     project_id: str = Field(
         ..., description="An ID for the compliance scan, copied from the input file."
@@ -121,21 +138,4 @@ class ManualAttributions(CamelBaseModel):
         None,
         description="Indicates that the attribution had previously"
         " been marked as preferred.",
-    )
-
-
-class OpossumOutputFileModel(CamelBaseModel):
-    model_config = ConfigDict(extra="allow")
-
-    metadata: Metadata
-    manual_attributions: dict[str, ManualAttributions]
-    resources_to_attributions: dict[str, list[str]] = Field(
-        ...,
-        description="Map from a path in the resource tree "
-        "(e.g. `/folder/subfolder/`, `/folder/file`, "
-        "note the mandatory slashes at the beginning and end) "
-        "to a list of attribution IDs.",
-    )
-    resolved_external_attributions: list[str] | None = Field(
-        None, description="List of attribution IDs for input signals that are resolved."
     )
