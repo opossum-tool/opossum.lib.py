@@ -81,6 +81,7 @@ uv run ruff check
 uv run ruff format --check
 uv run python -m mypy src/ tests/
 uv run pytest
+uv run lint-imports
 ```
 
 # Build
