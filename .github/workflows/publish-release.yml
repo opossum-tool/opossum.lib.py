@@ -19,7 +19,7 @@ jobs:
         python-version: ['3.13']
         include:
           - os: ubuntu-latest
-            asset-name: opossum-file-for-ubuntu
+            asset-name: opossum-file-for-linux
           - os: macos-latest
             asset-name: opossum-file-for-mac
           - os: windows-latest
