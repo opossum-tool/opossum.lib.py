@@ -18,8 +18,12 @@ class TestOpossumToOpossumModelConversion:
 
         assert result.output_file == opossum.review_results
 
-    def test_roundtrip(self, opossum_faker: OpossumFaker) -> None:
-        opossum = opossum_faker.opossum()
+    def test_roundtrip_without_preset_attribution_ids(
+        self, opossum_faker: OpossumFaker
+    ) -> None:
+        opossum = opossum_faker.opossum(
+            scan_results=opossum_faker.scan_results(attribution_to_id={})
+        )
         expected_result = deepcopy(opossum)
 
         opossum_file = opossum.to_opossum_file_model()
@@ -46,7 +50,9 @@ class TestOpossumToOpossumModelConversion:
 
         assert result_dict == expected_result_dict
 
-    def test_roundtrip_with_resource_ids(self, opossum_faker: OpossumFaker) -> None:
+    def test_roundtrip_with_preset_attribution_ids(
+        self, opossum_faker: OpossumFaker
+    ) -> None:
         opossum = opossum_faker.opossum(scan_results=opossum_faker.scan_results())
         expected_result = deepcopy(opossum)
 

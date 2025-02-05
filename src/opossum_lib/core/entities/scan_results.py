@@ -79,7 +79,7 @@ class ScanResults(BaseModel):
         if self.unassigned_attributions:
             result = {}
             for unassigned_attribution in self.unassigned_attributions:
-                key = self.get_attribution_key(unassigned_attribution)
+                key = self._get_or_create_attribution_id(unassigned_attribution)
                 result[key] = unassigned_attribution.to_opossum_file_model()
             return result
         else:
@@ -106,7 +106,7 @@ class ScanResults(BaseModel):
                 path = "/" + path
 
             node_attributions_by_id = {
-                self.get_attribution_key(a): a.to_opossum_file_model()
+                self._get_or_create_attribution_id(a): a.to_opossum_file_model()
                 for a in node.attributions
             }
             external_attributions.update(node_attributions_by_id)
@@ -122,7 +122,7 @@ class ScanResults(BaseModel):
 
         return external_attributions, resources_to_attributions
 
-    def get_attribution_key(
+    def _get_or_create_attribution_id(
         self, attribution: OpossumPackage
     ) -> OpossumPackageIdentifierModel:
         if attribution in self.attribution_to_id:
