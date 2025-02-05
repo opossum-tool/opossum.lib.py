@@ -12,11 +12,13 @@ SPDX-License-Identifier: Apache-2.0
 ![build workflow](https://github.com/opossum-tool/opossum-file/actions/workflows/build-and-e2e-test.yml/badge.svg)
 
 This is a library implementing operations around files readable by [OpossumUI](https://github.com/opossum-tool/OpossumUI/).
-Currently only supports conversion from single SPDX files to `.opossum` format.
 
 # Current state
 
-This is a work in progress and not yet stable.
+Supports the conversion from the following file format to `.opossum`:
+ - `.opossum` itself
+ - ScanCode (json)
+ - more to come...
 
 # License
 
@@ -24,19 +26,16 @@ This is a work in progress and not yet stable.
 
 # Installation
 
-This package uses [uv](https://docs.astral.sh/uv/) for installation and dependency management.
-After installing uv, you can set up the project with
+You find the [latest release here](https://github.com/opossum-tool/opossum-file/releases/latest). We offer prebuilt binaries for Linux, MacOS and Windows.
 
-```bash
-uv sync
-```
+Alternatively, or to get the cutting-edge version, you can clone the repository and run the code yourself. See [Development](#development) below for installation instructions.
 
 # How to use
 
 ## Command-line usage
 The CLI uses subcommands. The main command just displays all available subcommands
 ```bash
-Usage: uv run opossum-file [OPTIONS] COMMAND [ARGS]...
+Usage: opossum-file [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --help  Show this message and exit.
@@ -74,7 +73,22 @@ Options:
 
 # Development
 
-To test your changes, run
+## Installation
+This package uses [uv](https://docs.astral.sh/uv/) for installation and dependency management.
+After installing uv and cloning the repository, you can set up the project with
+
+```bash
+uv sync
+```
+
+## Execution
+To execute the code directly (i.e. without building it), use
+```bash
+uv run opossum-file generate ...
+```
+
+## Code quality tooling
+To lint and test your changes, run
 
 ```bash
 uv run ruff check
@@ -84,7 +98,12 @@ uv run pytest
 uv run lint-imports
 ```
 
-# Build
+Each PR is required to pass these checks, so it is a good a idea to run these commands locally before submitting your PR.
+
+**Note:**<br>
+This project uses [faker](https://faker.readthedocs.io/en/master/) for testing. By default, every test runs with a different seed. To fix the seed, just adapt the line in `faker_setup.py` (without committing).
+
+## Build
 
 To build, run
 
@@ -94,12 +113,9 @@ uv run python build.py opossum-file
 
 This will create a self-contained executable file `dist/opossum-file` (`dist/opossum-file.exe` on Windows).
 
-# Test
-* This project uses [faker](https://faker.readthedocs.io/en/master/) for testing
-* By default, every test runs with a different seed
-* To fix the seed, just adapt the line in faker_setup.py (without committing)
 
-# Creating a new release
+
+## Creating a new release
 
 Note: You will need the "maintain" role in order to create a new release.
 
